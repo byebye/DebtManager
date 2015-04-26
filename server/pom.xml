@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>pl</groupId>
+   <groupId>tcs</groupId>
    <artifactId>javaproject</artifactId>
    <version>0.1-SNAPSHOT</version>
-   
+
    <dependencies>
       <!-- jOOQ -->
       <dependency>
@@ -25,5 +25,14 @@
          <artifactId>jooq-codegen</artifactId>
          <version>3.5.4</version>
       </dependency>
+
+      <!-- PostgreSQL JDBC Driver -->
+      <dependency>
+         <groupId>org.postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+         <version>9.4-1201-jdbc41</version>
+      </dependency>
+
    </dependencies>
+
 </project>
