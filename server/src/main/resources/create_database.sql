@@ -22,3 +22,11 @@ CREATE TABLE user_budget (
    user_id       int REFERENCES users(id),
    budget_id     int REFERENCES budgets(id)
 );
+
+CREATE TABLE payments(
+   id            int PRIMARY KEY,
+   budget_id     int REFERENCES budgets(id),
+   user_id       int REFERENCES users(id),
+   description   varchar(200),
+   amount        numeric(6,2)
+);
