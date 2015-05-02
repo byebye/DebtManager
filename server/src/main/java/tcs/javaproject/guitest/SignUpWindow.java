@@ -1,6 +1,5 @@
 package tcs.javaproject.guitest;
 
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,11 +23,14 @@ import java.sql.DriverManager;
 /**
  * Created by byebye on 27.04.15.
  */
-public class SignUpWindow extends Application {
+public class SignUpWindow extends Stage {
 
-   @Override
-   public void start(Stage primaryStage) throws Exception {
-      primaryStage.setTitle("DebtManager - Sign Up");
+   public SignUpWindow() {
+      init();
+   }
+
+   private void init() {
+      setTitle("DebtManager - Sign Up");
 
       GridPane grid = new GridPane();
       grid.setHgap(10);
@@ -76,8 +78,9 @@ public class SignUpWindow extends Application {
       TextArea dbQueryResult = new TextArea();
       grid.add(dbQueryResult, 0, 8, 8, 6);
 
-      primaryStage.setScene(new Scene(grid, 350, 500));
-      primaryStage.show();
+      setScene(new Scene(grid, 350, 500));
+
+      cancelButton.setOnAction(event1 -> close());
 
       signUpButton.setDisable(true);
       email.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -101,8 +104,14 @@ public class SignUpWindow extends Application {
             BigInteger bankAccountValue = new BigInteger(bankAccount.getText().replaceAll("\\s", ""));
             String passwordValue = password.getText();
             if (createUser(dbQueryResult, emailValue, usernameValue, bankAccountValue, passwordValue)) {
-               actiontarget.setFill(Color.GREEN);
-               actiontarget.setText("User created successfully!");
+               Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
+               userCreatedAlert.setTitle("Success");
+               userCreatedAlert.setHeaderText("User created successfully!");
+               userCreatedAlert.setContentText("Now you can manage your budgets.");
+               userCreatedAlert.showAndWait();
+               userCreatedAlert.setOnCloseRequest(event1 -> {
+
+               });
             }
             else {
                actiontarget.setText("User couldn't be created!");
@@ -141,9 +150,5 @@ public class SignUpWindow extends Application {
          return false;
       }
       return true;
-   }
-
-   public static void main(String[] args) {
-      launch(args);
    }
 }

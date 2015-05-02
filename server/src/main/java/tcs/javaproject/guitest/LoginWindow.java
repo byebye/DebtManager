@@ -3,6 +3,7 @@ package tcs.javaproject.guitest;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,6 +38,10 @@ public class LoginWindow extends Application {
       grid.add(password, 1, 2, 2, 1);
 
       Button signUpButton = new Button("Sign up");
+      signUpButton.setOnAction(event -> {
+         SignUpWindow signUpWindow = new SignUpWindow();
+         signUpWindow.show();
+      });
       HBox leftButtonBox = new HBox(signUpButton);
       leftButtonBox.setAlignment(Pos.CENTER_LEFT);
 
