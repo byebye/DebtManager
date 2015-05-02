@@ -1,9 +1,5 @@
 package tcs.javaproject.guitest;
 
-/**
- * Created by Vsmasster on 29.04.15.
- */
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainWindowController implements Initializable {
+public class BudgetsListController implements Initializable {
 
     @FXML
     private Button btnLogout;

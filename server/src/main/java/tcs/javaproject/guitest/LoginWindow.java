@@ -3,7 +3,6 @@ package tcs.javaproject.guitest;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +17,7 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Users;
 
-import java.math.BigInteger;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -59,8 +58,14 @@ public class LoginWindow extends Application {
       Button logInButton = new Button("Log In");
       logInButton.setOnAction(event -> {
          if (validateUserPassword(username.getText(), password.getText())) {
-            actionInfo.setFill(Color.GREEN);
-            actionInfo.setText("Password correct!");
+            try {
+               BudgetsListWindow budgetsListWindow = new BudgetsListWindow();
+               budgetsListWindow.show();
+               primaryStage.hide();
+            }
+            catch (IOException e) {
+               e.printStackTrace();
+            }
          }
          else {
             actionInfo.setFill(Color.FIREBRICK);

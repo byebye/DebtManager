@@ -1,9 +1,5 @@
 package tcs.javaproject.guitest;
 
-/**
- * Created by Vsmasster on 30.04.15.
- */
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +9,7 @@ import javafx.stage.Stage;
 public class BudgetCreatorWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("BudgetCreator.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/BudgetCreatorWindow.fxml"));
         primaryStage.setTitle("DeptManager - Budget Creator");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
