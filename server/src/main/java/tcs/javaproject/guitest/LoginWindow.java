@@ -11,8 +11,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import tcs.javaproject.database.tables.Users;
+
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class LoginWindow extends Application {
 
@@ -37,6 +45,9 @@ public class LoginWindow extends Application {
       grid.add(new Label("Password:"), 0, 2);
       grid.add(password, 1, 2, 2, 1);
 
+      final Text actionInfo = new Text();
+      grid.add(actionInfo, 0, 4, 4, 1);
+
       Button signUpButton = new Button("Sign up");
       signUpButton.setOnAction(event -> {
          SignUpWindow signUpWindow = new SignUpWindow();
@@ -46,6 +57,16 @@ public class LoginWindow extends Application {
       leftButtonBox.setAlignment(Pos.CENTER_LEFT);
 
       Button logInButton = new Button("Log In");
+      logInButton.setOnAction(event -> {
+         if (validateUserPassword(username.getText(), password.getText())) {
+            actionInfo.setFill(Color.GREEN);
+            actionInfo.setText("Password correct!");
+         }
+         else {
+            actionInfo.setFill(Color.FIREBRICK);
+            actionInfo.setText("Incorrect username or password!");
+         }
+      });
       HBox rightButtonBox = new HBox(logInButton);
       rightButtonBox.setAlignment(Pos.CENTER_RIGHT);
       grid.add(leftButtonBox, 0, 3);
@@ -53,6 +74,25 @@ public class LoginWindow extends Application {
 
       primaryStage.setScene(new Scene(grid, 300, 275));
       primaryStage.show();
+   }
+
+   private boolean validateUserPassword(String username, String password) {
+      String url = "jdbc:postgresql://localhost/debtmanager";
+
+      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+         Result<Record1<String>> result = create.select(Users.USERS.PASSWORD_HASH)
+                                       .from(Users.USERS)
+                                       .where(Users.USERS.NAME.equal(username)).fetch();
+         if (result.isEmpty())
+            return false;
+         String expectedPassword = result.get(0).value1().trim();
+         return password.equals(expectedPassword);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return false;
+      }
    }
 
    public static void main(String[] args) {

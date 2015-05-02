@@ -1,7 +1,9 @@
 package tcs.javaproject.guitest;
 
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -16,6 +18,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Users;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -107,11 +110,8 @@ public class SignUpWindow extends Stage {
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");
-               userCreatedAlert.setContentText("Now you can manage your budgets.");
+               userCreatedAlert.setContentText("You will be automatically logged in to your budgets view.");
                userCreatedAlert.showAndWait();
-               userCreatedAlert.setOnCloseRequest(event1 -> {
-
-               });
             }
             else {
                actiontarget.setText("User couldn't be created!");
