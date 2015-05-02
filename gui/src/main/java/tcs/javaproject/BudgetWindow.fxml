@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget Name">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtUserCommentar" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User's commentar" />
+      <Button fx:id="btnBudgetDelete" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Delete">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnBudgetExport" layoutX="562.0" layoutY="14.0" mnemonicParsing="false" text="Export">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnBudgetClose" layoutX="670.0" layoutY="14.0" mnemonicParsing="false" text="Close">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Line endX="760.0" layoutX="20.0" layoutY="50.0" />
+      <GridPane hgap="10.0" layoutX="10.0" layoutY="60.0" maxHeight="-Infinity" prefHeight="540.0" prefWidth="780.0">
+        <columnConstraints>
+          <ColumnConstraints maxWidth="512.0" minWidth="10.0" prefWidth="500.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="373.0" minWidth="10.0" prefWidth="270.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints fillHeight="false" maxHeight="358.0" minHeight="10.0" prefHeight="316.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="353.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+          <RowConstraints fillHeight="false" maxHeight="198.0" minHeight="0.0" prefHeight="185.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TableView fx:id="tableUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
+              <columns>
+                <TableColumn prefWidth="237.0" text="What" />
+                <TableColumn prefWidth="64.0" text="Amount" />
+                  <TableColumn prefWidth="122.0" text="Who" />
+              </columns>
+            </TableView>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+               <GridPane.margin>
+                  <Insets left="10.0" top="5.0" />
+               </GridPane.margin>
+            </Text>
+            <Text fx:id="txtSum" strokeType="OUTSIDE" strokeWidth="0.0" text="SUM: 0$" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
+            <Line endX="500.0" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+            <Button fx:id="btnAdd" mnemonicParsing="false" text="Add" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+            <CheckBox fx:id="chboxIfMail" mnemonicParsing="false" text="Send via mail" GridPane.rowIndex="1" />
+            <Button fx:id="btnSettle" mnemonicParsing="false" text="Settle" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Accounted payments" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Text>
+            <TableView fx:id="tableAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+              <columns>
+                <TableColumn prefWidth="339.0" text="What" />
+                <TableColumn prefWidth="65.0" text="Amount" />
+                  <TableColumn prefWidth="95.0" text="Who" />
+              </columns>
+            </TableView>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Text>
+            <TableView fx:id="tableParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
+              <columns>
+                <TableColumn prefWidth="134.0" text="Name" />
+                <TableColumn prefWidth="134.0" text="Mail" />
+              </columns>
+            </TableView>
+            <Button fx:id="btnAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+         </children>
+         <opaqueInsets>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </opaqueInsets>
+      </GridPane>
+   </children>
+</Pane>
