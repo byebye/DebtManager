@@ -16,7 +16,7 @@ package tcs.javaproject.database.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Budgets extends org.jooq.impl.TableImpl<tcs.javaproject.database.tables.records.BudgetsRecord> {
 
-	private static final long serialVersionUID = -1981874623;
+	private static final long serialVersionUID = 1179868694;
 
 	/**
 	 * The reference instance of <code>debtmanager.budgets</code>
@@ -45,6 +45,11 @@ public class Budgets extends org.jooq.impl.TableImpl<tcs.javaproject.database.ta
 	 * The column <code>debtmanager.budgets.description</code>.
 	 */
 	public final org.jooq.TableField<tcs.javaproject.database.tables.records.BudgetsRecord, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(200), this, "");
+
+	/**
+	 * The column <code>debtmanager.budgets.owner_id</code>.
+	 */
+	public final org.jooq.TableField<tcs.javaproject.database.tables.records.BudgetsRecord, java.lang.Integer> OWNER_ID = createField("owner_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
 	 * Create a <code>debtmanager.budgets</code> table reference
@@ -90,6 +95,14 @@ public class Budgets extends org.jooq.impl.TableImpl<tcs.javaproject.database.ta
 	@Override
 	public java.util.List<org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BudgetsRecord>> getKeys() {
 		return java.util.Arrays.<org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BudgetsRecord>>asList(tcs.javaproject.database.Keys.BUDGETS_PKEY);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public java.util.List<org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, ?>> getReferences() {
+		return java.util.Arrays.<org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, ?>>asList(tcs.javaproject.database.Keys.BUDGETS__BUDGETS_OWNER_ID_FKEY);
 	}
 
 	/**

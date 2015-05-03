@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class BudgetWindow extends Stage {
 
-   public BudgetWindow() throws IOException {
+   public BudgetWindow(String budgetName) throws IOException {
       Parent root = FXMLLoader.load(getClass().getResource("/fxml/BudgetWindow.fxml"));
-      setTitle("DeptManager - [Budget Name]");
+      setTitle("DeptManager - " + budgetName);
       setScene(new Scene(root));
    }
 }

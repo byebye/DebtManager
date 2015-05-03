@@ -1,26 +1,26 @@
 package tcs.javaproject.guitest;
 
 public class Budget {
-    private final String name;
-    private final String description;
-    private final int partNum;
+   private final String name;
+   private final String description;
+   private final int partNum;
 
-    public Budget(String _name,String _description,int _partNum){
-        this.name = _name;
-        this.description = _description;
-        this.partNum = _partNum;
-    }
+   public Budget(String name, String description, int partNum) {
+      this.name = name;
+      this.description = description;
+      this.partNum = partNum;
+   }
 
-    public String getName(){
-        return name;
-    }
+   public String getName() {
+      return name;
+   }
 
-    public String getDescription(){
-        return description;
-    }
+   public String getDescription() {
+      return description;
+   }
 
-    public int getPartNum(){
-        return partNum;
-    }
+   public int getPartNum() {
+      return partNum;
+   }
 
 }

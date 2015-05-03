@@ -59,13 +59,15 @@ public class LoginWindow extends Application {
       logInButton.setOnAction(event -> {
          if (validateUserPassword(username.getText(), password.getText())) {
             try {
-               BudgetsListWindow budgetsListWindow = new BudgetsListWindow();
+               BudgetsListWindow budgetsListWindow = new BudgetsListWindow(username.getText());
                budgetsListWindow.show();
-               primaryStage.hide();
             }
             catch (IOException e) {
                e.printStackTrace();
             }
+            username.clear();
+            password.clear();
+            actionInfo.setText("");
          }
          else {
             actionInfo.setFill(Color.FIREBRICK);
