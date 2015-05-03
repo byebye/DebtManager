@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.*?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.BudgetController">
    <children>
       <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget Name">
          <font>
             <Font size="28.0" />
          </font>
       </Text>
-      <Text fx:id="txtUserCommentar" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User's commentar" />
+      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget description" />
       <Button fx:id="btnBudgetDelete" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Delete">
          <font>
             <Font size="16.0" />
