@@ -16,6 +16,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Users;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -104,7 +105,17 @@ public class SignUpWindow extends Stage {
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");
-               userCreatedAlert.setContentText("You will be automatically logged in to your budgets view.");
+               userCreatedAlert.setContentText("You will be automatically logged in.");
+               userCreatedAlert.setOnHidden(hiddenEvent -> {
+                  try {
+                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(username.getText());
+                     budgetsListWindow.show();
+                     close();
+                  }
+                  catch (IOException e) {
+                     e.printStackTrace();
+                  }
+               });
                userCreatedAlert.showAndWait();
             }
             else {
