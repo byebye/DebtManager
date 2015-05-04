@@ -25,8 +25,9 @@ CREATE TABLE user_budget (
 
 CREATE TABLE payments(
    id            int PRIMARY KEY,
-   budget_id     int REFERENCES budgets(id),
+   term          date NOT NULL,
+   budget_id     int REFERENCES budgets(id) NOT NULL,
    user_id       int REFERENCES users(id),
    description   varchar(200),
-   amount        numeric(6,2)
+   amount        numeric(6,2) NOT NULL
 );
