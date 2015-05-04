@@ -14,6 +14,7 @@ CREATE TABLE users (
 
 CREATE TABLE budgets (
    id            serial PRIMARY KEY,
+   owner_id      int REFERENCES users(id) NOT NULL,
    name          varchar(50) NOT NULL,
    description   varchar(200)
 );

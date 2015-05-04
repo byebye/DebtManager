@@ -36,6 +36,7 @@ public class Keys {
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, tcs.javaproject.database.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = ForeignKeys0.BUDGETS__BUDGETS_OWNER_ID_FKEY;
 	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.UserBudgetRecord, tcs.javaproject.database.tables.records.UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_USER_ID_FKEY;
 	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.UserBudgetRecord, tcs.javaproject.database.tables.records.BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY;
 
@@ -55,6 +56,7 @@ public class Keys {
 	}
 
 	private static class ForeignKeys0 extends org.jooq.impl.AbstractKeys {
+		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, tcs.javaproject.database.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.Budgets.BUDGETS, tcs.javaproject.database.tables.Budgets.BUDGETS.OWNER_ID);
 		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.UserBudgetRecord, tcs.javaproject.database.tables.records.UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.UserBudget.USER_BUDGET, tcs.javaproject.database.tables.UserBudget.USER_BUDGET.USER_ID);
 		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.UserBudgetRecord, tcs.javaproject.database.tables.records.BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.BUDGETS_PKEY, tcs.javaproject.database.tables.UserBudget.USER_BUDGET, tcs.javaproject.database.tables.UserBudget.USER_BUDGET.BUDGET_ID);
 	}
