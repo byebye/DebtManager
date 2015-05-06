@@ -1,15 +1,22 @@
+
 package tcs.javaproject.guitest;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.jooq.DSLContext;
 import org.jooq.Record3;
 import org.jooq.Result;
@@ -29,34 +36,23 @@ import java.util.ResourceBundle;
 
 public class BudgetCreatorController implements Initializable {
    @FXML
-   private TableView budgetParticipants;
-   @FXML
-   private TextField budgetName;
+   private TextField budgetName, txtFieldEnterMail;
    @FXML
    private TextArea budgetDescription;
    @FXML
-   private TableColumn colName;
+   private Button btnCreateBudget, btnAddUser;
    @FXML
-   private TableColumn colMail;
-   @FXML
-   private TableColumn colAdd;
-   @FXML
-   private Button btnCreateBudget;
+   private Text txtUsersAdded;
 
    private int userId;
-
+   private List<User> participantsList = new ArrayList<>();
    public void setUserId(int userId) {
       this.userId = userId;
    }
 
-   public void fillUsersTable() {
-      final ObservableList<User> data = FXCollections.observableArrayList(getUsersList());
-      budgetParticipants.setItems(data);
-   }
-
-
-   @Override
+   @Override //TODO finding user in database and adding items to participantsList
    public void initialize(URL location, ResourceBundle resources) {
+
       btnCreateBudget.setOnAction(event -> {
          if (createBudget()) {
             Stage stage = (Stage) btnCreateBudget.getScene().getWindow();
@@ -66,10 +62,22 @@ public class BudgetCreatorController implements Initializable {
             // Error
          }
       });
-      colName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
-      colMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
-      colAdd.setCellFactory(cell -> new CheckBoxTableCell<>());
-      colAdd.setCellValueFactory(new PropertyValueFactory<User, Boolean>("add"));
+      txtUsersAdded.setText("Users already added:");
+
+      btnAddUser.setOnAction(event -> {
+         if(existsUser(txtFieldEnterMail.getText())) {
+            participantsList.add(new User(1,"userName",txtFieldEnterMail.getText()));
+            txtUsersAdded.setText(txtUsersAdded.getText() + "\n" + txtFieldEnterMail.getText());
+         }
+         else{
+            //displaying popup
+         }
+      });
+   }
+
+   private boolean existsUser(String mail){
+
+      return false;
    }
 
    private boolean createBudget() {
@@ -85,8 +93,7 @@ public class BudgetCreatorController implements Initializable {
                  .returning(Budgets.BUDGETS.ID)
                  .fetch();
          int budgetId = result.get(0).value1();
-         for (Object item : budgetParticipants.getItems()) {
-            User user = (User) item;
+         for (User user : participantsList) {
             create.insertInto(UserBudget.USER_BUDGET,
                     UserBudget.USER_BUDGET.BUDGET_ID,
                     UserBudget.USER_BUDGET.USER_ID)
@@ -170,3 +177,4 @@ public class BudgetCreatorController implements Initializable {
       }
    }
 }
+

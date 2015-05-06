@@ -15,7 +15,7 @@ public class BudgetCreatorWindow extends Stage {
         Parent root = fxmlLoader.load();
         BudgetCreatorController controller = fxmlLoader.<BudgetCreatorController>getController();
         controller.setUserId(userId);
-        controller.fillUsersTable();
+
         setTitle("DeptManager - Budget Creator");
         setScene(new Scene(root));
     }
