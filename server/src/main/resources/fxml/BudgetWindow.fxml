@@ -44,11 +44,11 @@
           <RowConstraints fillHeight="false" maxHeight="198.0" minHeight="0.0" prefHeight="185.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TableView fx:id="tableUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
+            <TableView fx:id="tabUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
               <columns>
-                <TableColumn prefWidth="237.0" text="What" />
-                <TableColumn prefWidth="64.0" text="Amount" />
-                  <TableColumn prefWidth="122.0" text="Who" />
+                <TableColumn fx:id="colWhat" prefWidth="284.0" text="What" />
+                  <TableColumn fx:id="colWho" prefWidth="138.0" text="Who" />
+                <TableColumn fx:id="colAmount" prefWidth="77.0" text="Amount" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -62,7 +62,7 @@
                </font>
             </Text>
             <Line endX="500.0" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-            <Button fx:id="btnAdd" mnemonicParsing="false" text="Add" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+            <Button fx:id="btnAddPayment" mnemonicParsing="false" text="Add" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
                <font>
                   <Font size="15.0" />
                </font>
