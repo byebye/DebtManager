@@ -30,5 +30,6 @@ CREATE TABLE payments(
    budget_id     int REFERENCES budgets(id) NOT NULL,
    user_id       int REFERENCES users(id),
    description   varchar(200),
-   amount        numeric(6,2) NOT NULL
+   amount        numeric(6,2) NOT NULL,
+   accounted     boolean DEFAULT FALSE
 );
