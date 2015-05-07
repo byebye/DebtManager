@@ -30,13 +30,15 @@ public class BudgetController implements Initializable {
    @FXML
    private Text txtSum;
    @FXML
-   private Button btnAddPayment;
+   private Button btnAddPayment, btnSettle;
    @FXML
    private TableView<Payment> tabUnaccPayments;
    @FXML
-   private TableColumn colWhat,colWho;
+   private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colAmount;
+   private TableColumn colWhat,colWho,colAmount,colUserName,colUserMail;
+
+
 
    private Budget budget;
 
@@ -49,6 +51,10 @@ public class BudgetController implements Initializable {
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
+      btnSettle.setOnAction(event->{
+
+      });
+
       btnAddPayment.setOnAction(event -> {
          try {
             AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget);
@@ -63,15 +69,25 @@ public class BudgetController implements Initializable {
       colWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
       colAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
 
-      final ObservableList<Payment> list = FXCollections.observableArrayList(
+      colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
+      colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+
+      final ObservableList<Payment> dataUnaccPayments = FXCollections.observableArrayList(
               new Payment("John","Drinks",10),
               new Payment("Marry","Food",20)
       );
+
+      final ObservableList<User> dataParticipants = FXCollections.observableArrayList(
+              new User(1,"John","john@example.com"),
+              new User(2,"Marry","marry@example.com")
+      );
+
       int sum = 0;
-      for(Payment p: list)
+      for(Payment p: dataUnaccPayments)
          sum+=p.getAmount();
 
-      tabUnaccPayments.setItems(list);
+      tabUnaccPayments.setItems(dataUnaccPayments);
+      tabParticipants.setItems(dataParticipants);
 
       tabUnaccPayments.setRowFactory(param -> {
          TableRow<Payment> row = new TableRow<>();

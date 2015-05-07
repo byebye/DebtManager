@@ -74,7 +74,7 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </Text>
-            <TableView fx:id="tableAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+            <TableView fx:id="tabAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
               <columns>
                 <TableColumn prefWidth="339.0" text="What" />
                 <TableColumn prefWidth="65.0" text="Amount" />
@@ -86,10 +86,10 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </Text>
-            <TableView fx:id="tableParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
+            <TableView fx:id="tabParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn prefWidth="134.0" text="Name" />
-                <TableColumn prefWidth="134.0" text="Mail" />
+                <TableColumn fx:id="colUserName" prefWidth="134.0" text="Name" />
+                <TableColumn fx:id="colUserMail" prefWidth="134.0" text="Mail" />
               </columns>
             </TableView>
             <Button fx:id="btnAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />

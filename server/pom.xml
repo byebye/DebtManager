@@ -32,6 +32,20 @@
          <artifactId>postgresql</artifactId>
          <version>9.4-1201-jdbc41</version>
       </dependency>
+      <!-- JavaMail API-->
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+         <version>1.4</version>
+      </dependency>
+      <!-- JavaBeans Activation Framework -->
+      <dependency>
+         <groupId>javax.activation</groupId>
+         <artifactId>activation</artifactId>
+         <version>1.1.1</version>
+      </dependency>
+
+
 
    </dependencies>
 

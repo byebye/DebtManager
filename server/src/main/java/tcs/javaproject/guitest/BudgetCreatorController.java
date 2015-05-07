@@ -17,10 +17,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.jooq.DSLContext;
-import org.jooq.Record3;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Budgets;
 import tcs.javaproject.database.tables.UserBudget;
@@ -50,7 +47,7 @@ public class BudgetCreatorController implements Initializable {
       this.userId = userId;
    }
 
-   @Override //TODO finding user in database and adding items to participantsList
+   @Override
    public void initialize(URL location, ResourceBundle resources) {
 
       btnCreateBudget.setOnAction(event -> {
@@ -65,19 +62,34 @@ public class BudgetCreatorController implements Initializable {
       txtUsersAdded.setText("Users already added:");
 
       btnAddUser.setOnAction(event -> {
-         if(existsUser(txtFieldEnterMail.getText())) {
-            participantsList.add(new User(1,"userName",txtFieldEnterMail.getText()));
+         User p = existsUser(txtFieldEnterMail.getText());
+         if(p != null) {
+            participantsList.add(p);
             txtUsersAdded.setText(txtUsersAdded.getText() + "\n" + txtFieldEnterMail.getText());
          }
          else{
-            //displaying popup
+            txtFieldEnterMail.setText("User not found!");
          }
       });
    }
 
-   private boolean existsUser(String mail){
+   private User existsUser(String mail){
+      String url = "jdbc:postgresql://localhost/debtmanager";
 
-      return false;
+      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+         Result result = create.selectFrom(Users.USERS)
+                 .where(Users.USERS.EMAIL.equal(mail)).fetch();
+
+         if(result.isEmpty())
+            return null;
+
+         return new User((int)result.intoArray(Users.USERS.ID)[0],(String)result.intoArray(Users.USERS.NAME)[0],mail);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return null;
+      }
    }
 
    private boolean createBudget() {
@@ -129,51 +141,6 @@ public class BudgetCreatorController implements Initializable {
       catch (Exception e) {
          e.printStackTrace();
          return null;
-      }
-   }
-
-   public static class User {
-
-      private int id;
-      private String name;
-      private String email;
-      private BooleanProperty add;
-
-      public User(int id, String name, String email) {
-         this.id = id;
-         this.name = name;
-         this.email = email;
-         this.add = new SimpleBooleanProperty(false);
-      }
-
-      public int getId() {
-         return id;
-      }
-
-      public String getName() {
-         return name;
-      }
-
-      public String getEmail() {
-         return email;
-      }
-
-      public BooleanProperty getAdd() {
-         return add;
-      }
-
-      public void updateAdd() {
-         add.setValue(!add.getValue());
-      }
-
-      @Override
-      public String toString() {
-         return "User{" +
-                 "id=" + id +
-                 ", name='" + name + '\'' +
-                 ", email='" + email + '\'' +
-                 ", add='" + add + '\'' +
-                 '}';
       }
    }
 }
