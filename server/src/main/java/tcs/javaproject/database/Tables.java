@@ -22,6 +22,11 @@ public class Tables {
 	public static final tcs.javaproject.database.tables.Budgets BUDGETS = tcs.javaproject.database.tables.Budgets.BUDGETS;
 
 	/**
+	 * The table debtmanager.payments
+	 */
+	public static final tcs.javaproject.database.tables.Payments PAYMENTS = tcs.javaproject.database.tables.Payments.PAYMENTS;
+
+	/**
 	 * The table debtmanager.user_budget
 	 */
 	public static final tcs.javaproject.database.tables.UserBudget USER_BUDGET = tcs.javaproject.database.tables.UserBudget.USER_BUDGET;
