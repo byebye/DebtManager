@@ -1,16 +1,18 @@
 package tcs.javaproject.guitest;
 
+import java.util.List;
+
 public class Budget {
    private final int id;
    private final String name;
    private final String description;
-   private final int partNum;
+   private List<User> participants;
 
-   public Budget(int id, String name, String description, int partNum) {
+   public Budget(int id, String name, String description, List<User> participants) {
       this.id = id;
       this.name = name;
       this.description = description;
-      this.partNum = partNum;
+      this.participants = participants;
    }
 
    public int getId() {
@@ -26,7 +28,10 @@ public class Budget {
    }
 
    public int getPartNum() {
-      return partNum;
+      return participants == null ? 0 : participants.size();
    }
 
+   public List<User> getParticipants() {
+      return participants;
+   }
 }

@@ -160,7 +160,7 @@ public class BudgetsListController implements Initializable {
             String name = budget.value2();
             String description = budget.value3();
             final int partNum = partNumResult.get(0).value1();
-            budgets.add(new Budget(id, name, description, partNum));
+            budgets.add(new Budget(id, name, description, null));
          }
          return budgets;
       }
