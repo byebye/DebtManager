@@ -52,16 +52,18 @@ public class BudgetController implements Initializable {
 
    private Budget budget;
    private int userId;
+   private BudgetWindow budgetWindow;
 
-   void setBudget(Budget budget,int userId) {
+   void setBudget(Budget budget,int userId,BudgetWindow budgetWindow) {
       this.budget = budget;
       txtBudgetName.setText(budget.getName());
       txtBudgetDescription.setText(budget.getDescription());
       this.userId = userId;
+      this.budgetWindow = budgetWindow;
    }
 
    void fillTabUnaccPayments(){
-      int sum = 0;
+      double sum = 0;
       List<Payment> unaccPaymentsList = getUnaccPayments();
       if(unaccPaymentsList != null) {
          for (Payment p : unaccPaymentsList)
@@ -96,7 +98,7 @@ public class BudgetController implements Initializable {
 
       btnAddPayment.setOnAction(event -> {
          try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget,userId);
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget,userId,budgetWindow);
             addPaymentWindow.show();
          } catch (IOException e) {
             e.printStackTrace();

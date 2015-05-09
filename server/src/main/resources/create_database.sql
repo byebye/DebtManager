@@ -25,7 +25,7 @@ CREATE TABLE user_budget (
 );
 
 CREATE TABLE payments(
-   id            int PRIMARY KEY,
+   id            serial PRIMARY KEY,
    term          date NOT NULL DEFAULT now(),
    budget_id     int REFERENCES budgets(id) NOT NULL,
    user_id       int REFERENCES users(id),

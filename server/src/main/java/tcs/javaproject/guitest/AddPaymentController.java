@@ -37,18 +37,29 @@ public class AddPaymentController implements Initializable {
 
     private Budget budget;
     private int userId;
+   private BudgetWindow parent;
 
     public void setBudget(Budget budget){
         this.budget = budget;
     }
     public void setUser(int userId) {this.userId = userId;}
+   public void setParent(BudgetWindow parent){
+      this.parent = parent;
+   }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        btnAddPayment.setOnAction(event->{
-               addRecord();
-               Stage stage = (Stage) btnAddPayment.getScene().getWindow();
-               stage.close();
+        btnAddPayment.setOnAction(event -> {
+           addRecord();
+           Stage stage = (Stage) btnAddPayment.getScene().getWindow();
+           parent.close();
+           try {
+              BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
+              budgetWindow.show();
+           }catch(Exception e){
+
+           }
+           stage.close();
         });
     }
 
@@ -62,7 +73,11 @@ public class AddPaymentController implements Initializable {
                 Payments.PAYMENTS.AMOUNT,
                 Payments.PAYMENTS.USER_ID,
                 Payments.PAYMENTS.DESCRIPTION
-          ).values(budget.getId(), BigDecimal.valueOf(Integer.getInteger(txtFieldAmount.getText())), userId, txtAreaWhat.getText()).execute();
+          ).values(budget.getId(),
+                BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText())),
+                userId,
+                txtAreaWhat.getText())
+                .execute();
        }
        catch (Exception e) {
           e.printStackTrace();

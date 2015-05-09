@@ -13,7 +13,7 @@ public class BudgetWindow extends Stage {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BudgetWindow.fxml"));
       Parent root = fxmlLoader.load();
       BudgetController controller = fxmlLoader.<BudgetController>getController();
-      controller.setBudget(budget,userId);
+      controller.setBudget(budget,userId,this);
       controller.fillTabUnaccPayments();
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));
