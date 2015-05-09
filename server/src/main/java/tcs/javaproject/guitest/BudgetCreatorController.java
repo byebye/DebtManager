@@ -73,7 +73,7 @@ public class BudgetCreatorController implements Initializable {
       });
    }
 
-   private User existsUser(String mail){
+   public User existsUser(String mail){
       String url = "jdbc:postgresql://localhost/debtmanager";
 
       try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {

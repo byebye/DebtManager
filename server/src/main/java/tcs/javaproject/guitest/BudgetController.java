@@ -40,7 +40,7 @@ public class BudgetController implements Initializable {
    @FXML
    private Text txtSum;
    @FXML
-   private Button btnAddPayment, btnSettle;
+   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose;
    @FXML
    private TableView<Payment> tabUnaccPayments,tabAccPayments;
    @FXML
@@ -112,7 +112,7 @@ public class BudgetController implements Initializable {
             return row;
          });
       }
-      txtSum.setText("SUM: "+sum+"$");
+      txtSum.setText("SUM: " + sum + "$");
 
       tabUnaccPayments.setItems(FXCollections.observableArrayList(unaccPaymentsList));
    }
@@ -133,6 +133,20 @@ public class BudgetController implements Initializable {
          } catch (IOException e) {
             e.printStackTrace();
          }
+      });
+
+      btnAddParticipant.setOnAction(event->{
+         try {
+            AddUserWindow addUserWindow = new AddUserWindow(budget.getId(),budgetWindow);
+            addUserWindow.show();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      });
+
+      btnBudgetClose.setOnAction(event->{
+         Stage stage = (Stage)btnBudgetClose.getScene().getWindow();
+         stage.close();
       });
 
       //Table
@@ -175,7 +189,7 @@ public class BudgetController implements Initializable {
          for(Record1<Integer> userId: result){
             Result<Record2<String,String>> user = create
                   .select(Users.USERS.NAME,Users.USERS.EMAIL)
-                  .from(Users.USERS,UserBudget.USER_BUDGET)
+                  .from(Users.USERS, UserBudget.USER_BUDGET)
                   .where(Users.USERS.ID.equal(userId.value1())).fetch();
 
             users.add(new User(userId.value1(),user.get(0).value1(),user.get(0).value2()));
