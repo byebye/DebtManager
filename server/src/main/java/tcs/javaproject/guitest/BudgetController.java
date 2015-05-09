@@ -42,11 +42,11 @@ public class BudgetController implements Initializable {
    @FXML
    private Button btnAddPayment, btnSettle;
    @FXML
-   private TableView<Payment> tabUnaccPayments;
+   private TableView<Payment> tabUnaccPayments,tabAccPayments;
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colWhat,colWho,colAmount,colUserName,colUserMail;
+   private TableColumn colUnaccWhat,colUnaccWho,colUnaccAmount,colAccWhat,colAccWho,colAccAmount,colUserName,colUserMail;
 
 
 
@@ -62,9 +62,32 @@ public class BudgetController implements Initializable {
       this.budgetWindow = budgetWindow;
    }
 
+   void fillTabAccPayments(){
+      List<Payment> accPaymentsList = getPayments(true);
+      if(accPaymentsList != null) {
+         tabAccPayments.setRowFactory(param -> {
+            TableRow<Payment> row = new TableRow<>();
+            row.setOnMouseClicked(mouseEvent -> {
+               if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+                  Payment payment = row.getItem();
+                  try {
+                     PaymentWindow paymentWindow = new PaymentWindow(payment);
+                     paymentWindow.show();
+                  } catch (IOException e) {
+                     e.printStackTrace();
+                  }
+               }
+            });
+            return row;
+         });
+      }
+
+      tabAccPayments.setItems(FXCollections.observableArrayList(accPaymentsList));
+   }
+
    void fillTabUnaccPayments(){
       double sum = 0;
-      List<Payment> unaccPaymentsList = getUnaccPayments();
+      List<Payment> unaccPaymentsList = getPayments(false);
       if(unaccPaymentsList != null) {
          for (Payment p : unaccPaymentsList)
             sum += p.getAmount();
@@ -93,7 +116,9 @@ public class BudgetController implements Initializable {
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
       btnSettle.setOnAction(event->{
-
+         settleAllUnacc();
+         fillTabAccPayments();
+         fillTabUnaccPayments();
       });
 
       btnAddPayment.setOnAction(event -> {
@@ -106,16 +131,19 @@ public class BudgetController implements Initializable {
       });
 
       //Table
-      colWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
+      colUnaccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
+      colAccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
+      colUnaccWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
+      colAccWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
+      colUnaccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
+      colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
 
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
 
       final ObservableList<User> dataParticipants = FXCollections.observableArrayList(
-              new User(1,"John","john@example.com"),
-              new User(2,"Marry","marry@example.com")
+            new User(1, "John", "john@example.com"),
+            new User(2, "Marry", "marry@example.com")
       );
 
       int sum = 0;
@@ -125,7 +153,21 @@ public class BudgetController implements Initializable {
       tabParticipants.setItems(dataParticipants);
    }
 
-   List<Payment> getUnaccPayments(){
+   void settleAllUnacc(){
+      String url = "jdbc:postgresql://localhost/debtmanager";
+
+      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+         create.update(Payments.PAYMENTS)
+               .set(Payments.PAYMENTS.ACCOUNTED, true)
+               .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId())).execute();
+
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+
+   List<Payment> getPayments(boolean accounted){
       List<Payment> payments = new LinkedList<>();
       String url = "jdbc:postgresql://localhost/debtmanager";
 
@@ -135,7 +177,8 @@ public class BudgetController implements Initializable {
          Result<Record4<Integer, Integer, String, BigDecimal>> result = create
                .select(Payments.PAYMENTS.ID, Payments.PAYMENTS.USER_ID, Payments.PAYMENTS.DESCRIPTION,Payments.PAYMENTS.AMOUNT)
                .from(Payments.PAYMENTS)
-               .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId())).fetch();
+               .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId()))
+               .and(Payments.PAYMENTS.ACCOUNTED.equal(accounted)).fetch();
 
          for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
             int user_id = payment.value2();
