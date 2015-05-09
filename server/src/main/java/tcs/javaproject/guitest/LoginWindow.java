@@ -37,13 +37,13 @@ public class LoginWindow extends Application {
 
       grid.add(new Text("Please log in to view your budgets"), 0, 0, 2, 1);
 
-      TextField username = new TextField();
-      username.setPromptText("Username");
+      TextField email = new TextField();
+      email.setPromptText("Email");
       PasswordField password = new PasswordField();
       password.setPromptText("Password");
 
-      grid.add(new Label("Username:"), 0, 1);
-      grid.add(username, 1, 1, 2, 1);
+      grid.add(new Label("Email:"), 0, 1);
+      grid.add(email, 1, 1, 2, 1);
       grid.add(new Label("Password:"), 0, 2);
       grid.add(password, 1, 2, 2, 1);
 
@@ -60,21 +60,21 @@ public class LoginWindow extends Application {
 
       Button logInButton = new Button("Log In");
       logInButton.setOnAction(event -> {
-         if (dbController.validateUserPassword(username.getText(), password.getText())) {
+         if (dbController.validateUserPassword(email.getText(), password.getText())) {
             try {
-               BudgetsListWindow budgetsListWindow = new BudgetsListWindow(username.getText());
+               BudgetsListWindow budgetsListWindow = new BudgetsListWindow(email.getText());
                budgetsListWindow.show();
             }
             catch (IOException e) {
                e.printStackTrace();
             }
-            username.clear();
+            email.clear();
             password.clear();
             actionInfo.setText("");
          }
          else {
             actionInfo.setFill(Color.FIREBRICK);
-            actionInfo.setText("Incorrect username or password!");
+            actionInfo.setText("Incorrect email or password!");
          }
       });
       HBox rightButtonBox = new HBox(logInButton);

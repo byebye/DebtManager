@@ -73,12 +73,9 @@ public class SignUpWindow extends Stage {
       grid.add(leftButtonBox, 0, 7);
       grid.add(rightButtonBox, 6, 7);
 
-      TextArea dbQueryResult = new TextArea();
-      grid.add(dbQueryResult, 0, 8, 8, 6);
-
       setScene(new Scene(grid, 350, 500));
 
-      cancelButton.setOnAction(event1 -> close());
+      cancelButton.setOnAction(event -> close());
 
       signUpButton.setDisable(true);
       email.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -101,14 +98,14 @@ public class SignUpWindow extends Stage {
             String usernameValue = username.getText();
             BigInteger bankAccountValue = new BigInteger(bankAccount.getText().replaceAll("\\s", ""));
             String passwordValue = password.getText();
-            if (createUser(dbQueryResult, emailValue, usernameValue, bankAccountValue, passwordValue)) {
+            if (LoginWindow.dbController.createUser(emailValue, usernameValue, bankAccountValue, passwordValue)) {
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");
                userCreatedAlert.setContentText("You will be automatically logged in.");
                userCreatedAlert.setOnHidden(hiddenEvent -> {
                   try {
-                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(username.getText());
+                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(emailValue);
                      budgetsListWindow.show();
                      close();
                   }
@@ -123,37 +120,5 @@ public class SignUpWindow extends Stage {
             }
          }
       });
-   }
-
-   private boolean createUser(TextArea dbQueryResult, String email, String name, BigInteger bankAccount, String passwordHash) {
-      String url = "jdbc:postgresql://localhost/debtmanager";
-
-      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
-         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
-         create.insertInto(Users.USERS,
-                 Users.USERS.EMAIL,
-                 Users.USERS.NAME,
-                 Users.USERS.BANK_ACCOUNT,
-                 Users.USERS.PASSWORD_HASH)
-                 .values(email, name, bankAccount, passwordHash).execute();
-
-         Result<Record> result = create.select().from(Users.USERS).fetch();
-         dbQueryResult.clear();
-
-         for (Record r : result) {
-            Integer id = r.getValue(Users.USERS.ID);
-            String emailV = r.getValue(Users.USERS.EMAIL);
-            String nameV = r.getValue(Users.USERS.NAME);
-            BigInteger account = r.getValue(Users.USERS.BANK_ACCOUNT);
-            String row = "ID: " + id + " email: " + emailV + " name: " + nameV + " account: " + account;
-            System.out.println(row);
-            dbQueryResult.appendText(row+"\n");
-         }
-      }
-      catch (Exception e) {
-         e.printStackTrace();
-         return false;
-      }
-      return true;
    }
 }

@@ -1,11 +1,6 @@
 package tcs.javaproject.guitest;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,11 +10,9 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Observable;
 import java.util.ResourceBundle;
 
 public class BudgetController implements Initializable {
@@ -36,9 +29,7 @@ public class BudgetController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colWhat,colWho,colAmount,colUserName,colUserMail;
-
-
+   private TableColumn colWhat, colWho, colAmount, colUserName, colUserMail;
 
    private Budget budget;
 
@@ -51,7 +42,7 @@ public class BudgetController implements Initializable {
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
-      btnSettle.setOnAction(event->{
+      btnSettle.setOnAction(event -> {
 
       });
 
@@ -59,32 +50,38 @@ public class BudgetController implements Initializable {
          try {
             AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget);
             addPaymentWindow.show();
-         } catch (IOException e) {
+         }
+         catch (IOException e) {
             e.printStackTrace();
          }
       });
 
       //Table
       colWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
+      colWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
       colAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
 
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
 
       final ObservableList<Payment> dataUnaccPayments = FXCollections.observableArrayList(
-              new Payment("John","Drinks",10),
-              new Payment("Marry","Food",20)
+                                                                                                 new Payment("John",
+                                                                                                             "Drinks",
+                                                                                                             10),
+                                                                                                 new Payment("Marry",
+                                                                                                             "Food", 20)
       );
 
       final ObservableList<User> dataParticipants = FXCollections.observableArrayList(
-              new User(1,"John","john@example.com"),
-              new User(2,"Marry","marry@example.com")
+                                                                                             new User(1, "John",
+                                                                                                      "john@example.com"),
+                                                                                             new User(2, "Marry",
+                                                                                                      "marry@example.com")
       );
 
       int sum = 0;
-      for(Payment p: dataUnaccPayments)
-         sum+=p.getAmount();
+      for (Payment p : dataUnaccPayments)
+         sum += p.getAmount();
 
       tabUnaccPayments.setItems(dataUnaccPayments);
       tabParticipants.setItems(dataParticipants);
@@ -97,7 +94,8 @@ public class BudgetController implements Initializable {
                try {
                   PaymentWindow paymentWindow = new PaymentWindow(payment);
                   paymentWindow.show();
-               } catch (IOException e) {
+               }
+               catch (IOException e) {
                   e.printStackTrace();
                }
             }
@@ -105,6 +103,6 @@ public class BudgetController implements Initializable {
          return row;
       });
 
-      txtSum.setText("SUM: "+sum+"$");
+      txtSum.setText("SUM: " + sum + "$");
    }
 }
