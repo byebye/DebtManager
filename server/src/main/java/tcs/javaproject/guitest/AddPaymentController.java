@@ -11,11 +11,14 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import tcs.javaproject.database.tables.Payments;
 import tcs.javaproject.database.tables.Users;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.util.ResourceBundle;
 
@@ -33,22 +36,38 @@ public class AddPaymentController implements Initializable {
     private TextArea txtAreaWhat;
 
     private Budget budget;
+    private int userId;
 
     public void setBudget(Budget budget){
         this.budget = budget;
     }
+    public void setUser(int userId) {this.userId = userId;}
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         btnAddPayment.setOnAction(event->{
-            //add record to database, close window, refresh payments list
-            addRecord();
-            Stage stage = (Stage)btnAddPayment.getScene().getWindow();
-            stage.close();
+               addRecord();
+               Stage stage = (Stage) btnAddPayment.getScene().getWindow();
+               stage.close();
         });
     }
 
-    void addRecord(){
+    boolean addRecord(){
+       String url = "jdbc:postgresql://localhost/debtmanager";
 
+       try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+          DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+          final int result = create.insertInto(Payments.PAYMENTS,
+                Payments.PAYMENTS.BUDGET_ID,
+                Payments.PAYMENTS.AMOUNT,
+                Payments.PAYMENTS.USER_ID,
+                Payments.PAYMENTS.DESCRIPTION
+          ).values(budget.getId(), BigDecimal.valueOf(Integer.getInteger(txtFieldAmount.getText())), userId, txtAreaWhat.getText()).execute();
+       }
+       catch (Exception e) {
+          e.printStackTrace();
+          return false;
+       }
+       return true;
     }
 }

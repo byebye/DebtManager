@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.currentUser;
 
 public class BudgetsListController implements Initializable {
 
@@ -45,8 +46,8 @@ public class BudgetsListController implements Initializable {
 
    private int userId;
 
-   public void setUserName(String userName) {
-      txtUserName.setText(userName);
+   public void setUser(String user) {
+      txtUserName.setText(user);
    }
 
    public void fillBudgetsTable() {
@@ -103,7 +104,7 @@ public class BudgetsListController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                Budget budget = row.getItem();
                try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget);
+                  BudgetWindow budgetWindow = new BudgetWindow(budget,userId);
                   budgetWindow.show();
                }
                catch (IOException e) {

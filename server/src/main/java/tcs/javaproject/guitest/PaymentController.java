@@ -32,7 +32,7 @@ public class PaymentController implements Initializable{
         txtPaymentName.setText(payment.getWhat());
         txtFieldWho.setText(payment.getWho());
         txtAreaWhat.setText(payment.getWhat());
-        txtFieldAmount.setText(Integer.toString(payment.getAmount()));
+        txtFieldAmount.setText(Double.toString(payment.getAmount()));
     }
 
     @Override //TODO: sql code to update and remove payments

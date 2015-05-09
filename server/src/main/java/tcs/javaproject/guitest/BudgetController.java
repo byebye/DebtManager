@@ -16,11 +16,21 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import tcs.javaproject.database.tables.Budgets;
+import tcs.javaproject.database.tables.Payments;
+import tcs.javaproject.database.tables.UserBudget;
+import tcs.javaproject.database.tables.Users;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Observable;
-import java.util.ResourceBundle;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.*;
+
+import static org.jooq.impl.DSL.count;
 
 public class BudgetController implements Initializable {
    @FXML
@@ -41,11 +51,40 @@ public class BudgetController implements Initializable {
 
 
    private Budget budget;
+   private int userId;
 
-   void setBudget(Budget budget) {
+   void setBudget(Budget budget,int userId) {
       this.budget = budget;
       txtBudgetName.setText(budget.getName());
       txtBudgetDescription.setText(budget.getDescription());
+      this.userId = userId;
+   }
+
+   void fillTabUnaccPayments(){
+      int sum = 0;
+      List<Payment> unaccPaymentsList = getUnaccPayments();
+      if(unaccPaymentsList != null) {
+         for (Payment p : unaccPaymentsList)
+            sum += p.getAmount();
+         tabUnaccPayments.setRowFactory(param -> {
+            TableRow<Payment> row = new TableRow<>();
+            row.setOnMouseClicked(mouseEvent -> {
+               if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+                  Payment payment = row.getItem();
+                  try {
+                     PaymentWindow paymentWindow = new PaymentWindow(payment);
+                     paymentWindow.show();
+                  } catch (IOException e) {
+                     e.printStackTrace();
+                  }
+               }
+            });
+            return row;
+         });
+      }
+      txtSum.setText("SUM: "+sum+"$");
+
+      tabUnaccPayments.setItems(FXCollections.observableArrayList(unaccPaymentsList));
    }
 
    @Override
@@ -57,7 +96,7 @@ public class BudgetController implements Initializable {
 
       btnAddPayment.setOnAction(event -> {
          try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget);
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget,userId);
             addPaymentWindow.show();
          } catch (IOException e) {
             e.printStackTrace();
@@ -72,39 +111,44 @@ public class BudgetController implements Initializable {
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
 
-      final ObservableList<Payment> dataUnaccPayments = FXCollections.observableArrayList(
-              new Payment("John","Drinks",10),
-              new Payment("Marry","Food",20)
-      );
-
       final ObservableList<User> dataParticipants = FXCollections.observableArrayList(
               new User(1,"John","john@example.com"),
               new User(2,"Marry","marry@example.com")
       );
 
       int sum = 0;
-      for(Payment p: dataUnaccPayments)
-         sum+=p.getAmount();
 
-      tabUnaccPayments.setItems(dataUnaccPayments);
+
+
       tabParticipants.setItems(dataParticipants);
+   }
 
-      tabUnaccPayments.setRowFactory(param -> {
-         TableRow<Payment> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Payment payment = row.getItem();
-               try {
-                  PaymentWindow paymentWindow = new PaymentWindow(payment);
-                  paymentWindow.show();
-               } catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
+   List<Payment> getUnaccPayments(){
+      List<Payment> payments = new LinkedList<>();
+      String url = "jdbc:postgresql://localhost/debtmanager";
 
-      txtSum.setText("SUM: "+sum+"$");
+      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+
+         Result<Record4<Integer, Integer, String, BigDecimal>> result = create
+               .select(Payments.PAYMENTS.ID, Payments.PAYMENTS.USER_ID, Payments.PAYMENTS.DESCRIPTION,Payments.PAYMENTS.AMOUNT)
+               .from(Payments.PAYMENTS)
+               .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId())).fetch();
+
+         for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
+            int user_id = payment.value2();
+            Result<Record1<String>> userName = create
+                  .select(Users.USERS.NAME)
+                  .from(Users.USERS)
+                  .where(Users.USERS.ID.equal(user_id))
+                  .fetch();
+            payments.add(new Payment(userName.get(0).value1(), payment.value3(), payment.value4().doubleValue(), payment.value1()));
+         }
+         return payments;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return null;
+      }
    }
 }

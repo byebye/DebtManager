@@ -5,12 +5,14 @@ package tcs.javaproject.guitest;
  */
 public class Payment {
     private String who, what;
-    private int amount;
+    private int id;
+    private double amount;
 
-    public Payment(String who, String what, int amount){
+    public Payment(String who, String what, double amount,int id){
         this.who = who;
         this.what = what;
         this.amount = amount;
+        this.id = id;
     }
 
     public String getWho(){
@@ -21,7 +23,9 @@ public class Payment {
         return what;
     }
 
-    public int getAmount(){
+    public double getAmount(){
         return amount;
     }
+
+    public int getId(){return id;}
 }
