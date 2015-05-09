@@ -139,6 +139,7 @@ public class BudgetsListController implements Initializable {
       String url = "jdbc:postgresql://localhost/debtmanager";
 
       try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         List<Budget> budgets = new ArrayList<>();
          DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
          Result<Record1<Integer>> userIdResult = create
                  .select(Users.USERS.ID)
@@ -146,22 +147,29 @@ public class BudgetsListController implements Initializable {
                  .where(Users.USERS.NAME.equal(txtUserName.getText()))
                  .fetch();
          userId = userIdResult.get(0).value1();
-         Result<Record3<Integer, String, String>> result = create
-                 .select(Budgets.BUDGETS.ID, Budgets.BUDGETS.NAME, Budgets.BUDGETS.DESCRIPTION)
-                 .from(Budgets.BUDGETS)
-                 .where(Budgets.BUDGETS.OWNER_ID.equal(userId)).fetch();
-         List<Budget> budgets = new ArrayList<>();
-         for (Record3<Integer, String, String> budget : result) {
-            int id = budget.value1();
-            Result<Record1<Integer>> partNumResult = create
-                    .select(count())
-                    .from(UserBudget.USER_BUDGET)
-                    .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(id))
-                    .fetch();
-            String name = budget.value2();
-            String description = budget.value3();
-            final int partNum = partNumResult.get(0).value1();
-            budgets.add(new Budget(id, name, description, partNum));
+         Result<Record1<Integer>> result = create
+               .select(UserBudget.USER_BUDGET.BUDGET_ID)
+               .from(UserBudget.USER_BUDGET)
+               .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)).fetch();
+
+         for(Record1<Integer> budgetId: result){
+            Result<Record3<Integer, String, String>> result2 = create
+                  .select(Budgets.BUDGETS.ID, Budgets.BUDGETS.NAME, Budgets.BUDGETS.DESCRIPTION)
+                  .from(Budgets.BUDGETS)
+                  .where(Budgets.BUDGETS.ID.equal(budgetId.value1())).fetch();
+
+            for (Record3<Integer, String, String> budget : result2) {
+               int id = budget.value1();
+               Result<Record1<Integer>> partNumResult = create
+                     .select(count())
+                     .from(UserBudget.USER_BUDGET)
+                     .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(id))
+                     .fetch();
+               String name = budget.value2();
+               String description = budget.value3();
+               final int partNum = partNumResult.get(0).value1();
+               budgets.add(new Budget(id, name, description, partNum));
+            }
          }
          return budgets;
       }

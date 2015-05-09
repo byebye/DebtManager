@@ -176,7 +176,7 @@ public class BudgetController implements Initializable {
             Result<Record2<String,String>> user = create
                   .select(Users.USERS.NAME,Users.USERS.EMAIL)
                   .from(Users.USERS,UserBudget.USER_BUDGET)
-                  .where(Users.USERS.ID.equal(userId.field1())).fetch();
+                  .where(Users.USERS.ID.equal(userId.value1())).fetch();
 
             users.add(new User(userId.value1(),user.get(0).value1(),user.get(0).value2()));
          }
