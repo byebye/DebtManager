@@ -7,9 +7,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Created by Vsmasster on 07.05.15.
- */
 public class PaymentWindow extends Stage {
     public PaymentWindow(Payment payment) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PaymentWindow.fxml"));

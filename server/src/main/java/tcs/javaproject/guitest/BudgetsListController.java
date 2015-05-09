@@ -101,7 +101,7 @@ public class BudgetsListController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                Budget budget = row.getItem();
                try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget);
+                  BudgetWindow budgetWindow = new BudgetWindow(budget,userId);
                   budgetWindow.show();
                }
                catch (IOException e) {

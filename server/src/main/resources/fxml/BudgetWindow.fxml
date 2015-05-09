@@ -46,9 +46,9 @@
          <children>
             <TableView fx:id="tabUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
               <columns>
-                <TableColumn fx:id="colWhat" prefWidth="284.0" text="What" />
-                  <TableColumn fx:id="colWho" prefWidth="138.0" text="Who" />
-                <TableColumn fx:id="colAmount" prefWidth="77.0" text="Amount" />
+                <TableColumn fx:id="colUnaccWhat" prefWidth="284.0" text="What" />
+                  <TableColumn fx:id="colUnaccWho" prefWidth="138.0" text="Who" />
+                <TableColumn fx:id="colUnaccAmount" prefWidth="77.0" text="Amount" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -76,9 +76,9 @@
             </Text>
             <TableView fx:id="tabAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn prefWidth="339.0" text="What" />
-                <TableColumn prefWidth="65.0" text="Amount" />
-                  <TableColumn prefWidth="95.0" text="Who" />
+                <TableColumn fx:id="colAccWhat" prefWidth="299.0" text="What" />
+                  <TableColumn fx:id="colAccWho" prefWidth="131.0" text="Who" />
+                <TableColumn fx:id="colAccAmount" prefWidth="69.0" text="Amount" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">

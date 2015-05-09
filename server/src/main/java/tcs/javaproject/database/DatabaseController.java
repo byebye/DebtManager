@@ -3,12 +3,15 @@ package tcs.javaproject.database;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Budgets;
+import tcs.javaproject.database.tables.Payments;
 import tcs.javaproject.database.tables.UserBudget;
 import tcs.javaproject.database.tables.Users;
 import tcs.javaproject.database.tables.records.BudgetsRecord;
 import tcs.javaproject.guitest.Budget;
+import tcs.javaproject.guitest.Payment;
 import tcs.javaproject.guitest.User;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -65,6 +68,19 @@ public class DatabaseController {
       return new User(id, name, email);
    }
 
+   public User getUserById(int userId) {
+      Result<Record2<String, String>> result =
+              dbContext.select(Users.USERS.EMAIL,
+                               Users.USERS.NAME)
+                       .from(Users.USERS)
+                       .where(Users.USERS.ID.equal(userId))
+                       .fetch();
+      if (result.isEmpty())
+         return null;
+      final String email = result.get(0).value1();
+      final String name = result.get(0).value2();
+      return new User(userId, name, email);
+   }
 
 
    public boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) {
@@ -79,18 +95,17 @@ public class DatabaseController {
    }
 
    public boolean createBudget(Budget budget, int ownerId) {
-      final Result<BudgetsRecord> result =
+      final BudgetsRecord result =
               dbContext.insertInto(Budgets.BUDGETS,
                                    Budgets.BUDGETS.NAME,
                                    Budgets.BUDGETS.DESCRIPTION,
                                    Budgets.BUDGETS.OWNER_ID)
                        .values(budget.getName(), budget.getDescription(), ownerId)
                        .returning(Budgets.BUDGETS.ID)
-                       .fetch();
-      if (result.isEmpty())
-         return false;
-      int budgetId = result.get(0).value1();
+                       .fetchOne();
+      final int budgetId = result.getId();
       for (User user : budget.getParticipants()) {
+         System.out.println(budgetId + " " + user.getId());
          dbContext.insertInto(UserBudget.USER_BUDGET,
                               UserBudget.USER_BUDGET.BUDGET_ID,
                               UserBudget.USER_BUDGET.USER_ID)
@@ -136,8 +151,8 @@ public class DatabaseController {
                                Users.USERS.NAME,
                                Users.USERS.EMAIL)
                        .from(UserBudget.USER_BUDGET
-                                       .join(Users.USERS)
-                                       .on(Users.USERS.ID.equal(UserBudget.USER_BUDGET.USER_ID)))
+                                     .join(Users.USERS)
+                                     .on(Users.USERS.ID.equal(UserBudget.USER_BUDGET.USER_ID)))
                        .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId))
                        .fetch();
       List<User> participants = new ArrayList<>(result.size());
@@ -148,5 +163,57 @@ public class DatabaseController {
          participants.add(new User(id, name, email));
       }
       return participants;
+   }
+
+   public void addBudgetParticipants(int budgetId, List<User> users) {
+      for (User user : users) {
+         dbContext.insertInto(UserBudget.USER_BUDGET,
+                              UserBudget.USER_BUDGET.BUDGET_ID,
+                              UserBudget.USER_BUDGET.USER_ID)
+                  .values(budgetId, user.getId())
+                  .execute();
+      }
+   }
+
+   public void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
+      dbContext.insertInto(Payments.PAYMENTS,
+                           Payments.PAYMENTS.BUDGET_ID,
+                           Payments.PAYMENTS.AMOUNT,
+                           Payments.PAYMENTS.USER_ID,
+                           Payments.PAYMENTS.DESCRIPTION)
+               .values(budget.getId(),
+                       amount,
+                       userId,
+                       what)
+               .execute();
+   }
+
+   public List<Payment> getAllPayments(int budgetId, boolean accounted) {
+      Result<Record4<Integer, Integer, String, BigDecimal>> result =
+              dbContext.select(Payments.PAYMENTS.ID,
+                               Payments.PAYMENTS.USER_ID,
+                               Payments.PAYMENTS.DESCRIPTION,
+                               Payments.PAYMENTS.AMOUNT)
+                       .from(Payments.PAYMENTS)
+                       .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
+                       .and(Payments.PAYMENTS.ACCOUNTED.equal(accounted)).fetch();
+
+      List<Payment> payments = new ArrayList<>(result.size());
+      for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
+         final int userId = payment.value2();
+         final String userName = getUserById(userId).getName();
+         final int paymentId = payment.value1();
+         final String description = payment.value3();
+         final double amount = payment.value4().doubleValue();
+         payments.add(new Payment(userName, description, amount, paymentId));
+      }
+      return payments;
+   }
+
+   public void settleUnaccountedPayments(int budgetId) {
+      dbContext.update(Payments.PAYMENTS)
+               .set(Payments.PAYMENTS.ACCOUNTED, true)
+               .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
+               .execute();
    }
 }

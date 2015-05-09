@@ -8,12 +8,20 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class BudgetWindow extends Stage {
+   BudgetController controller;
 
-   public BudgetWindow(Budget budget) throws IOException {
+   public BudgetController getController() {
+      return controller;
+   }
+
+   public BudgetWindow(Budget budget, int userId) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BudgetWindow.fxml"));
       Parent root = fxmlLoader.load();
-      BudgetController controller = fxmlLoader.<BudgetController>getController();
-      controller.setBudget(budget);
+      controller = fxmlLoader.<BudgetController>getController();
+      controller.setBudget(budget, userId, this);
+      controller.fillTabUnaccPayments();
+      controller.fillTabAccPayments();
+      controller.fillTabParticipants();
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));
    }
