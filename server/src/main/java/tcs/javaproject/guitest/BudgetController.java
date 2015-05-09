@@ -62,6 +62,11 @@ public class BudgetController implements Initializable {
       this.budgetWindow = budgetWindow;
    }
 
+   void fillTabParticipants(){
+      List<User> participantsList = getParticipants();
+      tabParticipants.setItems(FXCollections.observableArrayList(participantsList));
+   }
+
    void fillTabAccPayments(){
       List<Payment> accPaymentsList = getPayments(true);
       if(accPaymentsList != null) {
@@ -137,20 +142,8 @@ public class BudgetController implements Initializable {
       colAccWho.setCellValueFactory(new PropertyValueFactory<Payment,String>("who"));
       colUnaccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
       colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
-
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
-
-      final ObservableList<User> dataParticipants = FXCollections.observableArrayList(
-            new User(1, "John", "john@example.com"),
-            new User(2, "Marry", "marry@example.com")
-      );
-
-      int sum = 0;
-
-
-
-      tabParticipants.setItems(dataParticipants);
    }
 
    void settleAllUnacc(){
@@ -164,6 +157,35 @@ public class BudgetController implements Initializable {
 
       }catch(Exception e){
          e.printStackTrace();
+      }
+   }
+
+   List<User> getParticipants(){
+      List<User> users = new LinkedList<>();
+      String url = "jdbc:postgresql://localhost/debtmanager";
+
+      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
+         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
+
+         Result<Record1<Integer>> result = create
+               .select(UserBudget.USER_BUDGET.USER_ID)
+               .from(UserBudget.USER_BUDGET)
+               .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budget.getId())).fetch();
+
+         for(Record1<Integer> userId: result){
+            Result<Record2<String,String>> user = create
+                  .select(Users.USERS.NAME,Users.USERS.EMAIL)
+                  .from(Users.USERS)
+                  .where(Users.USERS.ID.equal(userId.field1())).fetch();
+
+            users.add(new User(userId.value1(),user.get(0).value1(),user.get(0).value2()));
+         }
+
+         return users;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return null;
       }
    }
 

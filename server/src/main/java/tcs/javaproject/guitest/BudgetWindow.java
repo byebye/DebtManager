@@ -20,6 +20,7 @@ public class BudgetWindow extends Stage {
       controller.setBudget(budget,userId,this);
       controller.fillTabUnaccPayments();
       controller.fillTabAccPayments();
+      controller.fillTabParticipants();
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));
    }
