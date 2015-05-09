@@ -13,10 +13,15 @@ import java.io.IOException;
  * Created by Vsmasster on 07.05.15.
  */
 public class AddPaymentWindow extends Stage{
+
+   AddPaymentController controller;
+   public AddPaymentController getController(){
+      return controller;
+   }
     public AddPaymentWindow(Budget budget,int userId,BudgetWindow parent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/AddPaymentWindow.fxml"));
         Parent root = fxmlLoader.load();
-        AddPaymentController controller = fxmlLoader.<AddPaymentController>getController();
+        controller = fxmlLoader.<AddPaymentController>getController();
         controller.setBudget(budget);
         controller.setUser(userId);
          controller.setParent(parent);

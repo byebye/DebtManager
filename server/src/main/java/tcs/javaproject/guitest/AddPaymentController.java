@@ -51,14 +51,8 @@ public class AddPaymentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         btnAddPayment.setOnAction(event -> {
            addRecord();
+           parent.getController().fillTabUnaccPayments();
            Stage stage = (Stage) btnAddPayment.getScene().getWindow();
-           parent.close();
-           try {
-              BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
-              budgetWindow.show();
-           }catch(Exception e){
-
-           }
            stage.close();
         });
     }
