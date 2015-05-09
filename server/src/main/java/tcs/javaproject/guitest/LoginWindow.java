@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.jooq.*;
 import org.jooq.impl.DSL;
+import tcs.javaproject.database.DatabaseController;
 import tcs.javaproject.database.tables.Users;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class LoginWindow extends Application {
+
+   public static DatabaseController dbController = new DatabaseController();
 
    @Override
    public void start(Stage primaryStage) throws Exception {
@@ -57,7 +60,7 @@ public class LoginWindow extends Application {
 
       Button logInButton = new Button("Log In");
       logInButton.setOnAction(event -> {
-         if (validateUserPassword(username.getText(), password.getText())) {
+         if (dbController.validateUserPassword(username.getText(), password.getText())) {
             try {
                BudgetsListWindow budgetsListWindow = new BudgetsListWindow(username.getText());
                budgetsListWindow.show();
@@ -81,25 +84,6 @@ public class LoginWindow extends Application {
 
       primaryStage.setScene(new Scene(grid, 300, 275));
       primaryStage.show();
-   }
-
-   private boolean validateUserPassword(String username, String password) {
-      String url = "jdbc:postgresql://localhost/debtmanager";
-
-      try (Connection conn = DriverManager.getConnection(url, "debtmanager", "debtmanager")) {
-         DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
-         Result<Record1<String>> result = create.select(Users.USERS.PASSWORD_HASH)
-                                       .from(Users.USERS)
-                                       .where(Users.USERS.NAME.equal(username)).fetch();
-         if (result.isEmpty())
-            return false;
-         String expectedPassword = result.get(0).value1().trim();
-         return password.equals(expectedPassword);
-      }
-      catch (Exception e) {
-         e.printStackTrace();
-         return false;
-      }
    }
 
    public static void main(String[] args) {
