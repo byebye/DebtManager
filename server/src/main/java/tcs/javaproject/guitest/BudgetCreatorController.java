@@ -112,6 +112,12 @@ public class BudgetCreatorController implements Initializable {
                     .values(budgetId, user.getId())
                     .execute();
          }
+
+         create.insertInto(UserBudget.USER_BUDGET,
+               UserBudget.USER_BUDGET.BUDGET_ID,
+               UserBudget.USER_BUDGET.USER_ID)
+               .values(budgetId, userId)
+               .execute();
          return true;
       }
       catch (Exception e) {
