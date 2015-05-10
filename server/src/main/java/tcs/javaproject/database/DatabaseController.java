@@ -118,6 +118,9 @@ public class DatabaseController {
       dbContext.delete(UserBudget.USER_BUDGET)
                .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budget.getId()))
                .execute();
+      dbContext.delete(Payments.PAYMENTS)
+               .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId()))
+               .execute();
       dbContext.delete(Budgets.BUDGETS)
                .where(Budgets.BUDGETS.ID.equal(budget.getId()))
                .execute();
