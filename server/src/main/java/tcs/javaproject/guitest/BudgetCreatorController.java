@@ -1,24 +1,16 @@
 
 package tcs.javaproject.guitest;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import tcs.javaproject.database.DatabaseController;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -58,8 +50,8 @@ public class BudgetCreatorController implements Initializable {
       });
 
       btnCreateBudget.setOnAction(event -> {
-         Budget budget = new Budget(0, budgetName.getText(), budgetDescription.getText(), participantsList);
-         if (dbController.createBudget(budget, userId)) {
+         Budget budget = new Budget(dbController.getUserById(userId), budgetName.getText(), budgetDescription.getText(), participantsList);
+         if (dbController.createBudget(budget)) {
             Stage stage = (Stage) btnCreateBudget.getScene().getWindow();
             stage.close();
          }

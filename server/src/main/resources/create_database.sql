@@ -21,7 +21,8 @@ CREATE TABLE budgets (
 
 CREATE TABLE user_budget (
    user_id       int REFERENCES users(id),
-   budget_id     int REFERENCES budgets(id)
+   budget_id     int REFERENCES budgets(id),
+   PRIMARY KEY(user_id, budget_id)
 );
 
 CREATE TABLE payments(

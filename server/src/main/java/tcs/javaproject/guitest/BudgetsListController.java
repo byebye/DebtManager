@@ -1,33 +1,22 @@
 package tcs.javaproject.guitest;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import javafx.util.Callback;
 import tcs.javaproject.database.DatabaseController;
-import tcs.javaproject.database.tables.Budgets;
-import tcs.javaproject.database.tables.UserBudget;
-import tcs.javaproject.database.tables.Users;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
-
-import static org.jooq.impl.DSL.count;
 
 public class BudgetsListController implements Initializable {
 
@@ -36,9 +25,11 @@ public class BudgetsListController implements Initializable {
    @FXML
    private Button btnCreateNewBudget;
    @FXML
-   private TableColumn colName, colCom;
+   private TableColumn colName, colDescription;
    @FXML
-   private TableColumn colPeop;
+   private TableColumn colPeople;
+   @FXML
+   public TableColumn colOwner;
    @FXML
    private TableView<Budget> tabMyBudgets;
    @FXML
@@ -77,15 +68,14 @@ public class BudgetsListController implements Initializable {
          }
       });
 
-      colName.setCellValueFactory(
-              new PropertyValueFactory<Budget, String>("name")
-      );
-      colCom.setCellValueFactory(
-              new PropertyValueFactory<Budget, String>("description")
-      );
-      colPeop.setCellValueFactory(
-              new PropertyValueFactory<Budget, Integer>("partNum")
-      );
+      colName.setCellValueFactory(new PropertyValueFactory<Budget, String>("name"));
+      colDescription.setCellValueFactory(new PropertyValueFactory<Budget, String>("description"));
+      colPeople.setCellValueFactory(new PropertyValueFactory<Budget, Integer>("partNum"));
+      colOwner.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Budget, String>, ObservableValue<String>>() {
+         public ObservableValue<String> call(TableColumn.CellDataFeatures<Budget, String> budget) {
+            return new ReadOnlyObjectWrapper(budget.getValue().getOwner().getName());
+         }
+      });
 
       tabMyBudgets.setOnKeyPressed(keyEvent -> {
          if (keyEvent.getCode().equals(KeyCode.DELETE)) {
@@ -101,7 +91,7 @@ public class BudgetsListController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                Budget budget = row.getItem();
                try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget,userId);
+                  BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
                   budgetWindow.show();
                }
                catch (IOException e) {

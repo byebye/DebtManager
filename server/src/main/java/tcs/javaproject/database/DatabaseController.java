@@ -94,18 +94,17 @@ public class DatabaseController {
       return true;
    }
 
-   public boolean createBudget(Budget budget, int ownerId) {
+   public boolean createBudget(Budget budget) {
       final BudgetsRecord result =
               dbContext.insertInto(Budgets.BUDGETS,
                                    Budgets.BUDGETS.NAME,
                                    Budgets.BUDGETS.DESCRIPTION,
                                    Budgets.BUDGETS.OWNER_ID)
-                       .values(budget.getName(), budget.getDescription(), ownerId)
+                       .values(budget.getName(), budget.getDescription(), budget.getOwner().getId())
                        .returning(Budgets.BUDGETS.ID)
                        .fetchOne();
       final int budgetId = result.getId();
       for (User user : budget.getParticipants()) {
-         System.out.println(budgetId + " " + user.getId());
          dbContext.insertInto(UserBudget.USER_BUDGET,
                               UserBudget.USER_BUDGET.BUDGET_ID,
                               UserBudget.USER_BUDGET.USER_ID)
@@ -126,21 +125,32 @@ public class DatabaseController {
 
    }
 
-   public List<Budget> getAllBudgets(int ownerId) {
-      Result<Record3<Integer, String, String>> result =
+   public List<Budget> getAllBudgets(int userId) {
+      Result<Record4<Integer, Integer, String, String>> result =
               dbContext.select(Budgets.BUDGETS.ID,
+                               Budgets.BUDGETS.OWNER_ID,
                                Budgets.BUDGETS.NAME,
                                Budgets.BUDGETS.DESCRIPTION)
                        .from(Budgets.BUDGETS)
-                       .where(Budgets.BUDGETS.OWNER_ID.equal(ownerId))
+                       .where(Budgets.BUDGETS.OWNER_ID
+                                     .equal(userId)
+                                     .or(Budgets.BUDGETS.ID
+                                                 .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
+                                                              .from(UserBudget.USER_BUDGET)
+                                                              .where(UserBudget.USER_BUDGET.USER_ID
+                                                                             .equal(userId)))
+                                     )
+                       )
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
-      for (Record3<Integer, String, String> budget : result) {
+      for (Record4<Integer, Integer, String, String> budget : result) {
          final int id = budget.value1();
-         final String name = budget.value2();
-         final String description = budget.value3();
+         final int ownerId = budget.value2();
+         final User owner = getUserById(ownerId);
+         final String name = budget.value3();
+         final String description = budget.value4();
          final List<User> participants = getBudgetParticipants(id);
-         budgets.add(new Budget(id, name, description, participants));
+         budgets.add(new Budget(id, owner, name, description, participants));
       }
       return budgets;
    }
