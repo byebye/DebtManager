@@ -6,19 +6,23 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.AddUserToBudgetController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="282.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.AddUserToBudgetController">
    <children>
-      <Text layoutX="28.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add participant">
+      <Text layoutX="25.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add participant">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
       <Text layoutX="14.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="E-mail:" />
-      <TextField fx:id="txtFieldMail" layoutX="68.0" layoutY="55.0" />
+      <TextField fx:id="txtFieldEnterEmail" layoutX="68.0" layoutY="55.0" prefHeight="25.0" prefWidth="179.0" promptText="Enter user email" />
       <Line endX="300.0" layoutY="92.0" />
-      <Button fx:id="btnAdd" layoutX="247.0" layoutY="56.0" mnemonicParsing="false" text="Add" />
-      <Text fx:id="txtUsersAdded" layoutX="37.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <Button fx:id="btnConfirm" layoutX="229.0" layoutY="161.0" mnemonicParsing="false" text="Confirm" />
+      <Button fx:id="btnAddUser" layoutX="247.0" layoutY="56.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="btnConfirm" layoutX="220.0" layoutY="243.0" mnemonicParsing="false" text="Confirm" />
+      <TableView fx:id="tabParticipants" layoutX="14.0" layoutY="105.0" prefHeight="132.0" prefWidth="273.0">
+        <columns>
+          <TableColumn fx:id="colParticipantName" prefWidth="135.0" text="Name" />
+          <TableColumn fx:id="colParticipantEmail" minWidth="4.0" prefWidth="132.0" text="Email" />
+        </columns>
+      </TableView>
    </children>
 </Pane>

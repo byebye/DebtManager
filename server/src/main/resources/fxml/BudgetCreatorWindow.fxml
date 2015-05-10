@@ -16,18 +16,27 @@
          <rowConstraints>
             <RowConstraints maxHeight="103.0" minHeight="10.0" prefHeight="39.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="185.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="224.0" minHeight="0.0" prefHeight="24.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="24.0" prefHeight="24.0" valignment="CENTER" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="224.0" minHeight="10.0" prefHeight="134.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Commentary:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" />
             <TextField fx:id="budgetName" GridPane.columnIndex="1" />
             <TextArea fx:id="budgetDescription" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="txtFieldEnterMail" alignment="TOP_CENTER" promptText="entermail" text="Enter email" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-            <Button fx:id="btnAddUser" mnemonicParsing="false" text="Add" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-            <Text fx:id="txtUsersAdded" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+            <TableView fx:id="tabParticipants" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+              <columns>
+                <TableColumn fx:id="colParticipantName" minWidth="150.0" prefWidth="170.0" text="Name" />
+                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="150.0" prefWidth="195.0" text="Email" />
+              </columns>
+            </TableView>
+            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <TextField fx:id="txtFieldEnterEmail" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="300.0" promptText="Enter user email" />
+                  <Button fx:id="btnAddUser" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" text="Add" />
+               </children>
+            </HBox>
          </children>
       </GridPane>
       <Text layoutX="76.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget Creator">
@@ -35,6 +44,6 @@
             <Font size="31.0" />
          </font>
       </Text>
-      <Button fx:id="btnCreateBudget" layoutX="497.0" layoutY="350.0" mnemonicParsing="false" text="Create" />
+      <Button fx:id="btnCreateBudget" layoutX="473.0" layoutY="361.0" mnemonicParsing="false" text="Create" />
    </children>
 </Pane>

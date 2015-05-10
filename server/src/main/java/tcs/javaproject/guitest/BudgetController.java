@@ -1,6 +1,7 @@
 package tcs.javaproject.guitest;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -25,7 +26,7 @@ public class BudgetController implements Initializable {
    @FXML
    private Text txtSum;
    @FXML
-   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose;
+   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose, btnBudgetDelete;
    @FXML
    private TableView<Payment> tabUnaccPayments, tabAccPayments;
    @FXML
@@ -38,6 +39,7 @@ public class BudgetController implements Initializable {
    private Budget budget;
    private int userId;
    private BudgetWindow budgetWindow;
+   private ObservableList<User> participantsList = FXCollections.observableArrayList();
 
    void setBudget(Budget budget, int userId, BudgetWindow budgetWindow) {
       this.budget = budget;
@@ -47,9 +49,74 @@ public class BudgetController implements Initializable {
       this.budgetWindow = budgetWindow;
    }
 
+   @Override
+   public void initialize(URL location, ResourceBundle resources) {
+      //Buttons
+      btnSettle.setOnAction(event -> {
+         dbController.settleUnaccountedPayments(budget.getId());
+         fillTabAccPayments();
+         fillTabUnaccPayments();
+      });
+
+      btnAddPayment.setOnAction(event -> {
+         try {
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId, budgetWindow);
+            addPaymentWindow.show();
+         }
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+      });
+
+      btnAddParticipant.setOnAction(event -> {
+         try {
+            AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow(budgetWindow);
+            addUserToBudgetWindow.show();
+         }
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+      });
+
+      btnBudgetClose.setOnAction(event -> {
+         Stage stage = (Stage) btnBudgetClose.getScene().getWindow();
+         stage.close();
+      });
+
+      btnBudgetDelete.setOnAction(event -> {
+         // TODO window to confirm deletion;
+         dbController.deleteBudget(budget);
+         Stage stage = (Stage) btnBudgetDelete.getScene().getWindow();
+         stage.close();
+      });
+
+      //Table
+      colUnaccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
+      colAccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
+      colUnaccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
+      colAccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
+      colUnaccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
+      colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
+      colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
+      colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+      tabParticipants.setItems(participantsList);
+   }
+
+   void addParticipants(List<User> users) {
+      users.removeAll(participantsList);
+      participantsList.addAll(users);
+      dbController.addBudgetParticipants(budget.getId(), users);
+   }
+
+   void fillAllTables() {
+      fillTabUnaccPayments();
+      fillTabAccPayments();
+      fillTabParticipants();
+   }
+
    void fillTabParticipants() {
-      List<User> participantsList = dbController.getBudgetParticipants(budget.getId());
-      tabParticipants.setItems(FXCollections.observableArrayList(participantsList));
+      participantsList.clear();
+      participantsList.addAll(dbController.getBudgetParticipants(budget.getId()));
    }
 
    void fillTabAccPayments() {
@@ -102,50 +169,5 @@ public class BudgetController implements Initializable {
       txtSum.setText("SUM: " + sum + "$");
 
       tabUnaccPayments.setItems(FXCollections.observableArrayList(unaccPaymentsList));
-   }
-
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      //Buttons
-      btnSettle.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId());
-         fillTabAccPayments();
-         fillTabUnaccPayments();
-      });
-
-      btnAddPayment.setOnAction(event -> {
-         try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId, budgetWindow);
-            addPaymentWindow.show();
-         }
-         catch (IOException e) {
-            e.printStackTrace();
-         }
-      });
-
-      btnAddParticipant.setOnAction(event -> {
-         try {
-            AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow(budget.getId(), budgetWindow);
-            addUserToBudgetWindow.show();
-         }
-         catch (IOException e) {
-            e.printStackTrace();
-         }
-      });
-
-      btnBudgetClose.setOnAction(event -> {
-         Stage stage = (Stage) btnBudgetClose.getScene().getWindow();
-         stage.close();
-      });
-
-      //Table
-      colUnaccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colAccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colUnaccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
-      colAccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
-      colUnaccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
-      colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
-      colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
-      colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
    }
 }
