@@ -1,6 +1,7 @@
 package tcs.javaproject.guitest;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Budget {
    private final int id;
@@ -43,5 +44,18 @@ public class Budget {
 
    public List<User> getParticipants() {
       return participants;
+   }
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Budget budget = (Budget) o;
+      return Objects.equals(id, budget.id);
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(id);
    }
 }

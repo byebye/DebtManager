@@ -1,33 +1,36 @@
 
 package tcs.javaproject.guitest;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import tcs.javaproject.database.DatabaseController;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class BudgetCreatorController implements Initializable {
+
    @FXML
-   private TextField budgetName, txtFieldEnterMail;
+   private TextField budgetName, txtFieldEnterEmail;
    @FXML
    private TextArea budgetDescription;
    @FXML
    private Button btnCreateBudget, btnAddUser;
    @FXML
-   private Text txtUsersAdded;
+   private TableView<User> tabParticipants;
+   @FXML
+   public TableColumn colParticipantName;
+   @FXML
+   public TableColumn colParticipantEmail;
 
    private final DatabaseController dbController = LoginWindow.dbController;
    private int userId;
-   private List<User> participantsList = new ArrayList<>();
+   private ObservableList<User> participantsList = FXCollections.observableArrayList();
 
    public void setUserId(int userId) {
       this.userId = userId;
@@ -35,22 +38,30 @@ public class BudgetCreatorController implements Initializable {
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
-
-      txtUsersAdded.setText("Participants list:");
+      colParticipantName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
+      colParticipantEmail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+      tabParticipants.setItems(participantsList);
 
       btnAddUser.setOnAction(event -> {
-         User user = dbController.getUserByEmail(txtFieldEnterMail.getText());
-         if (user != null) {
-            participantsList.add(user);
-            txtUsersAdded.setText(txtUsersAdded.getText() + "\n" + txtFieldEnterMail.getText());
+         User user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+         if (user == null) {
+            txtFieldEnterEmail.setText("User not found!");
+         }
+         else if (user.getId() == userId) {
+            txtFieldEnterEmail.setText("You will be added automatically");
+         }
+         else if (participantsList.contains(user)) {
+            txtFieldEnterEmail.setText("User already added");
          }
          else {
-            txtFieldEnterMail.setText("User not found!");
+            participantsList.add(user);
+            txtFieldEnterEmail.clear();
          }
       });
 
       btnCreateBudget.setOnAction(event -> {
-         Budget budget = new Budget(dbController.getUserById(userId), budgetName.getText(), budgetDescription.getText(), participantsList);
+         final User owner = dbController.getUserById(userId);
+         Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsList);
          if (dbController.createBudget(budget)) {
             Stage stage = (Stage) btnCreateBudget.getScene().getWindow();
             stage.close();

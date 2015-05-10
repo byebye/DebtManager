@@ -19,9 +19,7 @@ public class BudgetWindow extends Stage {
       Parent root = fxmlLoader.load();
       controller = fxmlLoader.<BudgetController>getController();
       controller.setBudget(budget, userId, this);
-      controller.fillTabUnaccPayments();
-      controller.fillTabAccPayments();
-      controller.fillTabParticipants();
+      controller.fillAllTables();
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));
    }

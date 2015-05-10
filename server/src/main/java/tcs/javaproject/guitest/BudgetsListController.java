@@ -6,9 +6,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -36,7 +38,7 @@ public class BudgetsListController implements Initializable {
    private Text txtUserName;
 
    private final DatabaseController dbController = LoginWindow.dbController;
-
+   private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
    private int userId;
 
    public void setUserEmail(String userName) {
@@ -46,8 +48,8 @@ public class BudgetsListController implements Initializable {
    }
 
    public void fillBudgetsTable() {
-      final ObservableList<Budget> data = FXCollections.observableArrayList(dbController.getAllBudgets(userId));
-      tabMyBudgets.setItems(data);
+      budgets.clear();
+      budgets.addAll(dbController.getAllBudgets(userId));
    }
 
    @Override
@@ -76,14 +78,7 @@ public class BudgetsListController implements Initializable {
             return new ReadOnlyObjectWrapper(budget.getValue().getOwner().getName());
          }
       });
-
-      tabMyBudgets.setOnKeyPressed(keyEvent -> {
-         if (keyEvent.getCode().equals(KeyCode.DELETE)) {
-            Budget budget = tabMyBudgets.getSelectionModel().getSelectedItem();
-            dbController.deleteBudget(budget);
-            fillBudgetsTable();
-         }
-      });
+      tabMyBudgets.setItems(budgets);
 
       tabMyBudgets.setRowFactory(param -> {
          TableRow<Budget> row = new TableRow<>();
@@ -92,6 +87,7 @@ public class BudgetsListController implements Initializable {
                Budget budget = row.getItem();
                try {
                   BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
+                  budgetWindow.setOnHidden(e -> fillBudgetsTable());
                   budgetWindow.show();
                }
                catch (IOException e) {
