@@ -32,11 +32,10 @@ public class AddUserToBudgetController implements Initializable {
 
    private final DatabaseController dbController = LoginWindow.dbController;
 
-   private int budgetId;
-   private ObservableList<User> participantsList = FXCollections.observableArrayList();
+   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private BudgetWindow parent;
 
-   public void setData(BudgetWindow parent) {
+   public void setParent(BudgetWindow parent) {
       this.parent = parent;
    }
 

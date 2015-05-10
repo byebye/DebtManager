@@ -30,7 +30,7 @@ public class BudgetCreatorController implements Initializable {
 
    private final DatabaseController dbController = LoginWindow.dbController;
    private int userId;
-   private ObservableList<User> participantsList = FXCollections.observableArrayList();
+   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 
    public void setUserId(int userId) {
       this.userId = userId;
@@ -61,6 +61,7 @@ public class BudgetCreatorController implements Initializable {
 
       btnCreateBudget.setOnAction(event -> {
          final User owner = dbController.getUserById(userId);
+         participantsList.add(owner);
          Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsList);
          if (dbController.createBudget(budget)) {
             Stage stage = (Stage) btnCreateBudget.getScene().getWindow();

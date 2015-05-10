@@ -133,13 +133,13 @@ public class DatabaseController {
                                Budgets.BUDGETS.DESCRIPTION)
                        .from(Budgets.BUDGETS)
                        .where(Budgets.BUDGETS.OWNER_ID
-                                     .equal(userId)
-                                     .or(Budgets.BUDGETS.ID
-                                                 .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                                                              .from(UserBudget.USER_BUDGET)
-                                                              .where(UserBudget.USER_BUDGET.USER_ID
-                                                                             .equal(userId)))
-                                     )
+                                      .equal(userId)
+                                      .or(Budgets.BUDGETS.ID
+                                                  .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
+                                                               .from(UserBudget.USER_BUDGET)
+                                                               .where(UserBudget.USER_BUDGET.USER_ID
+                                                                              .equal(userId)))
+                                      )
                        )
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
@@ -198,6 +198,21 @@ public class DatabaseController {
                .execute();
    }
 
+   public void updatePayment(int paymentId, int userId, BigDecimal amount, String what) {
+      dbContext.update(Payments.PAYMENTS)
+               .set(Payments.PAYMENTS.AMOUNT, amount)
+               .set(Payments.PAYMENTS.USER_ID, userId)
+               .set(Payments.PAYMENTS.DESCRIPTION, what)
+               .where(Payments.PAYMENTS.ID.equal(paymentId))
+               .execute();
+   }
+
+   public void deletePayment(int paymentId) {
+      dbContext.delete(Payments.PAYMENTS)
+               .where(Payments.PAYMENTS.ID.equal(paymentId))
+               .execute();
+   }
+
    public List<Payment> getAllPayments(int budgetId, boolean accounted) {
       Result<Record4<Integer, Integer, String, BigDecimal>> result =
               dbContext.select(Payments.PAYMENTS.ID,
@@ -215,7 +230,7 @@ public class DatabaseController {
          final int paymentId = payment.value1();
          final String description = payment.value3();
          final double amount = payment.value4().doubleValue();
-         payments.add(new Payment(userName, description, amount, paymentId));
+         payments.add(new Payment(budgetId, userId, userName, description, amount, paymentId));
       }
       return payments;
    }

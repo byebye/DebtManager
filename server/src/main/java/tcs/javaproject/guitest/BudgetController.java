@@ -39,7 +39,9 @@ public class BudgetController implements Initializable {
    private Budget budget;
    private int userId;
    private BudgetWindow budgetWindow;
-   private ObservableList<User> participantsList = FXCollections.observableArrayList();
+   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
+   private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
+   private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
 
    void setBudget(Budget budget, int userId, BudgetWindow budgetWindow) {
       this.budget = budget;
@@ -54,13 +56,14 @@ public class BudgetController implements Initializable {
       //Buttons
       btnSettle.setOnAction(event -> {
          dbController.settleUnaccountedPayments(budget.getId());
-         fillTabAccPayments();
          fillTabUnaccPayments();
+         fillTabAccPayments();
       });
 
       btnAddPayment.setOnAction(event -> {
          try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId, budgetWindow);
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId);
+            addPaymentWindow.setOnHidden(e -> fillTabUnaccPayments());
             addPaymentWindow.show();
          }
          catch (IOException e) {
@@ -100,6 +103,42 @@ public class BudgetController implements Initializable {
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       tabParticipants.setItems(participantsList);
+      tabUnaccPayments.setItems(unaccountedPayments);
+      tabAccPayments.setItems(accountedPayments);
+      tabUnaccPayments.setRowFactory(param -> {
+         TableRow<Payment> row = new TableRow<>();
+         row.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+               Payment payment = row.getItem();
+               try {
+                  PaymentWindow paymentWindow = new PaymentWindow(payment, participantsList);
+                  paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
+                  paymentWindow.show();
+               }
+               catch (IOException e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+         return row;
+      });
+      //      TODO discuss if accounted payments should be editable
+      //      tabAccPayments.setRowFactory(param -> {
+      //         TableRow<Payment> row = new TableRow<>();
+      //         row.setOnMouseClicked(mouseEvent -> {
+      //            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+      //               Payment payment = row.getItem();
+      //               try {
+      //                  PaymentWindow paymentWindow = new PaymentWindow(payment);
+      //                  paymentWindow.show();
+      //               }
+      //               catch (IOException e) {
+      //                  e.printStackTrace();
+      //               }
+      //            }
+      //         });
+      //         return row;
+      //      });
    }
 
    void addParticipants(List<User> users) {
@@ -120,54 +159,16 @@ public class BudgetController implements Initializable {
    }
 
    void fillTabAccPayments() {
-      List<Payment> accPaymentsList = dbController.getAllPayments(budget.getId(), true);
-      if (accPaymentsList == null)
-         return;
-      tabAccPayments.setRowFactory(param -> {
-         TableRow<Payment> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Payment payment = row.getItem();
-               try {
-                  PaymentWindow paymentWindow = new PaymentWindow(payment);
-                  paymentWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
-      tabAccPayments.setItems(FXCollections.observableArrayList(accPaymentsList));
+      accountedPayments.clear();
+      accountedPayments.addAll(dbController.getAllPayments(budget.getId(), true));
    }
 
    void fillTabUnaccPayments() {
-      List<Payment> unaccPaymentsList = dbController.getAllPayments(budget.getId(), false);
-      if (unaccPaymentsList == null) {
-         return;
-      }
+      unaccountedPayments.clear();
+      unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
       double sum = 0;
-      for (Payment p : unaccPaymentsList)
+      for (Payment p : unaccountedPayments)
          sum += p.getAmount();
-      tabUnaccPayments.setRowFactory(param -> {
-         TableRow<Payment> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Payment payment = row.getItem();
-               try {
-                  PaymentWindow paymentWindow = new PaymentWindow(payment);
-                  paymentWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
       txtSum.setText("SUM: " + sum + "$");
-
-      tabUnaccPayments.setItems(FXCollections.observableArrayList(unaccPaymentsList));
    }
 }

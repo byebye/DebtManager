@@ -31,7 +31,6 @@ public class AddPaymentController implements Initializable {
 
    private Budget budget;
    private int userId;
-   private BudgetWindow parent;
 
    public void setBudget(Budget budget) {
       this.budget = budget;
@@ -41,16 +40,11 @@ public class AddPaymentController implements Initializable {
       this.userId = userId;
    }
 
-   public void setParent(BudgetWindow parent) {
-      this.parent = parent;
-   }
-
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       btnAddPayment.setOnAction(event -> {
          BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
          dbController.addPayment(budget, userId, amount, txtAreaWhat.getText());
-         parent.getController().fillTabUnaccPayments();
          Stage stage = (Stage) btnAddPayment.getScene().getWindow();
          stage.close();
       });
