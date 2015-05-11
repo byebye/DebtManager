@@ -1,7 +1,10 @@
 package tcs.javaproject.guitest;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -11,20 +14,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import tcs.javaproject.database.DatabaseController;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class BudgetController implements Initializable {
+
    @FXML
    private Text txtBudgetName;
    @FXML
    private Text txtBudgetDescription;
    @FXML
-   private Text txtSum;
+   private Text txtSum, txtSumPerPerson;
    @FXML
    private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose, btnBudgetDelete;
    @FXML
@@ -32,12 +38,17 @@ public class BudgetController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount, colAccWhat, colAccWho, colAccAmount, colUserName, colUserMail;
+   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount;
+   @FXML
+   private TableColumn colAccWhat, colAccWho, colAccAmount;
+   @FXML
+   private TableColumn colUserName, colUserMail, colUserBalance;
 
    private final DatabaseController dbController = LoginWindow.dbController;
 
    private Budget budget;
    private int userId;
+   double spentMoneySum = 0;
    private BudgetWindow budgetWindow;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
@@ -74,6 +85,7 @@ public class BudgetController implements Initializable {
       btnAddParticipant.setOnAction(event -> {
          try {
             AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow(budgetWindow);
+            addUserToBudgetWindow.setOnHidden(e -> fillTabUnaccPayments());
             addUserToBudgetWindow.show();
          }
          catch (IOException e) {
@@ -102,6 +114,15 @@ public class BudgetController implements Initializable {
       colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+      colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
+         public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
+            User participant = p.getValue();
+            double balance = 0;
+            if (participant != null)
+                balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
+            return new ReadOnlyObjectWrapper<BigDecimal>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
+         }
+      });
       tabParticipants.setItems(participantsList);
       tabParticipants.setRowFactory(param -> {
          TableRow<User> row = new TableRow<>();
@@ -110,7 +131,10 @@ public class BudgetController implements Initializable {
                User participant = row.getItem();
                try {
                   ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant);
-                  participantWindow.setOnHidden(event -> fillTabParticipants());
+                  participantWindow.setOnHidden(event -> {
+                     fillTabParticipants();
+                     fillTabUnaccPayments();
+                  });
                   participantWindow.show();
                }
                catch (IOException e) {
@@ -165,9 +189,9 @@ public class BudgetController implements Initializable {
    }
 
    void fillAllTables() {
+      fillTabParticipants();
       fillTabUnaccPayments();
       fillTabAccPayments();
-      fillTabParticipants();
    }
 
    void fillTabParticipants() {
@@ -183,9 +207,25 @@ public class BudgetController implements Initializable {
    void fillTabUnaccPayments() {
       unaccountedPayments.clear();
       unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
-      double sum = 0;
-      for (Payment p : unaccountedPayments)
-         sum += p.getAmount();
-      txtSum.setText("SUM: " + sum + "$");
+      spentMoneySum = 0;
+      for (User participant : participantsList)
+         participant.setSpentMoney(0);
+      for (Payment p : unaccountedPayments) {
+         spentMoneySum += p.getAmount();
+         FilteredList<User> filtered = participantsList.filtered(user -> user.getId() == p.getUserId());
+         if (!filtered.isEmpty()) {
+            User participant = filtered.get(0);
+            participant.addSpentMoney(p.getAmount());
+         }
+      }
+      refreshBalanceCells();
+      txtSum.setText("SUM: " + spentMoneySum + "$");
+      String perPerson = String.format("%.2f", spentMoneySum / participantsList.size());
+      txtSumPerPerson.setText("Sum / Person: " + perPerson + "$");
+   }
+
+   private void refreshBalanceCells() {
+      tabParticipants.getColumns().get(2).setVisible(false);
+      tabParticipants.getColumns().get(2).setVisible(true);
    }
 }

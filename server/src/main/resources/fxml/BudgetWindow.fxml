@@ -88,11 +88,13 @@
             </Text>
             <TableView fx:id="tabParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn fx:id="colUserName" prefWidth="134.0" text="Name" />
-                <TableColumn fx:id="colUserMail" prefWidth="134.0" text="Mail" />
+                <TableColumn fx:id="colUserName" prefWidth="110.0" text="Name" />
+                <TableColumn fx:id="colUserMail" prefWidth="92.0" text="Mail" />
+                  <TableColumn fx:id="colUserBalance" editable="false" prefWidth="66.0" text="Balance" />
               </columns>
             </TableView>
             <Button fx:id="btnAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+            <Text fx:id="txtSumPerPerson" strokeType="OUTSIDE" strokeWidth="0.0" text="Sum / Person:" textAlignment="CENTER" wrappingWidth="225.7294921875" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
          <opaqueInsets>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

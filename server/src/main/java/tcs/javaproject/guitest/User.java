@@ -9,11 +9,24 @@ public class User {
     private String email;
     private String bankAccount;
 
+    private double spentMoney = 0;
+
     public User(int id, String name, String email, String bankAccount) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.bankAccount = bankAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                       "id=" + id +
+                       ", name='" + name + '\'' +
+                       ", email='" + email + '\'' +
+                       ", bankAccount='" + bankAccount + '\'' +
+                       ", spentMoney=" + spentMoney +
+                       '}';
     }
 
     public int getId() {
@@ -32,6 +45,18 @@ public class User {
         return bankAccount;
     }
 
+    public double getSpentMoney() {
+        return spentMoney;
+    }
+
+    public void setSpentMoney(double spentMoney) {
+        this.spentMoney = spentMoney;
+    }
+
+    public void addSpentMoney(double spentMoney) {
+        this.spentMoney += spentMoney;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -43,16 +68,6 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                       "id=" + id +
-                       ", name='" + name + '\'' +
-                       ", email='" + email + '\'' +
-                       ", bankAccount='" + bankAccount + '\'' +
-                       '}';
     }
 
 }
