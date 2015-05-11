@@ -103,6 +103,23 @@ public class BudgetController implements Initializable {
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       tabParticipants.setItems(participantsList);
+      tabParticipants.setRowFactory(param -> {
+         TableRow<User> row = new TableRow<>();
+         row.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+               User participant = row.getItem();
+               try {
+                  ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant);
+                  participantWindow.setOnHidden(event -> fillTabParticipants());
+                  participantWindow.show();
+               }
+               catch (IOException e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+         return row;
+      });
       tabUnaccPayments.setItems(unaccountedPayments);
       tabAccPayments.setItems(accountedPayments);
       tabUnaccPayments.setRowFactory(param -> {

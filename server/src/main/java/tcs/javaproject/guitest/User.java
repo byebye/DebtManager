@@ -7,11 +7,13 @@ public class User {
     private int id;
     private String name;
     private String email;
+    private String bankAccount;
 
-    public User(int id, String name, String email) {
+    public User(int id, String name, String email, String bankAccount) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.bankAccount = bankAccount;
     }
 
     public int getId() {
@@ -24,6 +26,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
     }
 
     @Override
@@ -42,9 +48,11 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+                       "id=" + id +
+                       ", name='" + name + '\'' +
+                       ", email='" + email + '\'' +
+                       ", bankAccount='" + bankAccount + '\'' +
+                       '}';
     }
+
 }

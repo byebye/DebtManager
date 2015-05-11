@@ -55,9 +55,10 @@ public class DatabaseController {
    }
 
    public User getUserByEmail(String email) {
-      Result<Record2<Integer, String>> result =
+      Result<Record3<Integer, String, BigInteger>> result =
               dbContext.select(Users.USERS.ID,
-                               Users.USERS.NAME)
+                               Users.USERS.NAME,
+                               Users.USERS.BANK_ACCOUNT)
                        .from(Users.USERS)
                        .where(Users.USERS.EMAIL.equal(email))
                        .fetch();
@@ -65,13 +66,15 @@ public class DatabaseController {
          return null;
       final int id = result.get(0).value1();
       final String name = result.get(0).value2();
-      return new User(id, name, email);
+      final String bankAccount = result.get(0).value3().toString();
+      return new User(id, name, email, bankAccount);
    }
 
    public User getUserById(int userId) {
-      Result<Record2<String, String>> result =
+      Result<Record3<String, String, BigInteger>> result =
               dbContext.select(Users.USERS.EMAIL,
-                               Users.USERS.NAME)
+                               Users.USERS.NAME,
+                               Users.USERS.BANK_ACCOUNT)
                        .from(Users.USERS)
                        .where(Users.USERS.ID.equal(userId))
                        .fetch();
@@ -79,7 +82,8 @@ public class DatabaseController {
          return null;
       final String email = result.get(0).value1();
       final String name = result.get(0).value2();
-      return new User(userId, name, email);
+      final String bankAccount = result.get(0).value3().toString();
+      return new User(userId, name, email, bankAccount);
    }
 
 
@@ -135,15 +139,12 @@ public class DatabaseController {
                                Budgets.BUDGETS.NAME,
                                Budgets.BUDGETS.DESCRIPTION)
                        .from(Budgets.BUDGETS)
-                       .where(Budgets.BUDGETS.OWNER_ID
-                                      .equal(userId)
-                                      .or(Budgets.BUDGETS.ID
-                                                  .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                                                               .from(UserBudget.USER_BUDGET)
-                                                               .where(UserBudget.USER_BUDGET.USER_ID
-                                                                              .equal(userId)))
-                                      )
-                       )
+                       .where(Budgets.BUDGETS.OWNER_ID.equal(userId)
+                       .or(Budgets.BUDGETS.ID
+                       .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
+                                    .from(UserBudget.USER_BUDGET)
+                                    .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
+                       ))
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
       for (Record4<Integer, Integer, String, String> budget : result) {
@@ -159,21 +160,23 @@ public class DatabaseController {
    }
 
    public List<User> getBudgetParticipants(int budgetId) {
-      Result<Record3<Integer, String, String>> result =
+      Result<Record4<Integer, String, String, BigInteger>> result =
               dbContext.select(Users.USERS.ID,
                                Users.USERS.NAME,
-                               Users.USERS.EMAIL)
+                               Users.USERS.EMAIL,
+                               Users.USERS.BANK_ACCOUNT)
                        .from(UserBudget.USER_BUDGET
-                                     .join(Users.USERS)
-                                     .on(Users.USERS.ID.equal(UserBudget.USER_BUDGET.USER_ID)))
+                       .join(Users.USERS)
+                       .on(Users.USERS.ID.equal(UserBudget.USER_BUDGET.USER_ID)))
                        .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId))
                        .fetch();
       List<User> participants = new ArrayList<>(result.size());
-      for (Record3<Integer, String, String> user : result) {
+      for (Record4<Integer, String, String, BigInteger> user : result) {
          final int id = user.value1();
          final String name = user.value2();
          final String email = user.value3();
-         participants.add(new User(id, name, email));
+         final String bankAccount = user.value4().toString();
+         participants.add(new User(id, name, email, bankAccount));
       }
       return participants;
    }
@@ -244,4 +247,12 @@ public class DatabaseController {
                .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
                .execute();
    }
+
+   public void removeParticipant(int budgetId, int userId) {
+      dbContext.delete(UserBudget.USER_BUDGET)
+               .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
+               .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
+               .execute();
+   }
+
 }

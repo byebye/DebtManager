@@ -13,14 +13,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.jooq.*;
-import org.jooq.impl.DSL;
 import tcs.javaproject.database.DatabaseController;
-import tcs.javaproject.database.tables.Users;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 
 public class LoginWindow extends Application {
 
