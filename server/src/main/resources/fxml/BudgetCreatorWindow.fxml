@@ -25,11 +25,15 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" />
             <TextField fx:id="budgetName" GridPane.columnIndex="1" />
             <TextArea fx:id="budgetDescription" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TableView fx:id="tabParticipants" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <TableView fx:id="tabParticipants" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="134.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
                 <TableColumn fx:id="colParticipantName" minWidth="150.0" prefWidth="170.0" text="Name" />
-                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="150.0" prefWidth="195.0" text="Email" />
+                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="65.0" prefWidth="130.0" text="Email" />
+                  <TableColumn fx:id="colAction" maxWidth="30.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
             </TableView>
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
@@ -44,6 +48,7 @@
             <Font size="31.0" />
          </font>
       </Text>
-      <Button fx:id="btnCreateBudget" layoutX="473.0" layoutY="361.0" mnemonicParsing="false" text="Create" />
+      <Button fx:id="btnCreateBudget" layoutX="463.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" text="Create" />
+      <Button fx:id="btnCancel" layoutX="76.0" layoutY="361.0" mnemonicParsing="false" text="Cancel" />
    </children>
 </Pane>
