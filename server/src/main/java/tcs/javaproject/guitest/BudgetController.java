@@ -66,9 +66,16 @@ public class BudgetController implements Initializable {
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
       btnSettle.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId());
-         fillTabUnaccPayments();
-         fillTabAccPayments();
+         try {
+            SettleWindow settleWindow = new SettleWindow(budget);
+            settleWindow.show();
+         }
+         catch(Exception e){
+               e.printStackTrace();
+         }
+         //dbController.settleUnaccountedPayments(budget.getId());
+         //fillTabUnaccPayments();
+         //fillTabAccPayments();
       });
 
       btnAddPayment.setOnAction(event -> {
