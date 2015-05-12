@@ -5,8 +5,6 @@ import common.MessageBox;
 import common.SHA1Hasher;
 
 import javax.naming.AuthenticationException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
