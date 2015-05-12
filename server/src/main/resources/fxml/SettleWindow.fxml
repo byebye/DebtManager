@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.SettleController">
+   <children>
+      <Text layoutX="29.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Settle">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Button fx:id="btnConfirm" layoutX="222.0" layoutY="370.0" mnemonicParsing="false" text="Confirm" />
+      <Button fx:id="btnDeciline" layoutX="10.0" layoutY="370.0" mnemonicParsing="false" text="Deciline" />
+      <TableView fx:id="tabSettleView" layoutX="1.0" layoutY="59.0" prefHeight="303.0" prefWidth="300.0">
+        <columns>
+          <TableColumn fx:id="colWho" prefWidth="111.0" text="Who" />
+          <TableColumn fx:id="colWhom" prefWidth="101.0" text="Whom" />
+            <TableColumn fx:id="colAmount" prefWidth="86.0" text="Amount" />
+        </columns>
+      </TableView>
+   </children>
+</Pane>
