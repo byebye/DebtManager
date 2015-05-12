@@ -1,14 +1,16 @@
+JAVAC = javac
+JAR   = jar
 PRG_JAVA = $(wildcard */*.java)
 EXE_JAVA = $(patsubst %.java,%.class,$(PRG_JAVA))
 EXE     = $(EXE_JAVA)
 
 
 server: $(EXE)
-	jar cvf common.jar common/*.class
+	$(JAR) cvf common.jar common/*.class
 	cp common.jar ~/public_html/classes/common.jar
 
 %.class: %.java
-	javac $^
+	$(JVC) $^
 
 runServer: server
 	./startServer.sh
