@@ -9,11 +9,15 @@ public class IBAN {
         if(!validate(iban))
             throw new IllegalArgumentException();
 
-        this.IBAN = iban;
+        this.IBAN = normalize(iban);
     }
 
     private boolean validate(String iban) {
         return true;
+    }
+
+    private String normalize(String iban) {
+        return iban;
     }
 
     public String getIBAN() {
