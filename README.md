@@ -41,3 +41,22 @@ You may need to configure IDE to use Java 8 version.
 **Executing from the command line**
 
 *Will appear soon...*
+
+
+##RMIServer
+
+**Running client **
+
+    `java -Djava.security.policy=[ABSOULUTE_PATH]/DebtManager/RMIServer/src/main/java/AllPermissions.policy` client.MessageBoxClient [hostname] (localhost or michalglapa.student.tcs.uj.edu.pl)
+
+**Running server LOCALLY **
+    
+    `java -Djava.security.policy=[ABSOLUTE_PATH]/DebtManager/RMIServer/src/main/java/AllPermissions.policy -Djava.rmi.server.codebase=file://[ABS_PATH]/DebtManager/RMIServer/
+    server.RMIServer`
+
+**Running server on my users **
+
+    `make runServer`
+
+    Repeat if does not work
+
