@@ -1,3 +1,5 @@
+package tcs.javaproject;
+
 public class Payment {
    private String who, what;
    private int id;

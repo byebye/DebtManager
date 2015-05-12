@@ -1,3 +1,5 @@
+package tcs.javaproject;
+
 import java.math.BigDecimal;
 import java.rmi.Remote;
 import java.util.List;
@@ -6,7 +8,7 @@ public interface DBHandler extends Remote {
    boolean validateUserPassword(Email email, String passwordHash);
    User getUserByEmail(String email);
    User getUserById(int userId);
-   boolean createUser(User user);
+   boolean createUser(User user, String passwordHash);
    boolean createBudget(Budget budget);
    boolean deleteBudget(Budget budget);
    List<Budget> getAllBudgets(int userId);
