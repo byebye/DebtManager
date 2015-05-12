@@ -11,12 +11,11 @@ import java.io.IOException;
  * Created by Vsmasster on 12.05.15.
  */
 public class SettleWindow extends Stage {
-
-   public SettleWindow(Budget budget) throws IOException {
+   public SettleWindow(Budget budget,BudgetController parentController) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SettleWindow.fxml"));
       Parent root = fxmlLoader.load();
       SettleController controller = fxmlLoader.<SettleController>getController();
-      controller.setBudget(budget);
+      controller.setBudget(budget,parentController);
       controller.fillAllTables();
       setTitle("DeptManager - settle " + budget.getName());
       setScene(new Scene(root));

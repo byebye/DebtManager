@@ -67,7 +67,7 @@ public class BudgetController implements Initializable {
       //Buttons
       btnSettle.setOnAction(event -> {
          try {
-            SettleWindow settleWindow = new SettleWindow(budget);
+            SettleWindow settleWindow = new SettleWindow(budget,this);
             settleWindow.show();
          }
          catch(Exception e){

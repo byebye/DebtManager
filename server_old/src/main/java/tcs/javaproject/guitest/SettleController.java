@@ -29,9 +29,11 @@ public class SettleController implements Initializable {
    private final DatabaseController dbController = LoginWindow.dbController;
    private final ObservableList<BankTransfer> content = FXCollections.observableArrayList();
    private Budget budget;
+   private BudgetController parentController;
 
-   public void setBudget(Budget budget){
+   public void setBudget(Budget budget,BudgetController parentController){
       this.budget = budget;
+      this.parentController = parentController;
    }
 
    public void fillAllTables(){
@@ -47,6 +49,7 @@ public class SettleController implements Initializable {
       colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
       btnConfirm.setOnAction(event -> {
          dbController.settleUnaccountedPayments(budget.getId());
+         parentController.fillAllTables();
          Stage stage = (Stage) btnConfirm.getScene().getWindow();
          stage.close();
       });
