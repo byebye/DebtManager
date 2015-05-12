@@ -12,12 +12,12 @@ public class BankTransfer {
       this.amount = amount;
    }
 
-   public User getWho() {
-      return who;
+   public String getWho() {
+      return who.getName();
    }
 
-   public User getWhom() {
-      return whom;
+   public String getWhom() {
+      return whom.getName();
    }
 
    public BigDecimal getAmount() {
