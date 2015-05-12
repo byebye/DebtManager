@@ -22,7 +22,7 @@ public class SettleController implements Initializable {
    @FXML
    TableView tabSettleView;
    @FXML
-   TableColumn colWho,colWhom,colAmount;
+   TableColumn colWho,colWhom,colAmount,colAccNumber;
    @FXML
    Button btnSettle, btnDeciline;
 
@@ -44,7 +44,7 @@ public class SettleController implements Initializable {
       colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
-
+      colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
       btnSettle.setOnAction(event -> {
          dbController.settleUnaccountedPayments(budget.getId());
          Stage stage = (Stage) btnSettle.getScene().getWindow();
