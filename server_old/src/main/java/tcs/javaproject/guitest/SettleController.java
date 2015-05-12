@@ -1,13 +1,14 @@
 package tcs.javaproject.guitest;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import tcs.javaproject.database.DatabaseController;
 
 import java.math.BigDecimal;
@@ -22,6 +23,8 @@ public class SettleController implements Initializable {
    TableView tabSettleView;
    @FXML
    TableColumn colWho,colWhom,colAmount;
+   @FXML
+   Button btnSettle, btnDeciline;
 
    private final DatabaseController dbController = LoginWindow.dbController;
    private final ObservableList<BankTransfer> content = FXCollections.observableArrayList();
@@ -41,5 +44,16 @@ public class SettleController implements Initializable {
       colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
+
+      btnSettle.setOnAction(event -> {
+         dbController.settleUnaccountedPayments(budget.getId());
+         Stage stage = (Stage) btnSettle.getScene().getWindow();
+         stage.close();
+      });
+
+      btnDeciline.setOnAction(event->{
+         Stage stage = (Stage)btnDeciline.getScene().getWindow();
+         stage.close();
+      });
    }
 }
