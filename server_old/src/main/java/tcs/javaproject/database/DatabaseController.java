@@ -1,5 +1,6 @@
 package tcs.javaproject.database;
 
+import javafx.collections.ObservableList;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import tcs.javaproject.database.tables.Budgets;
@@ -143,8 +144,8 @@ public class DatabaseController {
                        .where(Budgets.BUDGETS.OWNER_ID.equal(userId)
                        .or(Budgets.BUDGETS.ID
                                    .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                                                .from(UserBudget.USER_BUDGET)
-                                                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
+                                         .from(UserBudget.USER_BUDGET)
+                                         .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
                        ))
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
@@ -194,14 +195,14 @@ public class DatabaseController {
 
    public void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
       dbContext.insertInto(Payments.PAYMENTS,
-                           Payments.PAYMENTS.BUDGET_ID,
-                           Payments.PAYMENTS.AMOUNT,
-                           Payments.PAYMENTS.USER_ID,
-                           Payments.PAYMENTS.DESCRIPTION)
+            Payments.PAYMENTS.BUDGET_ID,
+            Payments.PAYMENTS.AMOUNT,
+            Payments.PAYMENTS.USER_ID,
+            Payments.PAYMENTS.DESCRIPTION)
                .values(budget.getId(),
-                       amount,
-                       userId,
-                       what)
+                     amount,
+                     userId,
+                     what)
                .execute();
    }
 
@@ -248,16 +249,21 @@ public class DatabaseController {
       for(Payment payment : unaccountedPayments) {
          final int whoId = payment.getUserId();
          final int whomId = whoId;
-         neededTransfers.add(new BankTransfer(getUserById(whoId), getUserById(whomId), new BigDecimal(0)));
+         neededTransfers.add(new BankTransfer(getUserById(whoId), getUserById(whomId), new BigDecimal(0),payment.getId()));
       }
       return neededTransfers;
    }
 
-   public void settleUnaccountedPayments(int budgetId) {
-      dbContext.update(Payments.PAYMENTS)
-               .set(Payments.PAYMENTS.ACCOUNTED, true)
-               .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
-               .execute();
+   public void settleUnaccountedPayments(int budgetId,ObservableList<BankTransfer> bankTransfers) {
+      for(BankTransfer b: bankTransfers) {
+         if(b.getAccept()) {
+            dbContext.update(Payments.PAYMENTS)
+                  .set(Payments.PAYMENTS.ACCOUNTED, true)
+                  .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
+                  .and(Payments.PAYMENTS.ID.equal(b.getPaymentId()))
+                  .execute();
+         }
+      }
    }
 
    public void removeParticipant(int budgetId, int userId) {
