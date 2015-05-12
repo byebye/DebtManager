@@ -18,7 +18,7 @@ hs_err_pid*
 ##### IntelliJ files #####
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion
 
-*.iml
+#*.iml
 
 ## Directory-based project format:
 .idea/
