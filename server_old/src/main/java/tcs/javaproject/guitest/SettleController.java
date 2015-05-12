@@ -55,7 +55,7 @@ public class SettleController implements Initializable {
       colConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
       btnConfirm.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId(),content);
+         dbController.settleUnaccountedPayments(budget.getId(), content);
          parentController.fillAllTables();
          content.clear();
          Stage stage = (Stage) btnConfirm.getScene().getWindow();
@@ -63,6 +63,9 @@ public class SettleController implements Initializable {
       });
 
       btnDecline.setOnAction(event->{
+         for(BankTransfer b: content)
+            b.setAccept(true);
+         
          content.clear();
          Stage stage = (Stage)btnDecline.getScene().getWindow();
          stage.close();
