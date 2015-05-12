@@ -7,6 +7,7 @@ import tcs.javaproject.database.tables.Payments;
 import tcs.javaproject.database.tables.UserBudget;
 import tcs.javaproject.database.tables.Users;
 import tcs.javaproject.database.tables.records.BudgetsRecord;
+import tcs.javaproject.guitest.BankTransfer;
 import tcs.javaproject.guitest.Budget;
 import tcs.javaproject.guitest.Payment;
 import tcs.javaproject.guitest.User;
@@ -141,9 +142,9 @@ public class DatabaseController {
                        .from(Budgets.BUDGETS)
                        .where(Budgets.BUDGETS.OWNER_ID.equal(userId)
                        .or(Budgets.BUDGETS.ID
-                       .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                                    .from(UserBudget.USER_BUDGET)
-                                    .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
+                                   .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
+                                                .from(UserBudget.USER_BUDGET)
+                                                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
                        ))
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
@@ -239,6 +240,17 @@ public class DatabaseController {
          payments.add(new Payment(budgetId, userId, userName, description, amount, paymentId));
       }
       return payments;
+   }
+
+   public List<BankTransfer> calculateBankTransfers(int budgetId) {
+      List<Payment> unaccountedPayments = getAllPayments(budgetId, false);
+      List<BankTransfer> neededTransfers = new ArrayList<>();
+      for(Payment payment : unaccountedPayments) {
+         final int whoId = payment.getUserId();
+         final int whomId = whoId;
+         neededTransfers.add(new BankTransfer(getUserById(whoId), getUserById(whomId), new BigDecimal(0)));
+      }
+      return neededTransfers;
    }
 
    public void settleUnaccountedPayments(int budgetId) {

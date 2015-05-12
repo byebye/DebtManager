@@ -17,6 +17,11 @@ package tcs.javaproject.database;
 public class Tables {
 
 	/**
+	 * The table debtmanager.bank_transfers
+	 */
+	public static final tcs.javaproject.database.tables.BankTransfers BANK_TRANSFERS = tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS;
+
+	/**
 	 * The table debtmanager.budgets
 	 */
 	public static final tcs.javaproject.database.tables.Budgets BUDGETS = tcs.javaproject.database.tables.Budgets.BUDGETS;

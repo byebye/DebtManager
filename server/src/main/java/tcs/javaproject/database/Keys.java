@@ -21,13 +21,16 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.Identity<tcs.javaproject.database.tables.records.BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = Identities0.IDENTITY_BANK_TRANSFERS;
 	public static final org.jooq.Identity<tcs.javaproject.database.tables.records.BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = Identities0.IDENTITY_BUDGETS;
+	public static final org.jooq.Identity<tcs.javaproject.database.tables.records.PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = Identities0.IDENTITY_PAYMENTS;
 	public static final org.jooq.Identity<tcs.javaproject.database.tables.records.UsersRecord, java.lang.Integer> IDENTITY_USERS = Identities0.IDENTITY_USERS;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BankTransfersRecord> BANK_TRANSFERS_PKEY = UniqueKeys0.BANK_TRANSFERS_PKEY;
 	public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BudgetsRecord> BUDGETS_PKEY = UniqueKeys0.BUDGETS_PKEY;
 	public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.PaymentsRecord> PAYMENTS_PKEY = UniqueKeys0.PAYMENTS_PKEY;
 	public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
@@ -37,6 +40,9 @@ public class Keys {
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.BudgetsRecord> BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY;
+	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY;
+	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY;
 	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, tcs.javaproject.database.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = ForeignKeys0.BUDGETS__BUDGETS_OWNER_ID_FKEY;
 	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.PaymentsRecord, tcs.javaproject.database.tables.records.BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_BUDGET_ID_FKEY;
 	public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.PaymentsRecord, tcs.javaproject.database.tables.records.UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_USER_ID_FKEY;
@@ -48,11 +54,14 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends org.jooq.impl.AbstractKeys {
+		public static org.jooq.Identity<tcs.javaproject.database.tables.records.BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = createIdentity(tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS.ID);
 		public static org.jooq.Identity<tcs.javaproject.database.tables.records.BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = createIdentity(tcs.javaproject.database.tables.Budgets.BUDGETS, tcs.javaproject.database.tables.Budgets.BUDGETS.ID);
+		public static org.jooq.Identity<tcs.javaproject.database.tables.records.PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = createIdentity(tcs.javaproject.database.tables.Payments.PAYMENTS, tcs.javaproject.database.tables.Payments.PAYMENTS.ID);
 		public static org.jooq.Identity<tcs.javaproject.database.tables.records.UsersRecord, java.lang.Integer> IDENTITY_USERS = createIdentity(tcs.javaproject.database.tables.Users.USERS, tcs.javaproject.database.tables.Users.USERS.ID);
 	}
 
 	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
+		public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BankTransfersRecord> BANK_TRANSFERS_PKEY = createUniqueKey(tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS.ID);
 		public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.BudgetsRecord> BUDGETS_PKEY = createUniqueKey(tcs.javaproject.database.tables.Budgets.BUDGETS, tcs.javaproject.database.tables.Budgets.BUDGETS.ID);
 		public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.PaymentsRecord> PAYMENTS_PKEY = createUniqueKey(tcs.javaproject.database.tables.Payments.PAYMENTS, tcs.javaproject.database.tables.Payments.PAYMENTS.ID);
 		public static final org.jooq.UniqueKey<tcs.javaproject.database.tables.records.UsersRecord> USERS_PKEY = createUniqueKey(tcs.javaproject.database.tables.Users.USERS, tcs.javaproject.database.tables.Users.USERS.ID);
@@ -60,6 +69,9 @@ public class Keys {
 	}
 
 	private static class ForeignKeys0 extends org.jooq.impl.AbstractKeys {
+		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.BudgetsRecord> BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.BUDGETS_PKEY, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS.BUDGET_ID);
+		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS.WHO);
+		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BankTransfersRecord, tcs.javaproject.database.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS, tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS.WHOM);
 		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.BudgetsRecord, tcs.javaproject.database.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.Budgets.BUDGETS, tcs.javaproject.database.tables.Budgets.BUDGETS.OWNER_ID);
 		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.PaymentsRecord, tcs.javaproject.database.tables.records.BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.BUDGETS_PKEY, tcs.javaproject.database.tables.Payments.PAYMENTS, tcs.javaproject.database.tables.Payments.PAYMENTS.BUDGET_ID);
 		public static final org.jooq.ForeignKey<tcs.javaproject.database.tables.records.PaymentsRecord, tcs.javaproject.database.tables.records.UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = createForeignKey(tcs.javaproject.database.Keys.USERS_PKEY, tcs.javaproject.database.tables.Payments.PAYMENTS, tcs.javaproject.database.tables.Payments.PAYMENTS.USER_ID);

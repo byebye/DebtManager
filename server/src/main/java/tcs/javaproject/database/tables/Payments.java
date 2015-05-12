@@ -16,7 +16,7 @@ package tcs.javaproject.database.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Payments extends org.jooq.impl.TableImpl<tcs.javaproject.database.tables.records.PaymentsRecord> {
 
-	private static final long serialVersionUID = 1593319603;
+	private static final long serialVersionUID = -707645226;
 
 	/**
 	 * The reference instance of <code>debtmanager.payments</code>
@@ -34,7 +34,7 @@ public class Payments extends org.jooq.impl.TableImpl<tcs.javaproject.database.t
 	/**
 	 * The column <code>debtmanager.payments.id</code>.
 	 */
-	public final org.jooq.TableField<tcs.javaproject.database.tables.records.PaymentsRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final org.jooq.TableField<tcs.javaproject.database.tables.records.PaymentsRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>debtmanager.payments.term</code>.
@@ -86,6 +86,14 @@ public class Payments extends org.jooq.impl.TableImpl<tcs.javaproject.database.t
 
 	private Payments(java.lang.String alias, org.jooq.Table<tcs.javaproject.database.tables.records.PaymentsRecord> aliased, org.jooq.Field<?>[] parameters) {
 		super(alias, tcs.javaproject.database.Debtmanager.DEBTMANAGER, aliased, parameters, "");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public org.jooq.Identity<tcs.javaproject.database.tables.records.PaymentsRecord, java.lang.Integer> getIdentity() {
+		return tcs.javaproject.database.Keys.IDENTITY_PAYMENTS;
 	}
 
 	/**

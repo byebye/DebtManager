@@ -34,3 +34,12 @@ CREATE TABLE payments(
    amount        numeric(6,2) NOT NULL,
    accounted     boolean DEFAULT FALSE
 );
+
+CREATE TABLE bank_transfers (
+   id            serial PRIMARY KEY,
+   budget_id     int REFERENCES budgets(id) NOT NULL,
+   who           int REFERENCES users(id) NOT NULL,
+   whom          int REFERENCES users(id) NOT NULL,
+   amount        numeric(6, 2) NOT NULL,
+   paid          boolean DEFAULT FALSE
+);

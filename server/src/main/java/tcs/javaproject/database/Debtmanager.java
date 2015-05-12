@@ -16,7 +16,7 @@ package tcs.javaproject.database;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Debtmanager extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = 1542137780;
+	private static final long serialVersionUID = 1160184381;
 
 	/**
 	 * The reference instance of <code>debtmanager</code>
@@ -39,7 +39,9 @@ public class Debtmanager extends org.jooq.impl.SchemaImpl {
 
 	private final java.util.List<org.jooq.Sequence<?>> getSequences0() {
 		return java.util.Arrays.<org.jooq.Sequence<?>>asList(
+			tcs.javaproject.database.Sequences.BANK_TRANSFERS_ID_SEQ,
 			tcs.javaproject.database.Sequences.BUDGETS_ID_SEQ,
+			tcs.javaproject.database.Sequences.PAYMENTS_ID_SEQ,
 			tcs.javaproject.database.Sequences.USERS_ID_SEQ);
 	}
 
@@ -52,6 +54,7 @@ public class Debtmanager extends org.jooq.impl.SchemaImpl {
 
 	private final java.util.List<org.jooq.Table<?>> getTables0() {
 		return java.util.Arrays.<org.jooq.Table<?>>asList(
+			tcs.javaproject.database.tables.BankTransfers.BANK_TRANSFERS,
 			tcs.javaproject.database.tables.Budgets.BUDGETS,
 			tcs.javaproject.database.tables.Payments.PAYMENTS,
 			tcs.javaproject.database.tables.UserBudget.USER_BUDGET,
