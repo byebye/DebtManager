@@ -24,7 +24,7 @@ public class SettleController implements Initializable {
    @FXML
    TableColumn colWho,colWhom,colAmount,colAccNumber;
    @FXML
-   Button btnSettle, btnDeciline;
+   Button btnConfirm, btnDecline;
 
    private final DatabaseController dbController = LoginWindow.dbController;
    private final ObservableList<BankTransfer> content = FXCollections.observableArrayList();
@@ -45,14 +45,14 @@ public class SettleController implements Initializable {
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
       colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
-      btnSettle.setOnAction(event -> {
+      btnConfirm.setOnAction(event -> {
          dbController.settleUnaccountedPayments(budget.getId());
-         Stage stage = (Stage) btnSettle.getScene().getWindow();
+         Stage stage = (Stage) btnConfirm.getScene().getWindow();
          stage.close();
       });
 
-      btnDeciline.setOnAction(event->{
-         Stage stage = (Stage)btnDeciline.getScene().getWindow();
+      btnDecline.setOnAction(event->{
+         Stage stage = (Stage)btnDecline.getScene().getWindow();
          stage.close();
       });
    }
