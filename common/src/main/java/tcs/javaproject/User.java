@@ -1,3 +1,5 @@
+package tcs.javaproject;
+
 import java.util.Objects;
 
 public class User {
@@ -6,7 +8,6 @@ public class User {
     private String name;
     private String email;
     private String bankAccount;
-
     private double spentMoney = 0;
 
     public User(int id, String name, String email, String bankAccount) {
@@ -14,17 +15,6 @@ public class User {
         this.name = name;
         this.email = email;
         this.bankAccount = bankAccount;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                       "id=" + id +
-                       ", name='" + name + '\'' +
-                       ", email='" + email + '\'' +
-                       ", bankAccount='" + bankAccount + '\'' +
-                       ", spentMoney=" + spentMoney +
-                       '}';
     }
 
     public int getId() {
@@ -66,6 +56,17 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "tcs.javaproject.User{" +
+                       "id=" + id +
+                       ", name='" + name + '\'' +
+                       ", email='" + email + '\'' +
+                       ", bankAccount='" + bankAccount + '\'' +
+                       ", spentMoney=" + spentMoney +
+                       '}';
     }
 
 }

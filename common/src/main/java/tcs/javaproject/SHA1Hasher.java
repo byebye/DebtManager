@@ -1,4 +1,4 @@
-/**
+package tcs.javaproject; /**
  * Created by glapul on 10.05.15.
  */
 import java.security.MessageDigest;

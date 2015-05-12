@@ -1,3 +1,5 @@
+package tcs.javaproject;
+
 import java.math.BigDecimal;
 
 public class BankTransfer {
