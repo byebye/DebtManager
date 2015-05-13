@@ -46,9 +46,10 @@
          <children>
             <TableView fx:id="tabUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
               <columns>
-                <TableColumn fx:id="colUnaccWhat" prefWidth="284.0" text="What" />
-                  <TableColumn fx:id="colUnaccWho" prefWidth="138.0" text="Who" />
-                <TableColumn fx:id="colUnaccAmount" prefWidth="77.0" text="Amount" />
+                <TableColumn fx:id="colUnaccWhat" prefWidth="241.0" text="What" />
+                  <TableColumn fx:id="colUnaccWho" prefWidth="118.0" text="Who" />
+                <TableColumn fx:id="colUnaccAmount" prefWidth="101.0" text="Amount" />
+                  <TableColumn fx:id="colConfirm" prefWidth="53.0" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">

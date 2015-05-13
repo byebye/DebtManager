@@ -11,14 +11,12 @@ import java.math.BigDecimal;
 public class BankTransfer {
    private User who, whom;
    private BigDecimal amount;
-   private Boolean accept;
    private int paymentId;
 
    public BankTransfer(User who, User whom, BigDecimal amount,int paymentId) {
       this.who = who;
       this.whom = whom;
       this.amount = amount;
-      this.accept = true;
       this.paymentId = paymentId;
    }
 
@@ -36,12 +34,6 @@ public class BankTransfer {
 
    public String getBankAccount() {
       return whom.getBankAccount();
-   }
-
-   public Boolean getAccept(){return accept;}
-
-   public void setAccept(Boolean c){
-      accept = c;
    }
 
    public int getPaymentId(){

@@ -27,7 +27,7 @@ public class SettleController implements Initializable {
    @FXML
    TableView<BankTransfer> tabSettleView;
    @FXML
-   TableColumn colWho,colWhom,colAmount,colAccNumber,colConfirm;
+   TableColumn colWho,colWhom,colAmount,colAccNumber;
    @FXML
    Button btnConfirm, btnDecline;
 
@@ -35,14 +35,16 @@ public class SettleController implements Initializable {
    private static ObservableList<BankTransfer> content = FXCollections.observableArrayList();
    private Budget budget;
    private BudgetController parentController;
+   private ObservableList<Payment> paymentsToSettle;
 
-   public void setBudget(Budget budget,BudgetController parentController){
+   public void setBudget(Budget budget,ObservableList<Payment> paymentsToSettle,BudgetController parentController){
       this.budget = budget;
+      this.paymentsToSettle = paymentsToSettle;
       this.parentController = parentController;
    }
 
    public void fillAllTables(){
-      content.addAll(dbController.calculateBankTransfers(budget.getId()));
+      content.addAll(dbController.calculateBankTransfers(budget.getId(),paymentsToSettle));
       tabSettleView.setItems(content);
    }
 
@@ -52,10 +54,9 @@ public class SettleController implements Initializable {
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
       colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
-      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
       btnConfirm.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId(), content);
+         dbController.settleUnaccountedPayments(budget.getId(),content);
          parentController.fillAllTables();
          content.clear();
          Stage stage = (Stage) btnConfirm.getScene().getWindow();
@@ -63,42 +64,9 @@ public class SettleController implements Initializable {
       });
 
       btnDecline.setOnAction(event->{
-         for(BankTransfer b: content)
-            b.setAccept(true);
-         
          content.clear();
          Stage stage = (Stage)btnDecline.getScene().getWindow();
          stage.close();
       });
    }
-
-   public static class CheckBoxTableCell extends TableCell<BankTransfer, Boolean> {
-
-      private final CheckBox checkBox;
-
-      public CheckBoxTableCell() {
-         this.checkBox = new CheckBox();
-         this.checkBox.setAlignment(Pos.CENTER);
-
-         setAlignment(Pos.CENTER);
-         setGraphic(checkBox);
-         checkBox.setSelected(true);
-         checkBox.setOnAction(event->{
-            BankTransfer bankTransfer = (BankTransfer)CheckBoxTableCell.this.getTableRow().getItem();
-            bankTransfer.setAccept(!bankTransfer.getAccept());
-         });
-      }
-
-
-
-      @Override public void updateItem(Boolean item, boolean empty) {
-         super.updateItem(item, empty);
-
-         if(empty)
-            setGraphic(null);
-
-      }
-
-   }
-
 }

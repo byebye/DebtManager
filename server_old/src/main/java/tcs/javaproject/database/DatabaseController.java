@@ -243,33 +243,30 @@ public class DatabaseController {
       return payments;
    }
 
-   public List<BankTransfer> calculateBankTransfers(int budgetId) {
-      List<Payment> unaccountedPayments = getAllPayments(budgetId, false);
+   public List<BankTransfer> calculateBankTransfers(int budgetId, ObservableList<Payment> unaccountedPayments) {
       List<BankTransfer> neededTransfers = new ArrayList<>();
       for(Payment payment : unaccountedPayments) {
          final int whoId = payment.getUserId();
          final int whomId = whoId;
          neededTransfers.add(new BankTransfer(getUserById(whoId), getUserById(whomId), new BigDecimal(0),payment.getId()));
       }
+
       return neededTransfers;
    }
 
    public void settleUnaccountedPayments(int budgetId,ObservableList<BankTransfer> bankTransfers) {
       for(BankTransfer b: bankTransfers) {
-         if(b.getAccept()) {
-            dbContext.update(Payments.PAYMENTS)
-                  .set(Payments.PAYMENTS.ACCOUNTED, true)
-                  .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
-                  .and(Payments.PAYMENTS.ID.equal(b.getPaymentId()))
-                  .execute();
-         }
+         dbContext.update(Payments.PAYMENTS)
+               .set(Payments.PAYMENTS.ACCOUNTED, true)
+               .where(Payments.PAYMENTS.ID.equal(b.getPaymentId()))
+               .execute();
       }
    }
 
    public void removeParticipant(int budgetId, int userId) {
       dbContext.delete(UserBudget.USER_BUDGET)
                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
-               .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
+                     .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
                .execute();
    }
 

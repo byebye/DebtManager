@@ -5,17 +5,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tcs.javaproject.database.DatabaseController;
+import javafx.scene.control.cell.CheckBoxTableCell;
+
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -38,7 +39,7 @@ public class BudgetController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount;
+   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount, colConfirm;
    @FXML
    private TableColumn colAccWhat, colAccWho, colAccAmount;
    @FXML
@@ -65,9 +66,14 @@ public class BudgetController implements Initializable {
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
-      btnSettle.setOnAction(event -> {
+      btnSettle.setOnAction(event -> { //TODO: clear paymentsToSettle after closing window with "Close" button
          try {
-            SettleWindow settleWindow = new SettleWindow(budget,this);
+            ObservableList<Payment> paymentsToSettle = FXCollections.observableArrayList();
+            for(Payment p: unaccountedPayments)
+               if(p.getAccept())
+                  paymentsToSettle.add(p);
+
+            SettleWindow settleWindow = new SettleWindow(budget,paymentsToSettle,this);
             settleWindow.show();
          }
          catch(Exception e){
@@ -121,6 +127,7 @@ public class BudgetController implements Initializable {
       colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
       colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
          public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
             User participant = p.getValue();
@@ -234,5 +241,34 @@ public class BudgetController implements Initializable {
    private void refreshBalanceCells() {
       tabParticipants.getColumns().get(2).setVisible(false);
       tabParticipants.getColumns().get(2).setVisible(true);
+   }
+
+   public static class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+
+      private final CheckBox checkBox;
+
+      public CheckBoxTableCell() {
+         this.checkBox = new CheckBox();
+         this.checkBox.setAlignment(Pos.CENTER);
+
+         setAlignment(Pos.CENTER);
+         setGraphic(checkBox);
+         checkBox.setSelected(true);
+         checkBox.setOnAction(event->{
+            Payment payment = (Payment)CheckBoxTableCell.this.getTableRow().getItem();
+            payment.setAccept(!payment.getAccept());
+         });
+      }
+
+
+
+      @Override public void updateItem(Boolean item, boolean empty) {
+         super.updateItem(item, empty);
+
+         if(empty)
+            setGraphic(null);
+
+      }
+
    }
 }
