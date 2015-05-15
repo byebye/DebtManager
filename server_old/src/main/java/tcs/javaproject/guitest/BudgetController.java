@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tcs.javaproject.database.DatabaseController;
@@ -66,15 +67,17 @@ public class BudgetController implements Initializable {
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
-      btnSettle.setOnAction(event -> { //TODO: clear paymentsToSettle after closing window with "Close" button
+      btnSettle.setOnAction(event -> {
          try {
             ObservableList<Payment> paymentsToSettle = FXCollections.observableArrayList();
-            for(Payment p: unaccountedPayments)
-               if(p.getAccept())
+            for (Payment p : unaccountedPayments)
+               if (p.getAccept())
                   paymentsToSettle.add(p);
 
-            SettleWindow settleWindow = new SettleWindow(budget,paymentsToSettle,this);
-            settleWindow.show();
+            SettleWindow settleWindow = new SettleWindow(budget, paymentsToSettle, this);
+            settleWindow.initModality(Modality.APPLICATION_MODAL);
+            settleWindow.showAndWait();
+            paymentsToSettle.clear();
          }
          catch(Exception e){
                e.printStackTrace();
@@ -134,7 +137,7 @@ public class BudgetController implements Initializable {
             double balance = 0;
             if (participant != null)
                 balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
-            return new ReadOnlyObjectWrapper<BigDecimal>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
+            return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
          }
       });
       tabParticipants.setItems(participantsList);
@@ -177,23 +180,6 @@ public class BudgetController implements Initializable {
          });
          return row;
       });
-      //      TODO discuss if accounted payments should be editable
-      //      tabAccPayments.setRowFactory(param -> {
-      //         TableRow<Payment> row = new TableRow<>();
-      //         row.setOnMouseClicked(mouseEvent -> {
-      //            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-      //               Payment payment = row.getItem();
-      //               try {
-      //                  PaymentWindow paymentWindow = new PaymentWindow(payment);
-      //                  paymentWindow.show();
-      //               }
-      //               catch (IOException e) {
-      //                  e.printStackTrace();
-      //               }
-      //            }
-      //         });
-      //         return row;
-      //      });
    }
 
    void addParticipants(List<User> users) {
@@ -245,29 +231,25 @@ public class BudgetController implements Initializable {
 
    public static class CheckBoxTableCell extends TableCell<Payment, Boolean> {
 
-      private final CheckBox checkBox;
+      private final CheckBox checkBox = new CheckBox();
 
       public CheckBoxTableCell() {
-         this.checkBox = new CheckBox();
-         this.checkBox.setAlignment(Pos.CENTER);
-
          setAlignment(Pos.CENTER);
-         setGraphic(checkBox);
-         checkBox.setSelected(true);
-         checkBox.setOnAction(event->{
+         checkBox.setOnAction(event -> {
             Payment payment = (Payment)CheckBoxTableCell.this.getTableRow().getItem();
             payment.setAccept(!payment.getAccept());
          });
       }
 
-
-
-      @Override public void updateItem(Boolean item, boolean empty) {
+      @Override
+      public void updateItem(Boolean item, boolean empty) {
          super.updateItem(item, empty);
-
-         if(empty)
+         if(!empty) {
+            checkBox.setSelected(true);
+            setGraphic(checkBox);
+         }
+         else
             setGraphic(null);
-
       }
 
    }

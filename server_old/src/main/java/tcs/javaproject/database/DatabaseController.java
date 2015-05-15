@@ -144,8 +144,8 @@ public class DatabaseController {
                        .where(Budgets.BUDGETS.OWNER_ID.equal(userId)
                        .or(Budgets.BUDGETS.ID
                                    .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                                         .from(UserBudget.USER_BUDGET)
-                                         .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
+                                                .from(UserBudget.USER_BUDGET)
+                                                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
                        ))
                        .fetch();
       List<Budget> budgets = new ArrayList<>();
@@ -195,14 +195,14 @@ public class DatabaseController {
 
    public void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
       dbContext.insertInto(Payments.PAYMENTS,
-            Payments.PAYMENTS.BUDGET_ID,
-            Payments.PAYMENTS.AMOUNT,
-            Payments.PAYMENTS.USER_ID,
-            Payments.PAYMENTS.DESCRIPTION)
+                           Payments.PAYMENTS.BUDGET_ID,
+                           Payments.PAYMENTS.AMOUNT,
+                           Payments.PAYMENTS.USER_ID,
+                           Payments.PAYMENTS.DESCRIPTION)
                .values(budget.getId(),
-                     amount,
-                     userId,
-                     what)
+                       amount,
+                       userId,
+                       what)
                .execute();
    }
 
@@ -254,13 +254,12 @@ public class DatabaseController {
       return neededTransfers;
    }
 
-   public void settleUnaccountedPayments(int budgetId,ObservableList<BankTransfer> bankTransfers) {
-      for(BankTransfer b: bankTransfers) {
+   public void settleUnaccountedPayments(int budgetId, ObservableList<Payment> payments) {
+      for (Payment payment : payments)
          dbContext.update(Payments.PAYMENTS)
-               .set(Payments.PAYMENTS.ACCOUNTED, true)
-               .where(Payments.PAYMENTS.ID.equal(b.getPaymentId()))
-               .execute();
-      }
+                  .set(Payments.PAYMENTS.ACCOUNTED, true)
+                  .where(Payments.PAYMENTS.ID.equal(payment.getId()))
+                  .execute();
    }
 
    public void removeParticipant(int budgetId, int userId) {
