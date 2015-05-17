@@ -13,8 +13,6 @@
    <artifactId>server</artifactId>
    <version>0.0.1</version>
 
-   <
-
    <dependencies>
       <!-- classes from 'common' module -->
       <dependency>
