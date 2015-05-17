@@ -1,0 +1,1 @@
+ $JAVA_1_8_HOME/bin/java -cp server/target/server-0.0.1.jar:common/target/common-0.0.1.jar:/home/z1111813/.m2/repository/org/jooq/jooq/3.5.4/jooq-3.5.4.jar:/home/z1111813/.m2/repository/  server.Server
