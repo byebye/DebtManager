@@ -1,6 +1,7 @@
 package server;
 
 import common.*;
+import javafx.collections.ObservableList;
 import server.jooq.tables.Budgets;
 import server.jooq.tables.Payments;
 import server.jooq.tables.Users;
