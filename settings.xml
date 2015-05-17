@@ -1,0 +1,16 @@
+<settings>
+
+    <profiles>
+
+        <profile>
+            <id>compiler</id>
+            <properties>
+                <JAVA_1_8_HOME>/afs/matinf.uj.edu.pl/common/tcs/kozik/jdk1.8.0/</JAVA_1_8_HOME>
+            </properties>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>compiler</activeProfile>
+    </activeProfiles>
+</settings>
