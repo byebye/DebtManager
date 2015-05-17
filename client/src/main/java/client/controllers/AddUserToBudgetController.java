@@ -2,6 +2,8 @@ package client.controllers;
 
 import client.windows.BudgetWindow;
 import client.windows.LoginWindow;
+import common.DBHandler;
+import common.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,7 +14,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import common.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,7 +33,7 @@ public class AddUserToBudgetController implements Initializable {
    @FXML
    public TableColumn colParticipantEmail;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
 
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private BudgetWindow parent;

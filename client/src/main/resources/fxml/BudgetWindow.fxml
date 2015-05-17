@@ -9,14 +9,14 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.BudgetController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.BudgetController">
    <children>
-      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="common.Budget Name">
+      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget Name">
          <font>
             <Font size="28.0" />
          </font>
       </Text>
-      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="common.Budget description" />
+      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget description" />
       <Button fx:id="btnBudgetDelete" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Delete">
          <font>
             <Font size="16.0" />
@@ -46,9 +46,10 @@
          <children>
             <TableView fx:id="tabUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
               <columns>
-                <TableColumn fx:id="colUnaccWhat" prefWidth="284.0" text="What" />
-                  <TableColumn fx:id="colUnaccWho" prefWidth="138.0" text="Who" />
-                <TableColumn fx:id="colUnaccAmount" prefWidth="77.0" text="Amount" />
+                <TableColumn fx:id="colUnaccWhat" prefWidth="241.0" text="What" />
+                  <TableColumn fx:id="colUnaccWho" prefWidth="118.0" text="Who" />
+                <TableColumn fx:id="colUnaccAmount" prefWidth="101.0" text="Amount" />
+                  <TableColumn fx:id="colConfirm" prefWidth="53.0" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">

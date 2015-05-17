@@ -1,7 +1,10 @@
 
 package client.controllers;
 
+import common.Budget;
 import client.windows.LoginWindow;
+import common.DBHandler;
+import common.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,8 +15,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import common.Budget;
-import common.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,7 +32,7 @@ public class BudgetCreatorController implements Initializable {
    @FXML
    public TableColumn colParticipantName, colParticipantEmail, colAction;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
    private int userId;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 

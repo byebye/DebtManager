@@ -1,6 +1,10 @@
 package client.controllers;
 
 import client.windows.*;
+import common.Budget;
+import common.DBHandler;
+import common.Payment;
+import common.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -8,17 +12,14 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import common.Budget;
-import common.Payment;
-import common.User;
+
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -41,17 +42,17 @@ public class BudgetController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount;
+   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount, colConfirm;
    @FXML
    private TableColumn colAccWhat, colAccWho, colAccAmount;
    @FXML
    private TableColumn colUserName, colUserMail, colUserBalance;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
 
    private Budget budget;
    private int userId;
-   private double spentMoneySum = 0;
+   double spentMoneySum = 0;
    private BudgetWindow budgetWindow;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
@@ -70,8 +71,15 @@ public class BudgetController implements Initializable {
       //Buttons
       btnSettle.setOnAction(event -> {
          try {
-            SettleWindow settleWindow = new SettleWindow(budget);
-            settleWindow.show();
+            ObservableList<Payment> paymentsToSettle = FXCollections.observableArrayList();
+            for (Payment p : unaccountedPayments)
+               if (p.getAccept())
+                  paymentsToSettle.add(p);
+
+            SettleWindow settleWindow = new SettleWindow(budget, paymentsToSettle, this);
+            settleWindow.initModality(Modality.APPLICATION_MODAL);
+            settleWindow.showAndWait();
+            paymentsToSettle.clear();
          }
          catch(Exception e){
                e.printStackTrace();
@@ -124,13 +132,14 @@ public class BudgetController implements Initializable {
       colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
       colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
          public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
             User participant = p.getValue();
             double balance = 0;
             if (participant != null)
                 balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
-            return new ReadOnlyObjectWrapper<BigDecimal>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
+            return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
          }
       });
       tabParticipants.setItems(participantsList);
@@ -173,26 +182,9 @@ public class BudgetController implements Initializable {
          });
          return row;
       });
-      //      TODO discuss if accounted payments should be editable
-      //      tabAccPayments.setRowFactory(param -> {
-      //         TableRow<Payment> row = new TableRow<>();
-      //         row.setOnMouseClicked(mouseEvent -> {
-      //            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-      //               Payment payment = row.getItem();
-      //               try {
-      //                  PaymentWindow paymentWindow = new PaymentWindow(payment);
-      //                  paymentWindow.show();
-      //               }
-      //               catch (IOException e) {
-      //                  e.printStackTrace();
-      //               }
-      //            }
-      //         });
-      //         return row;
-      //      });
    }
 
-   public void addParticipants(List<User> users) {
+   void addParticipants(List<User> users) {
       users.removeAll(participantsList);
       participantsList.addAll(users);
       dbController.addBudgetParticipants(budget.getId(), users);
@@ -204,17 +196,17 @@ public class BudgetController implements Initializable {
       fillTabAccPayments();
    }
 
-   private void fillTabParticipants() {
+   void fillTabParticipants() {
       participantsList.clear();
       participantsList.addAll(dbController.getBudgetParticipants(budget.getId()));
    }
 
-   private void fillTabAccPayments() {
+   void fillTabAccPayments() {
       accountedPayments.clear();
       accountedPayments.addAll(dbController.getAllPayments(budget.getId(), true));
    }
 
-   private void fillTabUnaccPayments() {
+   void fillTabUnaccPayments() {
       unaccountedPayments.clear();
       unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
       spentMoneySum = 0;
@@ -237,5 +229,30 @@ public class BudgetController implements Initializable {
    private void refreshBalanceCells() {
       tabParticipants.getColumns().get(2).setVisible(false);
       tabParticipants.getColumns().get(2).setVisible(true);
+   }
+
+   public static class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+
+      private final CheckBox checkBox = new CheckBox();
+
+      public CheckBoxTableCell() {
+         setAlignment(Pos.CENTER);
+         checkBox.setOnAction(event -> {
+            Payment payment = (Payment)CheckBoxTableCell.this.getTableRow().getItem();
+            payment.setAccept(!payment.getAccept());
+         });
+      }
+
+      @Override
+      public void updateItem(Boolean item, boolean empty) {
+         super.updateItem(item, empty);
+         if(!empty) {
+            checkBox.setSelected(true);
+            setGraphic(checkBox);
+         }
+         else
+            setGraphic(null);
+      }
+
    }
 }

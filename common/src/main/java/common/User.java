@@ -1,14 +1,14 @@
 package common;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class User implements Serializable{
+public class User {
 
     private int id;
     private String name;
     private String email;
     private String bankAccount;
+
     private double spentMoney = 0;
 
     public User(int id, String name, String email, String bankAccount) {
@@ -16,6 +16,17 @@ public class User implements Serializable{
         this.name = name;
         this.email = email;
         this.bankAccount = bankAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                       "id=" + id +
+                       ", name='" + name + '\'' +
+                       ", email='" + email + '\'' +
+                       ", bankAccount='" + bankAccount + '\'' +
+                       ", spentMoney=" + spentMoney +
+                       '}';
     }
 
     public int getId() {
@@ -57,17 +68,6 @@ public class User implements Serializable{
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                       "id=" + id +
-                       ", name='" + name + '\'' +
-                       ", email='" + email + '\'' +
-                       ", bankAccount='" + bankAccount + '\'' +
-                       ", spentMoney=" + spentMoney +
-                       '}';
     }
 
 }

@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="282.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.AddUserToBudgetController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="282.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.AddUserToBudgetController">
    <children>
       <Text layoutX="25.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add participant">
          <font>
@@ -21,7 +21,7 @@
       <TableView fx:id="tabParticipants" layoutX="14.0" layoutY="105.0" prefHeight="132.0" prefWidth="273.0">
         <columns>
           <TableColumn fx:id="colParticipantName" prefWidth="135.0" text="Name" />
-          <TableColumn fx:id="colParticipantEmail" minWidth="4.0" prefWidth="132.0" text="common.Email" />
+          <TableColumn fx:id="colParticipantEmail" minWidth="4.0" prefWidth="132.0" text="Email" />
         </columns>
       </TableView>
    </children>

@@ -1,13 +1,14 @@
 package client.controllers;
 
+import common.Budget;
 import client.windows.LoginWindow;
+import common.DBHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import common.Budget;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -21,7 +22,7 @@ public class AddPaymentController implements Initializable {
    @FXML
    private TextArea txtAreaWhat;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
 
    private Budget budget;
    private int userId;

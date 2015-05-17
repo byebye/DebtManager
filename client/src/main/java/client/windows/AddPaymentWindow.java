@@ -1,11 +1,11 @@
 package client.windows;
 
 import client.controllers.AddPaymentController;
+import common.Budget;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import common.Budget;
 
 import java.io.IOException;
 

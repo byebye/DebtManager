@@ -1,12 +1,13 @@
 package client.controllers;
 
 import client.windows.LoginWindow;
+import common.DBHandler;
+import common.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import common.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,7 +27,7 @@ public class ParticipantDetailsController implements Initializable {
 
    private User participant;
    private int budgetId;
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
 
    public void setParticipant(User participant) {
       this.participant = participant;

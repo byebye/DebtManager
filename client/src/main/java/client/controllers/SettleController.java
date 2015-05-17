@@ -1,17 +1,17 @@
 package client.controllers;
 
+import common.BankTransfer;
+import common.Budget;
 import client.windows.LoginWindow;
+import common.DBHandler;
+import common.Payment;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import common.BankTransfer;
-import common.Budget;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -22,23 +22,27 @@ import java.util.ResourceBundle;
  */
 public class SettleController implements Initializable {
    @FXML
-   TableView tabSettleView;
+   TableView<BankTransfer> tabSettleView;
    @FXML
    TableColumn colWho,colWhom,colAmount,colAccNumber;
    @FXML
-   Button btnSettle, btnDeciline;
+   Button btnConfirm, btnDecline;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
-   private final ObservableList<BankTransfer> content = FXCollections.observableArrayList();
+   private static DBHandler dbController = LoginWindow.dbController;
+   private static ObservableList<BankTransfer> bankTransfers = FXCollections.observableArrayList();
    private Budget budget;
+   private BudgetController parentController;
+   private ObservableList<Payment> paymentsToSettle;
 
-   public void setBudget(Budget budget){
+   public void setBudget(Budget budget,ObservableList<Payment> paymentsToSettle,BudgetController parentController){
       this.budget = budget;
+      this.paymentsToSettle = paymentsToSettle;
+      this.parentController = parentController;
    }
 
    public void fillAllTables(){
-      content.addAll(dbController.calculateBankTransfers(budget.getId()));
-      tabSettleView.setItems(content);
+      bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsToSettle));
+      tabSettleView.setItems(bankTransfers);
    }
 
    @Override
@@ -47,14 +51,18 @@ public class SettleController implements Initializable {
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
       colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
-      btnSettle.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId());
-         Stage stage = (Stage) btnSettle.getScene().getWindow();
+
+      btnConfirm.setOnAction(event -> {
+         dbController.settleUnaccountedPayments(budget.getId(), paymentsToSettle);
+         parentController.fillAllTables();
+         bankTransfers.clear();
+         Stage stage = (Stage) btnConfirm.getScene().getWindow();
          stage.close();
       });
 
-      btnDeciline.setOnAction(event->{
-         Stage stage = (Stage)btnDeciline.getScene().getWindow();
+      btnDecline.setOnAction(event->{
+         bankTransfers.clear();
+         Stage stage = (Stage) btnDecline.getScene().getWindow();
          stage.close();
       });
    }

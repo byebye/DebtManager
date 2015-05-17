@@ -1,16 +1,17 @@
 package common;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BankTransfer implements Serializable{
+public class BankTransfer {
    private User who, whom;
    private BigDecimal amount;
+   private int paymentId;
 
-   public BankTransfer(User who, User whom, BigDecimal amount) {
+   public BankTransfer(User who, User whom, BigDecimal amount,int paymentId) {
       this.who = who;
       this.whom = whom;
       this.amount = amount;
+      this.paymentId = paymentId;
    }
 
    public String getWho() {
@@ -27,5 +28,9 @@ public class BankTransfer implements Serializable{
 
    public String getBankAccount() {
       return whom.getBankAccount();
+   }
+
+   public int getPaymentId(){
+      return paymentId;
    }
 }

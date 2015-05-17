@@ -1,10 +1,10 @@
 package client.windows;
 
+import client.controllers.BudgetsListController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import client.controllers.BudgetsListController;
 
 import java.io.IOException;
 

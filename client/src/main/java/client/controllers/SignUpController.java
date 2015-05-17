@@ -1,5 +1,7 @@
-package tcs.javaproject.guitest;
+package client.controllers;
 
+import client.windows.BudgetsListWindow;
+import client.windows.LoginWindow;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;

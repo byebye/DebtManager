@@ -1,13 +1,13 @@
 package client.windows;
 
 import client.controllers.PaymentController;
+import common.Payment;
+import common.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import common.Payment;
-import common.User;
 
 import java.io.IOException;
 

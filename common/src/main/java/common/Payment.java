@@ -1,12 +1,11 @@
 package common;
 
-import java.io.Serializable;
-
-public class Payment implements Serializable {
+public class Payment {
    private String who, what;
    private int id;
    private int userId;
    private int budgetId;
+   private boolean accept = true;
    private double amount;
 
    public Payment(int budgetId, int userId, String who, String what, double amount, int id) {
@@ -40,5 +39,13 @@ public class Payment implements Serializable {
 
    public int getId() {
       return id;
+   }
+
+   public boolean getAccept(){
+      return accept;
+   }
+
+   public void setAccept(boolean c){
+      accept = c;
    }
 }

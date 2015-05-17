@@ -1,9 +1,11 @@
 package client.controllers;
 
-import common.*;
-import client.windows.LoginWindow;
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
+import client.windows.LoginWindow;
+import common.Budget;
+import common.DBHandler;
+import common.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -40,7 +42,7 @@ public class BudgetsListController implements Initializable {
    @FXML
    private Text txtUserName;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
    private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
    private int userId;
 

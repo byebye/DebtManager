@@ -1,6 +1,9 @@
 package client.controllers;
 
 import client.windows.LoginWindow;
+import common.DBHandler;
+import common.Payment;
+import common.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,8 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import common.Payment;
-import common.User;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -28,7 +29,7 @@ public class PaymentController implements Initializable {
    @FXML
    private Button btnUpdate, btnRemove;
 
-   private final DatabaseController dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginWindow.dbController;
 
    public void setPayment(Payment payment) {
       this.payment = payment;

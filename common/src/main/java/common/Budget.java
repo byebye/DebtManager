@@ -1,10 +1,9 @@
 package common;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class Budget implements Serializable{
+public class Budget {
    private final int id;
    private final User owner;
    private final String name;

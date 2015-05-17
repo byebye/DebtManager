@@ -1,5 +1,7 @@
 package common;
 
+import javafx.collections.ObservableList;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.rmi.Remote;
@@ -10,7 +12,7 @@ public interface DBHandler extends Remote {
    User getUserByEmail(String email);
    User getUserById(int userId);
    boolean createUser(User user, String passwordHash);
-   public boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash);
+   boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash);
    boolean createBudget(Budget budget);
    boolean deleteBudget(Budget budget);
    List<Budget> getAllBudgets(int userId);
@@ -20,7 +22,7 @@ public interface DBHandler extends Remote {
    void updatePayment(int paymentId, int userId, BigDecimal amount, String what);
    void deletePayment(int paymentId);
    List<Payment> getAllPayments(int budgetId, boolean accounted);
-   List<BankTransfer> calculateBankTransfers(int budgetId);
-   void settleUnaccountedPayments(int budgetId);
+   List<BankTransfer> calculateBankTransfers(int budgetId,ObservableList<Payment> paymentsToSettle);
+   void settleUnaccountedPayments(int budgetId,ObservableList<Payment> paymentsToSettle);
    void removeParticipant(int budgetId, int userId);
 }
