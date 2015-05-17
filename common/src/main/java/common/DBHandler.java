@@ -1,6 +1,7 @@
 package common;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.rmi.Remote;
 import java.util.List;
 
@@ -9,6 +10,7 @@ public interface DBHandler extends Remote {
    User getUserByEmail(String email);
    User getUserById(int userId);
    boolean createUser(User user, String passwordHash);
+   public boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash);
    boolean createBudget(Budget budget);
    boolean deleteBudget(Budget budget);
    List<Budget> getAllBudgets(int userId);

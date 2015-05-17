@@ -3,6 +3,7 @@ package client.controllers;
 import common.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 public class DatabaseController implements DBHandler {
@@ -19,6 +20,11 @@ public class DatabaseController implements DBHandler {
    }
 
    public boolean createUser(User user, String passwordHash) {
+      return false;
+   }
+
+   @Override
+   public boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) {
       return false;
    }
 

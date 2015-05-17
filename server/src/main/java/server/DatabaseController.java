@@ -16,6 +16,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
    private final String dbUser = "debtmanager";
@@ -23,6 +26,9 @@ public class DatabaseController implements DBHandler {
    private final String url = "jdbc:postgresql://localhost/debtmanager";
    private Connection connection;
    private DSLContext dbContext;
+
+   //lock that will be used to synchronize ALL operations on the database
+   public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
    public DatabaseController() {
       connect();

@@ -1,6 +1,7 @@
 package common;
 
 import javax.naming.AuthenticationException;
+import java.math.BigInteger;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -27,6 +28,6 @@ public interface AccessProvider extends Remote {
      * @throws RemoteException
      * @throws AuthenticationException if a user with such email OR IBAN already exists
      */
-    public void signUp(Email mail, String passwordHash, IBAN iban)
+    public void signUp(Email mail, String name, BigInteger bankAccount, String passwordHash)
             throws RemoteException, AuthenticationException;
 }
