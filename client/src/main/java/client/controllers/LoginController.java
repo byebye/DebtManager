@@ -18,6 +18,8 @@ import javafx.scene.text.Text;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.AccessException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
@@ -33,6 +35,9 @@ public class LoginController implements Initializable{
    Text txtReturnMessage;
 
    public static DBHandler dbController;
+   public static AccessProvider ac;
+
+   private static final String host = "michalglapa.student.tcs.uj.edu.pl";
 
    public void setDbController(DBHandler dbhandler){
       dbController = dbhandler;
@@ -40,6 +45,19 @@ public class LoginController implements Initializable{
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
+
+      //RMI connection
+      if(System.getSecurityManager() == null)
+         System.setSecurityManager(new SecurityManager());
+
+      try {
+         ac = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         System.exit(1);
+      }
+
       //Buttons
       btnSignUp.setOnAction(event -> {
          try {
@@ -55,7 +73,6 @@ public class LoginController implements Initializable{
             System.setSecurityManager(new SecurityManager());
 
          try {
-            AccessProvider ac = (AccessProvider) LocateRegistry.getRegistry("michalglapa.student.tcs.uj.edu.pl").lookup("AccessProvider");
             String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
 
             dbController = (DBHandler) ac.getDBHandler(new Email(txtFieldEmail.getText()), passwordHash);

@@ -57,7 +57,7 @@ public class SignUpController implements Initializable {
             BigInteger bankAccountValue = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
             String passwordValue = txtFieldPassword.getText();
             try{
-               AccessProvider ac = (AccessProvider) LocateRegistry.getRegistry("michalglapa.student.tcs.uj.edu.pl").lookup("AccessProvider");
+               AccessProvider ac = LoginController.ac;
                ac.signUp(new Email(emailValue),usernameValue,bankAccountValue, SHA1Hasher.hash(passwordValue));
                LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),SHA1Hasher.hash(passwordValue));
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
