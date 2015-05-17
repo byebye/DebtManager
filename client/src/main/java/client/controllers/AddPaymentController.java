@@ -22,7 +22,7 @@ public class AddPaymentController implements Initializable {
    @FXML
    private TextArea txtAreaWhat;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
 
    private Budget budget;
    private int userId;

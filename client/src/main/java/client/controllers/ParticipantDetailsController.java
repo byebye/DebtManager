@@ -27,7 +27,7 @@ public class ParticipantDetailsController implements Initializable {
 
    private User participant;
    private int budgetId;
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
 
    public void setParticipant(User participant) {
       this.participant = participant;

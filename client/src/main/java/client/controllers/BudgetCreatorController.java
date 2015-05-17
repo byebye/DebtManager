@@ -32,7 +32,7 @@ public class BudgetCreatorController implements Initializable {
    @FXML
    public TableColumn colParticipantName, colParticipantEmail, colAction;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
    private int userId;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 

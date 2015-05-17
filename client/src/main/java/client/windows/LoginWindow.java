@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import common.DBHandler;
 
 public class LoginWindow extends Application {
-   public static DBHandler dbController;
 
    @Override
    public void start(Stage primaryStage) throws Exception {

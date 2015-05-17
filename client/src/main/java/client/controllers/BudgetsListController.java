@@ -42,7 +42,7 @@ public class BudgetsListController implements Initializable {
    @FXML
    private Text txtUserName;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
    private int userId;
 

@@ -28,7 +28,7 @@ public class SettleController implements Initializable {
    @FXML
    Button btnConfirm, btnDecline;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
    private static ObservableList<BankTransfer> bankTransfers = FXCollections.observableArrayList();
    private Budget budget;
    private BudgetController parentController;

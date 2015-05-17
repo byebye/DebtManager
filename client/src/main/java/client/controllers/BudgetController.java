@@ -48,7 +48,7 @@ public class BudgetController implements Initializable {
    @FXML
    private TableColumn colUserName, colUserMail, colUserBalance;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
 
    private Budget budget;
    private int userId;

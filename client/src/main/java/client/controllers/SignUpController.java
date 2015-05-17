@@ -2,6 +2,10 @@ package client.controllers;
 
 import client.windows.BudgetsListWindow;
 import client.windows.LoginWindow;
+import common.AccessProvider;
+import common.DBHandler;
+import common.Email;
+import common.SHA1Hasher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -15,6 +19,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
 /**
@@ -51,7 +56,10 @@ public class SignUpController implements Initializable {
             String usernameValue = txtFieldUsername.getText();
             BigInteger bankAccountValue = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
             String passwordValue = txtFieldPassword.getText();
-            if (LoginWindow.dbController.createUser(emailValue, usernameValue, bankAccountValue, passwordValue)) {
+            try{
+               AccessProvider ac = (AccessProvider) LocateRegistry.getRegistry("michalglapa.student.tcs.uj.edu.pl").lookup("AccessProvider");
+               ac.signUp(new Email(emailValue),usernameValue,bankAccountValue, SHA1Hasher.hash(passwordValue));
+               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),SHA1Hasher.hash(passwordValue));
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");
@@ -62,12 +70,13 @@ public class SignUpController implements Initializable {
                      budgetsListWindow.show();
                      Stage stage = (Stage) btnCancel.getScene().getWindow();
                      stage.close();
-                  } catch (IOException e) {
+                  }catch (Exception e){
                      e.printStackTrace();
                   }
                });
                userCreatedAlert.showAndWait();
-            } else {
+
+            } catch(Exception e){
                txtResult.setText("User couldn't be created!");
             }
          }

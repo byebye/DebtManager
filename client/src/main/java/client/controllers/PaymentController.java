@@ -29,7 +29,7 @@ public class PaymentController implements Initializable {
    @FXML
    private Button btnUpdate, btnRemove;
 
-   private static DBHandler dbController = LoginWindow.dbController;
+   private static DBHandler dbController = LoginController.dbController;
 
    public void setPayment(Payment payment) {
       this.payment = payment;
