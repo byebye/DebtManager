@@ -28,7 +28,7 @@
             <TableView fx:id="tabParticipants" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="134.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
                 <TableColumn fx:id="colParticipantName" minWidth="150.0" prefWidth="170.0" text="Name" />
-                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="65.0" prefWidth="130.0" text="tcs.javaproject.Email" />
+                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="65.0" prefWidth="130.0" text="common.Email" />
                   <TableColumn fx:id="colAction" maxWidth="30.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
               </columns>
                <columnResizePolicy>
@@ -43,7 +43,7 @@
             </HBox>
          </children>
       </GridPane>
-      <Text layoutX="76.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="tcs.javaproject.Budget Creator">
+      <Text layoutX="76.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="common.Budget Creator">
          <font>
             <Font size="31.0" />
          </font>

@@ -11,12 +11,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tcs.javaproject.guitest.BudgetController">
    <children>
-      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="tcs.javaproject.Budget Name">
+      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="common.Budget Name">
          <font>
             <Font size="28.0" />
          </font>
       </Text>
-      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="tcs.javaproject.Budget description" />
+      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="common.Budget description" />
       <Button fx:id="btnBudgetDelete" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Delete">
          <font>
             <Font size="16.0" />
