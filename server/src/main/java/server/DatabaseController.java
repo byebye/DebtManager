@@ -22,9 +22,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
-   private final String dbUser = "debtmanager";
-   private final String dbPassword = "debtmanager";
-   private final String url = "jdbc:postgresql://localhost/debtmanager";
+   private final String dbUser = "z1111813";
+   private final String dbPassword = "rU7i7xWoLVdh";
+   private final String url = "jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
    private Connection connection;
    private DSLContext dbContext;
 
