@@ -12,20 +12,6 @@ Application which solves the problem of whip-rounds: who owes whom and how much.
    * PostgreSQL JDBC Driver (only server)
    * common (internal library used by both client and server)
 
-**Adding 'common' package to Maven repository:**
-
-In order to execute client or server you need to build a 'common' library and add it to your local maven repository.
-To do this, get into *common* folder and type:
-```
-$ mvn package
-$ mvn install:install-file 
-    -Dfile='target/common-0.0.1.jar' 
-    -DgroupId=tcs.javaproject 
-    -DartifactId=common 
-    -Dversion=0.0.1 
-    -Dpackaging=jar
-```
-Now maven should be able to resolve all required dependencies (other libraries will be downloaded from online repositories).
 
 **Opening in IDE:**
 
