@@ -29,6 +29,8 @@
                         <compilerVersion>1.8</compilerVersion>
                     </configuration>
                 </plugin>
+
+
             </plugins>
         </pluginManagement>
     </build>
