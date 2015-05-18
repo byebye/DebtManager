@@ -77,6 +77,7 @@ public class SignUpController implements Initializable {
                userCreatedAlert.showAndWait();
 
             } catch(Exception e){
+               e.printStackTrace();
                txtResult.setText("User couldn't be created!");
             }
          }
