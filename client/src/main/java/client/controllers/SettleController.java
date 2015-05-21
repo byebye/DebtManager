@@ -16,11 +16,10 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-/**
- * Created by Vsmasster on 12.05.15.
- */
 public class SettleController implements Initializable {
    @FXML
    TableView<BankTransfer> tabSettleView;
@@ -35,7 +34,7 @@ public class SettleController implements Initializable {
    private BudgetController parentController;
    private ObservableList<Payment> paymentsToSettle;
 
-   public void setBudget(Budget budget,ObservableList<Payment> paymentsToSettle,BudgetController parentController){
+   public void setBudget(Budget budget, ObservableList<Payment> paymentsToSettle, BudgetController parentController){
       this.budget = budget;
       this.paymentsToSettle = paymentsToSettle;
       this.parentController = parentController;
@@ -43,7 +42,8 @@ public class SettleController implements Initializable {
 
    public void fillAllTables(){
       try {
-         bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsToSettle));
+         List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
+         bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsSerializable));
       }
       catch (RemoteException e) {
          e.printStackTrace();
@@ -60,7 +60,8 @@ public class SettleController implements Initializable {
 
       btnConfirm.setOnAction(event -> {
          try {
-            dbController.settleUnaccountedPayments(budget.getId(), paymentsToSettle);
+            List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
+            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable);
             parentController.fillAllTables();
             bankTransfers.clear();
             Stage stage = (Stage) btnConfirm.getScene().getWindow();

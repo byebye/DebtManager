@@ -22,9 +22,6 @@ import java.net.URL;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
-/**
- * Created by Vsmasster on 16.05.15.
- */
 public class SignUpController implements Initializable {
    @FXML
    TextField txtFieldEmail, txtFieldUsername, txtFieldBankAccount;
@@ -58,8 +55,8 @@ public class SignUpController implements Initializable {
             String passwordValue = txtFieldPassword.getText();
             try{
                AccessProvider ac = LoginController.ac;
-               ac.signUp(new Email(emailValue),usernameValue,bankAccountValue, SHA1Hasher.hash(passwordValue));
-               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),SHA1Hasher.hash(passwordValue));
+               ac.signUp(new Email(emailValue), usernameValue, bankAccountValue, SHA1Hasher.hash(passwordValue));
+               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue), SHA1Hasher.hash(passwordValue));
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");

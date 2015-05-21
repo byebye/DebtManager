@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -194,7 +195,8 @@ public class BudgetController implements Initializable {
       users.removeAll(participantsList);
       participantsList.addAll(users);
       try {
-         dbController.addBudgetParticipants(budget.getId(), users);
+         List<User> usersSerializable = new ArrayList<>(users);
+         dbController.addBudgetParticipants(budget.getId(), usersSerializable);
       }
       catch (RemoteException e) {
          e.printStackTrace();

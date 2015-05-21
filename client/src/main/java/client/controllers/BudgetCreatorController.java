@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class BudgetCreatorController implements Initializable {
@@ -74,7 +76,8 @@ public class BudgetCreatorController implements Initializable {
          try {
             final User owner = dbController.getUserById(userId);
             participantsList.add(owner);
-            Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsList);
+            List<User> participantsSerializable = new ArrayList<User>(participantsList);
+            Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsSerializable);
             if (dbController.createBudget(budget))
                close();
             else {
