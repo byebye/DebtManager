@@ -1,14 +1,13 @@
 package server;
 
 import common.*;
-import javafx.collections.ObservableList;
-import server.jooq.tables.Budgets;
-import server.jooq.tables.Payments;
-import server.jooq.tables.Users;
-import server.jooq.tables.records.BudgetsRecord;
 import org.jooq.*;
 import org.jooq.impl.DSL;
+import server.jooq.tables.Budgets;
+import server.jooq.tables.Payments;
 import server.jooq.tables.UserBudget;
+import server.jooq.tables.Users;
+import server.jooq.tables.records.BudgetsRecord;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,8 +16,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {

@@ -61,14 +61,14 @@ public class SettleController implements Initializable {
       btnConfirm.setOnAction(event -> {
          try {
             dbController.settleUnaccountedPayments(budget.getId(), paymentsToSettle);
+            parentController.fillAllTables();
+            bankTransfers.clear();
+            Stage stage = (Stage) btnConfirm.getScene().getWindow();
+            stage.close();
          }
          catch (RemoteException e) {
             e.printStackTrace();
          }
-         parentController.fillAllTables();
-         bankTransfers.clear();
-         Stage stage = (Stage) btnConfirm.getScene().getWindow();
-         stage.close();
       });
 
       btnDecline.setOnAction(event->{
