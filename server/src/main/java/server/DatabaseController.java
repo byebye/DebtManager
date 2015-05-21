@@ -22,9 +22,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
-   private final String dbUser = "z1111813";
-   private final String dbPassword = "rU7i7xWoLVdh";
-   private final String url = "jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
+   private String dbUser = "debtmanager"; // "z1111813";
+   private String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
+   private String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
    private Connection connection;
    private DSLContext dbContext;
 
@@ -32,6 +32,13 @@ public class DatabaseController implements DBHandler {
    public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
    public DatabaseController() {
+      connect();
+   }
+
+   public DatabaseController(String dbUser, String dbPassword, String url) {
+      this.dbUser = dbUser;
+      this.dbPassword = dbPassword;
+      this.url = url;
       connect();
    }
 
@@ -260,7 +267,7 @@ public class DatabaseController implements DBHandler {
       return payments;
    }
 
-    public List<BankTransfer> calculateBankTransfers(int budgetId, ObservableList<Payment> unaccountedPayments) {
+    public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
         List<BankTransfer> neededTransfers = new ArrayList<>();
         for(Payment payment : unaccountedPayments) {
             final int whoId = payment.getUserId();
@@ -270,7 +277,7 @@ public class DatabaseController implements DBHandler {
         return neededTransfers;
     }
 
-    public void settleUnaccountedPayments(int budgetId, ObservableList<Payment> payments) {
+    public void settleUnaccountedPayments(int budgetId, List<Payment> payments) {
         for (Payment payment : payments)
             dbContext.update(Payments.PAYMENTS)
                     .set(Payments.PAYMENTS.ACCOUNTED, true)

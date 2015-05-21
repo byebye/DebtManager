@@ -37,7 +37,7 @@ public class LoginController implements Initializable{
    public static DBHandler dbController;
    public static AccessProvider ac;
 
-   private static final String host = "michalglapa.student.tcs.uj.edu.pl";
+   private static final String host = "localhost"; //"michalglapa.student.tcs.uj.edu.pl";
 
    public void setDbController(DBHandler dbhandler){
       dbController = dbhandler;
@@ -63,7 +63,7 @@ public class LoginController implements Initializable{
          try {
             SignUpWindow signUpWindow = new SignUpWindow();
             signUpWindow.show();
-         }catch(Exception e){
+         } catch(Exception e){
             e.printStackTrace();
          }
       });
@@ -84,6 +84,7 @@ public class LoginController implements Initializable{
             txtReturnMessage.setText("");
          }
          catch(Exception e){
+            e.printStackTrace();
             txtReturnMessage.setText("Wrong login/password combination");
          }
       });

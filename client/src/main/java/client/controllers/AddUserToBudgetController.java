@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class AddUserToBudgetController implements Initializable {
@@ -49,7 +50,13 @@ public class AddUserToBudgetController implements Initializable {
       tabParticipants.setItems(participantsList);
 
       btnAddUser.setOnAction(event -> {
-         User user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+         User user = null;
+         try {
+            user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
          if (user == null) {
             txtFieldEnterEmail.setText("User not found!");
          }

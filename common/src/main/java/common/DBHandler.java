@@ -1,28 +1,27 @@
 package common;
 
-import javafx.collections.ObservableList;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
 public interface DBHandler extends Remote {
-   boolean validateUserPassword(Email email, String passwordHash);
-   User getUserByEmail(String email);
-   User getUserById(int userId);
-   boolean createUser(User user, String passwordHash);
-   boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash);
-   boolean createBudget(Budget budget);
-   boolean deleteBudget(Budget budget);
-   List<Budget> getAllBudgets(int userId);
-   List<User> getBudgetParticipants(int budgetId);
-   void addBudgetParticipants(int budgetId, List<User> users);
-   void addPayment(Budget budget, int userId, BigDecimal amount, String what);
-   void updatePayment(int paymentId, int userId, BigDecimal amount, String what);
-   void deletePayment(int paymentId);
-   List<Payment> getAllPayments(int budgetId, boolean accounted);
-   List<BankTransfer> calculateBankTransfers(int budgetId,ObservableList<Payment> paymentsToSettle);
-   void settleUnaccountedPayments(int budgetId,ObservableList<Payment> paymentsToSettle);
-   void removeParticipant(int budgetId, int userId);
+   boolean validateUserPassword(Email email, String passwordHash) throws RemoteException;
+   User getUserByEmail(String email) throws RemoteException;
+   User getUserById(int userId) throws RemoteException;
+   boolean createUser(User user, String passwordHash) throws RemoteException;
+   boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) throws RemoteException;
+   boolean createBudget(Budget budget) throws RemoteException;
+   boolean deleteBudget(Budget budget) throws RemoteException;
+   List<Budget> getAllBudgets(int userId) throws RemoteException;
+   List<User> getBudgetParticipants(int budgetId) throws RemoteException;
+   void addBudgetParticipants(int budgetId, List<User> users) throws RemoteException;
+   void addPayment(Budget budget, int userId, BigDecimal amount, String what) throws RemoteException;
+   void updatePayment(int paymentId, int userId, BigDecimal amount, String what) throws RemoteException;
+   void deletePayment(int paymentId) throws RemoteException;
+   List<Payment> getAllPayments(int budgetId, boolean accounted) throws RemoteException;
+   List<BankTransfer> calculateBankTransfers(int budgetId,List<Payment> paymentsToSettle) throws RemoteException;
+   void settleUnaccountedPayments(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
+   void removeParticipant(int budgetId, int userId) throws RemoteException;
 }

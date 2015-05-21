@@ -1,8 +1,9 @@
 package common;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BankTransfer {
+public class BankTransfer implements Serializable {
    private User who, whom;
    private BigDecimal amount;
    private int paymentId;

@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class AddPaymentController implements Initializable {
@@ -39,7 +40,12 @@ public class AddPaymentController implements Initializable {
    public void initialize(URL location, ResourceBundle resources) {
       btnAddPayment.setOnAction(event -> {
          BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
-         dbController.addPayment(budget, userId, amount, txtAreaWhat.getText());
+         try {
+            dbController.addPayment(budget, userId, amount, txtAreaWhat.getText());
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
          Stage stage = (Stage) btnAddPayment.getScene().getWindow();
          stage.close();
       });

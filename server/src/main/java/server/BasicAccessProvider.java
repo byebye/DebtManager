@@ -12,7 +12,6 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class BasicAccessProvider implements AccessProvider {
 
-
    //This should have been done differently! Storing dbController is unsafe
    DatabaseController dbController;
 

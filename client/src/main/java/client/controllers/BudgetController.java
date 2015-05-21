@@ -24,6 +24,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -118,7 +119,12 @@ public class BudgetController implements Initializable {
 
       btnBudgetDelete.setOnAction(event -> {
          // TODO window to confirm deletion;
-         dbController.deleteBudget(budget);
+         try {
+            dbController.deleteBudget(budget);
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
          Stage stage = (Stage) btnBudgetDelete.getScene().getWindow();
          stage.close();
       });
@@ -187,7 +193,12 @@ public class BudgetController implements Initializable {
    void addParticipants(List<User> users) {
       users.removeAll(participantsList);
       participantsList.addAll(users);
-      dbController.addBudgetParticipants(budget.getId(), users);
+      try {
+         dbController.addBudgetParticipants(budget.getId(), users);
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
    }
 
    public void fillAllTables() {
@@ -198,17 +209,32 @@ public class BudgetController implements Initializable {
 
    void fillTabParticipants() {
       participantsList.clear();
-      participantsList.addAll(dbController.getBudgetParticipants(budget.getId()));
+      try {
+         participantsList.addAll(dbController.getBudgetParticipants(budget.getId()));
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
    }
 
    void fillTabAccPayments() {
       accountedPayments.clear();
-      accountedPayments.addAll(dbController.getAllPayments(budget.getId(), true));
+      try {
+         accountedPayments.addAll(dbController.getAllPayments(budget.getId(), true));
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
    }
 
    void fillTabUnaccPayments() {
       unaccountedPayments.clear();
-      unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
+      try {
+         unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
       spentMoneySum = 0;
       for (User participant : participantsList)
          participant.setSpentMoney(0);

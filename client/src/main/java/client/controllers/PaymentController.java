@@ -14,6 +14,7 @@ import javafx.util.Callback;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class PaymentController implements Initializable {
@@ -65,17 +66,27 @@ public class PaymentController implements Initializable {
          BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
          User chosenUser = (User) boxChooseWho.getSelectionModel().getSelectedItem();
          final int who = chosenUser.getId();
-         dbController.updatePayment(payment.getId(), who,
-                                    amount,
-                                    txtAreaWhat.getText());
-         Stage stage = (Stage) btnUpdate.getScene().getWindow();
-         stage.close();
+         try {
+            dbController.updatePayment(payment.getId(), who,
+                                       amount,
+                                       txtAreaWhat.getText());
+            Stage stage = (Stage) btnUpdate.getScene().getWindow();
+            stage.close();
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
       });
 
       btnRemove.setOnAction(event -> {
-         dbController.deletePayment(payment.getId());
-         Stage stage = (Stage) btnRemove.getScene().getWindow();
-         stage.close();
+         try {
+            dbController.deletePayment(payment.getId());
+            Stage stage = (Stage) btnRemove.getScene().getWindow();
+            stage.close();
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
       });
    }
 }

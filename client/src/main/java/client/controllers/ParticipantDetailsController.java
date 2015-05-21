@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class ParticipantDetailsController implements Initializable {
@@ -47,9 +48,14 @@ public class ParticipantDetailsController implements Initializable {
          stage.close();
       });
       btnRemoveParticipant.setOnAction(event -> {
-         dbController.removeParticipant(budgetId, participant.getId());
-         Stage stage = (Stage) btnRemoveParticipant.getScene().getWindow();
-         stage.close();
+         try {
+            dbController.removeParticipant(budgetId, participant.getId());
+            Stage stage = (Stage) btnRemoveParticipant.getScene().getWindow();
+            stage.close();
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
       });
    }
 }

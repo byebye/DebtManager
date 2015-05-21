@@ -2,7 +2,6 @@
 package client.controllers;
 
 import common.Budget;
-import client.windows.LoginWindow;
 import common.DBHandler;
 import common.User;
 import javafx.collections.FXCollections;
@@ -17,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class BudgetCreatorController implements Initializable {
@@ -48,7 +48,13 @@ public class BudgetCreatorController implements Initializable {
       tabParticipants.setItems(participantsList);
 
       btnAddUser.setOnAction(event -> {
-         User user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+         User user = null;
+         try {
+            user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
          if (user == null) {
             txtFieldEnterEmail.setText("User not found!");
          }
@@ -65,13 +71,18 @@ public class BudgetCreatorController implements Initializable {
       });
 
       btnCreateBudget.setOnAction(event -> {
-         final User owner = dbController.getUserById(userId);
-         participantsList.add(owner);
-         Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsList);
-         if (dbController.createBudget(budget))
-            close();
-         else {
-            // Error
+         try {
+            final User owner = dbController.getUserById(userId);
+            participantsList.add(owner);
+            Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsList);
+            if (dbController.createBudget(budget))
+               close();
+            else {
+               // Error
+            }
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
          }
       });
 

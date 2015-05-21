@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 /**
@@ -41,7 +42,12 @@ public class SettleController implements Initializable {
    }
 
    public void fillAllTables(){
-      bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsToSettle));
+      try {
+         bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsToSettle));
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
       tabSettleView.setItems(bankTransfers);
    }
 
@@ -53,7 +59,12 @@ public class SettleController implements Initializable {
       colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
 
       btnConfirm.setOnAction(event -> {
-         dbController.settleUnaccountedPayments(budget.getId(), paymentsToSettle);
+         try {
+            dbController.settleUnaccountedPayments(budget.getId(), paymentsToSettle);
+         }
+         catch (RemoteException e) {
+            e.printStackTrace();
+         }
          parentController.fillAllTables();
          bankTransfers.clear();
          Stage stage = (Stage) btnConfirm.getScene().getWindow();

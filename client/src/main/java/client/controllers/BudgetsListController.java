@@ -23,6 +23,7 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class BudgetsListController implements Initializable {
@@ -47,14 +48,24 @@ public class BudgetsListController implements Initializable {
    private int userId;
 
    public void setUserEmail(String userName) {
-      User user = dbController.getUserByEmail(userName);
-      userId = user.getId();
-      txtUserName.setText(user.getName());
+      try {
+         User user = dbController.getUserByEmail(userName);
+         userId = user.getId();
+         txtUserName.setText(user.getName());
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
    }
 
    public void fillBudgetsTable() {
       budgets.clear();
-      budgets.addAll(dbController.getAllBudgets(userId));
+      try {
+         budgets.addAll(dbController.getAllBudgets(userId));
+      }
+      catch (RemoteException e) {
+         e.printStackTrace();
+      }
    }
 
    @Override
