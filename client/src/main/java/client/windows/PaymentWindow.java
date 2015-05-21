@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,5 +22,6 @@ public class PaymentWindow extends Stage {
         controller.setObjectsText();
         setTitle("DeptManager - show payment details");
         setScene(new Scene(root));
+        initModality(Modality.WINDOW_MODAL);
     }
 }

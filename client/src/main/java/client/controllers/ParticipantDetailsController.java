@@ -1,6 +1,5 @@
 package client.controllers;
 
-import client.windows.LoginWindow;
 import common.DBHandler;
 import common.User;
 import javafx.fxml.FXML;

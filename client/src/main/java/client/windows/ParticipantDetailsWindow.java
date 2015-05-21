@@ -6,6 +6,7 @@ import common.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,5 +20,6 @@ public class ParticipantDetailsWindow extends Stage {
       controller.setParticipant(participant);
       setTitle(budget.getName() + " participant details");
       setScene(new Scene(root));
+      initModality(Modality.WINDOW_MODAL);
    }
 }

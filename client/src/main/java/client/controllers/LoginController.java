@@ -1,7 +1,6 @@
 package client.controllers;
 
 import client.windows.BudgetsListWindow;
-import client.windows.LoginWindow;
 import client.windows.SignUpWindow;
 import common.AccessProvider;
 import common.DBHandler;
@@ -12,14 +11,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
-import javax.naming.AuthenticationException;
-import java.io.IOException;
 import java.net.URL;
-import java.rmi.AccessException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
@@ -62,7 +57,10 @@ public class LoginController implements Initializable{
       btnSignUp.setOnAction(event -> {
          try {
             SignUpWindow signUpWindow = new SignUpWindow();
-            signUpWindow.show();
+            Stage loginWindow = (Stage) btnSignUp.getScene().getWindow();
+            signUpWindow.setOnHidden(e -> loginWindow.show());
+            loginWindow.hide();
+            signUpWindow.showAndWait();
          } catch(Exception e){
             e.printStackTrace();
          }
@@ -78,7 +76,10 @@ public class LoginController implements Initializable{
             dbController = (DBHandler) ac.getDBHandler(new Email(txtFieldEmail.getText()), passwordHash);
 
             BudgetsListWindow budgetsListWindow = new BudgetsListWindow(txtFieldEmail.getText());
-            budgetsListWindow.show();
+            Stage loginWindow = (Stage) btnLogIn.getScene().getWindow();
+            budgetsListWindow.setOnHidden(e -> loginWindow.show());
+            loginWindow.hide();
+            budgetsListWindow.showAndWait();
             txtFieldEmail.clear();
             txtFieldPassword.clear();
             txtReturnMessage.setText("");

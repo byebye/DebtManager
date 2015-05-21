@@ -4,6 +4,7 @@ import client.controllers.AddUserToBudgetController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,5 +17,6 @@ public class AddUserToBudgetWindow extends Stage {
       controller.setParent(budgetWindow);
       setTitle("DeptManager - add user");
       setScene(new Scene(root));
+      initModality(Modality.WINDOW_MODAL);
    }
 }

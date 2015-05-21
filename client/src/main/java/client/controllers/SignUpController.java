@@ -1,7 +1,6 @@
 package client.controllers;
 
 import client.windows.BudgetsListWindow;
-import client.windows.LoginWindow;
 import common.AccessProvider;
 import common.DBHandler;
 import common.Email;
@@ -16,10 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
 public class SignUpController implements Initializable {

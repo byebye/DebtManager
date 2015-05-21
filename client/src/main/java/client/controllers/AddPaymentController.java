@@ -1,7 +1,6 @@
 package client.controllers;
 
 import common.Budget;
-import client.windows.LoginWindow;
 import common.DBHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

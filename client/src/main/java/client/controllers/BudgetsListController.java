@@ -2,7 +2,6 @@ package client.controllers;
 
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
-import client.windows.LoginWindow;
 import common.Budget;
 import common.DBHandler;
 import common.User;
@@ -78,8 +77,9 @@ public class BudgetsListController implements Initializable {
       btnCreateNewBudget.setOnAction(event -> {
          try {
             BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow(userId);
-            budgetCreatorWindow.setOnHidden(e -> fillBudgetsTable());
-            budgetCreatorWindow.show();
+            budgetCreatorWindow.initOwner(btnCreateNewBudget.getScene().getWindow());
+            budgetCreatorWindow.showAndWait();
+            fillBudgetsTable();
          }
          catch (IOException e) {
             e.printStackTrace();
@@ -104,6 +104,7 @@ public class BudgetsListController implements Initializable {
                try {
                   BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
+                  budgetWindow.initOwner(btnCreateNewBudget.getScene().getWindow());
                   budgetWindow.show();
                }
                catch (IOException e) {

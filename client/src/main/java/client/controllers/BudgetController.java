@@ -16,10 +16,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -79,7 +77,7 @@ public class BudgetController implements Initializable {
                   paymentsToSettle.add(p);
 
             SettleWindow settleWindow = new SettleWindow(budget, paymentsToSettle, this);
-            settleWindow.initModality(Modality.APPLICATION_MODAL);
+            settleWindow.initOwner(btnSettle.getScene().getWindow());
             settleWindow.showAndWait();
             paymentsToSettle.clear();
          }
@@ -94,6 +92,7 @@ public class BudgetController implements Initializable {
       btnAddPayment.setOnAction(event -> {
          try {
             AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId);
+            addPaymentWindow.initOwner(btnAddPayment.getScene().getWindow());
             addPaymentWindow.setOnHidden(e -> fillTabUnaccPayments());
             addPaymentWindow.show();
          }
@@ -105,6 +104,7 @@ public class BudgetController implements Initializable {
       btnAddParticipant.setOnAction(event -> {
          try {
             AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow(budgetWindow);
+            addUserToBudgetWindow.initOwner(btnAddParticipant.getScene().getWindow());
             addUserToBudgetWindow.setOnHidden(e -> fillTabUnaccPayments());
             addUserToBudgetWindow.show();
          }
@@ -157,6 +157,7 @@ public class BudgetController implements Initializable {
                User participant = row.getItem();
                try {
                   ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant);
+                  participantWindow.initOwner(btnAddParticipant.getScene().getWindow());
                   participantWindow.setOnHidden(event -> {
                      fillTabParticipants();
                      fillTabUnaccPayments();
@@ -179,6 +180,7 @@ public class BudgetController implements Initializable {
                Payment payment = row.getItem();
                try {
                   PaymentWindow paymentWindow = new PaymentWindow(payment, participantsList);
+                  paymentWindow.initOwner(btnAddParticipant.getScene().getWindow());
                   paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
                   paymentWindow.show();
                }

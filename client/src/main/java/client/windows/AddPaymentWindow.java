@@ -5,6 +5,7 @@ import common.Budget;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,5 +26,6 @@ public class AddPaymentWindow extends Stage {
       controller.setUser(userId);
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));
+      initModality(Modality.WINDOW_MODAL);
    }
 }
