@@ -6,65 +6,42 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="350.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SignUpController">
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="350.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SignUpController">
   <columnConstraints>
-    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="169.0" minWidth="10.0" prefWidth="141.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.0" minWidth="10.0" prefWidth="199.0" />
+    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="150.0" />
   </columnConstraints>
   <rowConstraints>
-    <RowConstraints maxHeight="40.0" minHeight="60.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="57.0" minHeight="0.0" prefHeight="19.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="95.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="50.0" minHeight="25.0" prefHeight="50.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Create new account" wrappingWidth="137.767578125">
+      <Text boundsType="LOGICAL_VERTICAL_CENTER" strokeType="OUTSIDE" strokeWidth="0.0" text="Create new account" textAlignment="CENTER" wrappingWidth="310.767578125" GridPane.columnSpan="2">
          <GridPane.margin>
-            <Insets left="20.0" />
+            <Insets />
          </GridPane.margin>
-      </Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" GridPane.rowIndex="1">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" GridPane.rowIndex="2">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" GridPane.rowIndex="3">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" GridPane.rowIndex="4">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repeat password:" GridPane.rowIndex="5">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
+         <font>
+            <Font size="14.0" />
+         </font>
       </Text>
       <TextField fx:id="txtFieldEmail" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets />
          </GridPane.margin>
       </TextField>
       <TextField fx:id="txtFieldUsername" promptText="Username" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets />
          </GridPane.margin>
       </TextField>
       <TextField fx:id="txtFieldBankAccount" promptText="Bank account" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets />
          </GridPane.margin>
       </TextField>
       <PasswordField fx:id="txtFieldPassword" promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="4">
@@ -72,7 +49,7 @@
             <Insets />
          </opaqueInsets>
          <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets />
          </GridPane.margin>
       </PasswordField>
       <PasswordField fx:id="txtFieldRepPassword" promptText="Repeat password" GridPane.columnIndex="1" GridPane.rowIndex="5">
@@ -80,23 +57,46 @@
             <Insets />
          </opaqueInsets>
          <GridPane.margin>
-            <Insets right="20.0" />
+            <Insets />
          </GridPane.margin>
       </PasswordField>
-      <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" GridPane.rowIndex="6">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
-         <GridPane.margin>
-            <Insets right="20.0" />
-         </GridPane.margin>
-      </Button>
-      <Text fx:id="txtResult" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.rowIndex="7">
-         <GridPane.margin>
-            <Insets left="20.0" />
-         </GridPane.margin>
-      </Text>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repeat password:" />
+         </children>
+      </HBox>
+      <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+         <children>
+            <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" />
+         </children>
+      </HBox>
+      <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="6">
+         <children>
+            <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" />
+         </children>
+      </HBox>
    </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
 </GridPane>
