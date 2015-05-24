@@ -3,10 +3,7 @@ package server;
 import common.*;
 import org.jooq.*;
 import org.jooq.impl.DSL;
-import server.jooq.tables.Budgets;
-import server.jooq.tables.Payments;
-import server.jooq.tables.UserBudget;
-import server.jooq.tables.Users;
+import server.jooq.tables.*;
 import server.jooq.tables.records.BudgetsRecord;
 
 import java.math.BigDecimal;
@@ -14,10 +11,7 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
@@ -244,6 +238,56 @@ public class DatabaseController implements DBHandler {
                .execute();
    }
 
+   public List<Settlement> getAllSettlements(int budgetId){
+      List<Settlement> settlements = new ArrayList<>();
+
+      Result<Record2<Integer,java.sql.Date>> result =
+            dbContext.select(Settlements.SETTLEMENTS.ID,Settlements.SETTLEMENTS.TERM)
+                     .from(Settlements.SETTLEMENTS)
+                     .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))
+                     .fetch();
+
+      for(Record2<Integer,java.sql.Date> settlement: result){
+         int numPaidBankTransfers = dbContext.selectCount()
+                                             .from(BankTransfers.BANK_TRANSFERS)
+                                             .where(BankTransfers.BANK_TRANSFERS.PAID.equal(true))
+                                             .execute();
+         int numAllBankTransfers = dbContext.selectCount()
+                                            .from(BankTransfers.BANK_TRANSFERS)
+                                            .execute();
+
+         double amount = 0.0;
+         for(Payment p: getPaymentsBySettlementId(settlement.value1()))
+            amount += p.getAmount();
+
+         settlements.add(new Settlement(settlement.value1(),budgetId,numPaidBankTransfers,numAllBankTransfers,settlement.value2().toString(),amount));
+      }
+
+      return settlements;
+   }
+
+   public List<Payment> getPaymentsBySettlementId(int settlementId){
+      List<Payment> payments = new ArrayList<>();
+      Result<Record1<Integer>> result =
+            dbContext.select(Payments.PAYMENTS.ID)
+            .from(Payments.PAYMENTS)
+            .where(Payments.PAYMENTS.SETTLEMENT_ID.equal(settlementId))
+            .fetch();
+
+      for(Record1<Integer> id: result){
+         Result<Record4<Integer,Integer,String,BigDecimal>> result2 =
+               dbContext.select(Payments.PAYMENTS.BUDGET_ID,
+                                Payments.PAYMENTS.USER_ID,
+                                Payments.PAYMENTS.DESCRIPTION,
+                                Payments.PAYMENTS.AMOUNT)
+                        .from(Payments.PAYMENTS)
+                        .where(Payments.PAYMENTS.ID.equal(id.value1()))
+                        .fetch();
+         payments.add(new Payment(result2.get(0).value1(),result2.get(0).value2(),getUserById(result2.get(0).value2()).getName(),result2.get(0).value3(),result2.get(0).value4().doubleValue(),id.value1()));
+      }
+      return payments;
+   }
+
    public List<Payment> getAllPayments(int budgetId, boolean accounted) {
       Result<Record4<Integer, Integer, String, BigDecimal>> result =
               dbContext.select(Payments.PAYMENTS.ID,
@@ -298,6 +342,29 @@ public class DatabaseController implements DBHandler {
             else if(userSpend.get(userAbove) > sum/userNum)
                 usersAboveAverage.add(userAbove);
         }
+
+         int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
+               .values(budgetId)
+               .returning(Settlements.SETTLEMENTS.ID)
+               .execute();
+
+         for(BankTransfer bk: neededTransfers) {
+            dbContext.insertInto(
+                        BankTransfers.BANK_TRANSFERS,
+                        BankTransfers.BANK_TRANSFERS.SETTLE_ID,
+                        BankTransfers.BANK_TRANSFERS.WHO,
+                        BankTransfers.BANK_TRANSFERS.WHOM,
+                        BankTransfers.BANK_TRANSFERS.AMOUNT
+                  ).values(settleId,bk.getWhoId(),bk.getWhomId(),bk.getAmount())
+                  .execute();
+         }
+
+       for(Payment p: unaccountedPayments){
+          dbContext.update(Payments.PAYMENTS)
+                   .set(Payments.PAYMENTS.SETTLEMENT_ID,settleId)
+                   .where(Payments.PAYMENTS.ID.equal(p.getId()))
+                   .execute();
+       }
 
         return neededTransfers;
     }

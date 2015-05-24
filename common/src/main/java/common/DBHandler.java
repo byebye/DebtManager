@@ -24,4 +24,6 @@ public interface DBHandler extends Remote {
    List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
    void settleUnaccountedPayments(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
    void removeParticipant(int budgetId, int userId) throws RemoteException;
+   List<Settlement> getAllSettlements(int budgetId) throws RemoteException;
+   List<Payment> getPaymentsBySettlementId(int settlemendId) throws RemoteException;
 }

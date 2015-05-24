@@ -18,10 +18,12 @@ public class BankTransfer implements Serializable {
    public String getWho() {
       return who.getName();
    }
+   public int getWhoId(){return who.getId();}
 
    public String getWhom() {
       return whom.getName();
    }
+   public int getWhomId(){return whom.getId();}
 
    public BigDecimal getAmount() {
       return amount;

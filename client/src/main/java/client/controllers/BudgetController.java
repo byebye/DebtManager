@@ -1,10 +1,7 @@
 package client.controllers;
 
 import client.windows.*;
-import common.Budget;
-import common.DBHandler;
-import common.Payment;
-import common.User;
+import common.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,6 +41,10 @@ public class BudgetController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
+   private TableView<Settlement> tabSettleHistory;
+   @FXML
+   private TableColumn colDate,colAmount,colStatus;
+   @FXML
    private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount, colConfirm;
    @FXML
    private TableColumn colAccWhat, colAccWho, colAccAmount;
@@ -59,6 +60,7 @@ public class BudgetController implements Initializable {
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
    private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
+   private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
 
    public void setBudget(Budget budget, int userId, BudgetWindow budgetWindow) {
       this.budget = budget;
@@ -155,6 +157,9 @@ public class BudgetController implements Initializable {
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       colConfirm.setCellFactory(param -> new CheckBoxTableCell());
+      colDate.setCellValueFactory(new PropertyValueFactory<Settlement,String>("date"));
+      colAmount.setCellValueFactory(new PropertyValueFactory<Settlement,Double>("amount"));
+      colStatus.setCellValueFactory(new PropertyValueFactory<Settlement,String>("status"));
       colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
          public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
             User participant = p.getValue();
@@ -164,6 +169,7 @@ public class BudgetController implements Initializable {
             return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
          }
       });
+      tabSettleHistory.setItems(settleHistory);
       tabParticipants.setItems(participantsList);
       tabParticipants.setRowFactory(param -> {
          TableRow<User> row = new TableRow<>();
@@ -231,6 +237,16 @@ public class BudgetController implements Initializable {
       fillTabParticipants();
       fillTabUnaccPayments();
       fillTabAccPayments();
+      fillTabSettleHistory();
+   }
+
+   void fillTabSettleHistory(){
+      try {
+         settleHistory.addAll(dbController.getAllSettlements(budget.getId()));
+      }catch(Exception e){
+         System.out.println("Access denied");
+         e.printStackTrace();
+      }
    }
 
    void fillTabParticipants() {

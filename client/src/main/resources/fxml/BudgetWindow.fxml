@@ -96,6 +96,18 @@
             </TableView>
             <Button fx:id="btnAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
             <Text fx:id="txtSumPerPerson" strokeType="OUTSIDE" strokeWidth="0.0" text="Sum / Person:" textAlignment="CENTER" wrappingWidth="225.7294921875" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="History of settlements" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
+            </Text>
+            <TableView fx:id="tabSettleHistory" minWidth="-Infinity" prefHeight="161.0" prefWidth="270.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+              <columns>
+                <TableColumn fx:id="colDate" prefWidth="123.0" text="Date" />
+                <TableColumn fx:id="colAmount" prefWidth="81.0" text="Amount" />
+                  <TableColumn fx:id="colStatus" prefWidth="65.0" text="Status" />
+              </columns>
+            </TableView>
          </children>
          <opaqueInsets>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
