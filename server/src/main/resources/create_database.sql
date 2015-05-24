@@ -37,9 +37,15 @@ CREATE TABLE payments(
 
 CREATE TABLE bank_transfers (
    id            serial PRIMARY KEY,
-   budget_id     int REFERENCES budgets(id) NOT NULL,
+   settle_id     int REFERENCES settlements(id) NOT NULL,
    who           int REFERENCES users(id) NOT NULL,
    whom          int REFERENCES users(id) NOT NULL,
    amount        numeric(6, 2) NOT NULL,
    paid          boolean DEFAULT FALSE
+);
+
+CREATE TABLE settlements(
+   id             serial PRIMARY KEY,
+   budget_id      int REFERENCES budgets(id) NOT NULL,
+   term           date NOT NULL DEFAULT now()
 );
