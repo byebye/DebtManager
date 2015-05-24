@@ -1,5 +1,6 @@
 package client.windows;
 
+import client.controllers.LoginController;
 import client.controllers.SignUpController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,11 +12,15 @@ import java.io.IOException;
 
 public class SignUpWindow extends Stage {
 
-   public SignUpWindow() throws IOException {
+   public SignUpWindow(LoginController loginController) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SignUpWindow.fxml"));
       Parent root = fxmlLoader.load();
+
       SignUpController controller = fxmlLoader.<SignUpController>getController();
-      setTitle("DeptManager - sign up");
+      controller.setStage(this);
+      controller.setLoginController(loginController);
+
+      setTitle("DebtManager - Sign up");
       setScene(new Scene(root));
       initModality(Modality.APPLICATION_MODAL);
    }
