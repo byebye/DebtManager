@@ -15,7 +15,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
@@ -265,12 +267,38 @@ public class DatabaseController implements DBHandler {
    }
 
     public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
-        List<BankTransfer> neededTransfers = new ArrayList<>();
-        for(Payment payment : unaccountedPayments) {
-            final int whoId = payment.getUserId();
-            final int whomId = whoId;
-            neededTransfers.add(new BankTransfer(getUserById(whoId), getUserById(whomId), new BigDecimal(0),payment.getId()));
+        List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
+        Map<Integer,Double> userSpend = new HashMap<>();
+        double sum = 0;
+        double userNum = (double)getBudgetParticipants(budgetId).size();
+        for(User u: getBudgetParticipants(budgetId))
+            userSpend.put(u.getId(),0.0);
+        for(Payment p: unaccountedPayments) {
+            sum += p.getAmount();
+            userSpend.put(p.getUserId(),userSpend.get(p.getUserId())+p.getAmount());
         }
+
+        for(Integer userId: userSpend.keySet()){
+            if(userSpend.get(userId) < sum/userNum)
+                usersBellowAverage.add(userId);
+            else if(userSpend.get(userId) > sum/userNum)
+                usersAboveAverage.add(userId);
+        }
+
+        List<BankTransfer> neededTransfers = new ArrayList<>();
+
+        System.out.println(usersAboveAverage.size()+ " " + usersBellowAverage.size());
+
+        while(!usersBellowAverage.isEmpty() && !usersAboveAverage.isEmpty()){
+            int userBellow = usersBellowAverage.remove(0), userAbove = usersAboveAverage.remove(0);
+            neededTransfers.add(new BankTransfer(getUserById(userBellow),getUserById(userAbove),BigDecimal.valueOf(sum/userNum-userSpend.get(userBellow)),0));//drop paymentId field
+            userSpend.put(userAbove,userSpend.get(userAbove)-(sum/userNum-userSpend.get(userBellow)));
+            if(userSpend.get(userAbove) < sum/userNum)
+                usersBellowAverage.add(userAbove);
+            else if(userSpend.get(userAbove) > sum/userNum)
+                usersAboveAverage.add(userAbove);
+        }
+
         return neededTransfers;
     }
 
