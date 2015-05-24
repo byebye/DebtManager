@@ -9,13 +9,23 @@ import javafx.stage.Stage;
 
 public class LoginWindow extends Application {
 
+   private LoginController controller;
+
+   public LoginController getController() {
+      return controller;
+   }
+
    @Override
    public void start(Stage primaryStage) throws Exception {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();
-      LoginController controller = fxmlLoader.<LoginController>getController();
 
-      primaryStage.setTitle("DeptManager - Sign in");
+      controller = fxmlLoader.<LoginController>getController();
+      final String host = getParameters().getNamed().get("host");
+      controller.connectWithRMIHost(host);
+      controller.setStage(primaryStage);
+
+      primaryStage.setTitle("DebtManager - Log in");
       primaryStage.setScene(new Scene(root));
       primaryStage.show();
    }

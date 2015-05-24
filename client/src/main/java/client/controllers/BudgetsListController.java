@@ -28,6 +28,8 @@ import java.util.ResourceBundle;
 public class BudgetsListController implements Initializable {
 
    @FXML
+   public Text txtUserName;
+   @FXML
    private Button btnLogout;
    @FXML
    private Button btnCreateNewBudget;
@@ -39,22 +41,15 @@ public class BudgetsListController implements Initializable {
    public TableColumn colOwner;
    @FXML
    private TableView<Budget> tabMyBudgets;
-   @FXML
-   private Text txtUserName;
 
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
-   private int userId;
+   private int userId = LoginController.currentUser.getId();
 
-   public void setUserEmail(String userName) {
-      try {
-         User user = dbController.getUserByEmail(userName);
-         userId = user.getId();
-         txtUserName.setText(user.getName());
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
    }
 
    public void fillBudgetsTable() {
@@ -69,15 +64,14 @@ public class BudgetsListController implements Initializable {
 
    @Override
    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-      btnLogout.setOnAction(event -> {
-         Stage stage = (Stage) btnLogout.getScene().getWindow();
-         stage.close();
-      });
+      txtUserName.setText(LoginController.currentUser.getName());
+
+      btnLogout.setOnAction(event -> currentStage.close());
 
       btnCreateNewBudget.setOnAction(event -> {
          try {
             BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow(userId);
-            budgetCreatorWindow.initOwner(btnCreateNewBudget.getScene().getWindow());
+            budgetCreatorWindow.initOwner(currentStage);
             budgetCreatorWindow.showAndWait();
             fillBudgetsTable();
          }
@@ -91,7 +85,7 @@ public class BudgetsListController implements Initializable {
       colPeople.setCellValueFactory(new PropertyValueFactory<Budget, Integer>("partNum"));
       colOwner.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Budget, String>, ObservableValue<String>>() {
          public ObservableValue<String> call(TableColumn.CellDataFeatures<Budget, String> budget) {
-            return new ReadOnlyObjectWrapper(budget.getValue().getOwner().getName());
+            return new ReadOnlyObjectWrapper(budget.getValue().getOwner().getEmail());
          }
       });
       tabMyBudgets.setItems(budgets);
@@ -104,7 +98,7 @@ public class BudgetsListController implements Initializable {
                try {
                   BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
-                  budgetWindow.initOwner(btnCreateNewBudget.getScene().getWindow());
+                  budgetWindow.initOwner(currentStage);
                   budgetWindow.show();
                }
                catch (IOException e) {

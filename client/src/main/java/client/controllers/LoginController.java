@@ -8,17 +8,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import javax.naming.AuthenticationException;
+import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable{
 
    @FXML
-   Button btnSignUp,btnLogIn;
+   Button btnSignUp, btnLogIn;
    @FXML
    TextField txtFieldEmail;
    @FXML
@@ -27,20 +29,22 @@ public class LoginController implements Initializable{
    public static DBHandler dbController;
    public static AccessProvider ac;
    public static User currentUser;
+   private static String host;
 
-   private static final String host = "localhost"; //"michalglapa.student.tcs.uj.edu.pl";
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
 
    public void setDbController(DBHandler dbhandler){
       dbController = dbhandler;
    }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-
-      //RMI connection
+   public void connectWithRMIHost(String host) {
+      this.host = (host == null ? "localhost" : host);
       if(System.getSecurityManager() == null)
          System.setSecurityManager(new SecurityManager());
-
       try {
          ac = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
       }
@@ -48,39 +52,52 @@ public class LoginController implements Initializable{
          e.printStackTrace();
          System.exit(1);
       }
+   }
 
-      //Buttons
+   public void fillDataFields(String email, String password) {
+      txtFieldEmail.setText(email);
+      txtFieldPassword.setText(password);
+   }
+
+   @Override
+   public void initialize(URL location, ResourceBundle resources) {
       btnSignUp.setOnAction(event -> {
          try {
-            SignUpWindow signUpWindow = new SignUpWindow();
-            Stage loginWindow = (Stage) btnSignUp.getScene().getWindow();
-            signUpWindow.initOwner(loginWindow);
+            SignUpWindow signUpWindow = new SignUpWindow(this);
+            signUpWindow.initOwner(currentStage);
             signUpWindow.showAndWait();
-         } catch(Exception e){
+         }
+         catch (Exception e) {
             e.printStackTrace();
          }
       });
 
       btnLogIn.setOnAction(event -> {
-         if(System.getSecurityManager() == null)
+         if (System.getSecurityManager() == null)
             System.setSecurityManager(new SecurityManager());
 
          try {
-            String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
-
-            dbController = (DBHandler) ac.getDBHandler(new Email(txtFieldEmail.getText()), passwordHash);
-            currentUser = dbController.getUserByEmail(txtFieldEmail.getText());
-            BudgetsListWindow budgetsListWindow = new BudgetsListWindow(txtFieldEmail.getText());
-            Stage loginWindow = (Stage) btnLogIn.getScene().getWindow();
-            budgetsListWindow.setOnHidden(e -> loginWindow.show());
-            loginWindow.hide();
-            budgetsListWindow.showAndWait();
-            txtFieldEmail.clear();
-            txtFieldPassword.clear();
+            tryToLogIn();
+            displayBudgetsListWindow();
          }
-         catch(Exception e){
+         catch (Exception e) {
             e.printStackTrace();
          }
       });
+   }
+
+   private void tryToLogIn() throws RemoteException, AuthenticationException {
+      final Email email = new Email(txtFieldEmail.getText());
+      final String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
+      dbController = (DBHandler) ac.getDBHandler(email, passwordHash);
+      currentUser = dbController.getUserByEmail(txtFieldEmail.getText());
+   }
+
+   private void displayBudgetsListWindow() throws IOException {
+      BudgetsListWindow budgetsListWindow = new BudgetsListWindow();
+      budgetsListWindow.setOnHidden(e -> currentStage.show());
+      currentStage.hide();
+      txtFieldPassword.clear();
+      budgetsListWindow.showAndWait();
    }
 }

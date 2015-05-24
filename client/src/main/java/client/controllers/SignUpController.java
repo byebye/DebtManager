@@ -1,8 +1,5 @@
 package client.controllers;
 
-import client.windows.BudgetsListWindow;
-import common.AccessProvider;
-import common.DBHandler;
 import common.Email;
 import common.SHA1Hasher;
 import javafx.fxml.FXML;
@@ -14,10 +11,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
+import javax.naming.AuthenticationException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class SignUpController implements Initializable {
@@ -27,70 +25,62 @@ public class SignUpController implements Initializable {
    PasswordField txtFieldPassword, txtFieldRepPassword;
    @FXML
    Button btnSignUp, btnCancel;
-   @FXML
-   Text txtResult;
+
+   private Stage currentStage;
+   private LoginController loginController;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
+
+   public void setLoginController(LoginController controller) {
+      loginController = controller;
+   }
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
-      btnSignUp.setDisable(true);
-      txtFieldEmail.textProperty().addListener((observable, oldValue, newValue) -> {
-         btnSignUp.setDisable(newValue.trim().isEmpty());
-      });
+      btnCancel.setOnAction(event -> currentStage.close());
+
       btnSignUp.setOnAction(event -> {
          if (!txtFieldPassword.getText().equals(txtFieldRepPassword.getText())) {
-            txtResult.setFill(Color.FIREBRICK);
-            txtResult.setText("Passwords don't match");
+//            txtResult.setFill(Color.FIREBRICK);
+//            txtResult.setText("Passwords don't match");
             event.consume();
          }
          else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
-            txtResult.setFill(Color.FIREBRICK);
-            txtResult.setText("Bank account should contain 22 digits");
+//            txtResult.setFill(Color.FIREBRICK);
+//            txtResult.setText("Bank account should contain 22 digits");
             event.consume();
          }
          else {
-            String emailValue = txtFieldEmail.getText();
-            String usernameValue = txtFieldUsername.getText();
-            BigInteger bankAccountValue = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
-            String passwordValue = txtFieldPassword.getText();
             try {
-               AccessProvider ac = LoginController.ac;
-               ac.signUp(new Email(emailValue), usernameValue, bankAccountValue, SHA1Hasher.hash(passwordValue));
-               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),
-                                                                          SHA1Hasher.hash(passwordValue));
-               LoginController.currentUser = LoginController.dbController.getUserByEmail(txtFieldEmail.getText());
-               Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
-               userCreatedAlert.setTitle("Success");
-               userCreatedAlert.setHeaderText("User created successfully!");
-               userCreatedAlert.setContentText("You will be automatically logged in.");
-               userCreatedAlert.setOnHidden(hiddenEvent -> {
-                  try {
-                     Stage stage = (Stage) btnCancel.getScene().getWindow();
-                     Stage loginWindow = (Stage) stage.getOwner();
-                     loginWindow.hide();
-                     stage.close();
-                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(emailValue);
-                     budgetsListWindow.setOnHidden(e -> loginWindow.show());
-                     budgetsListWindow.show();
-                  }
-                  catch (Exception e) {
-                     e.printStackTrace();
-                  }
-               });
-               userCreatedAlert.showAndWait();
-
+               tryToSignUp();
+               displayUserCreatedAlert();
+               loginController.fillDataFields(txtFieldEmail.getText(), txtFieldPassword.getText());
             }
             catch (Exception e) {
                e.printStackTrace();
-               txtResult.setText("User couldn't be created!");
+//               txtResult.setText("User couldn't be created!");
             }
          }
       });
+   }
 
-      btnCancel.setOnAction(event -> {
-         Stage stage = (Stage) btnCancel.getScene().getWindow();
-         stage.close();
-      });
+   private void tryToSignUp() throws RemoteException, AuthenticationException {
+      Email email = new Email(txtFieldEmail.getText());
+      String userName = txtFieldUsername.getText();
+      BigInteger bankAccount = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
+      String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
+      LoginController.ac.signUp(email, userName, bankAccount, passwordHash);
+   }
 
+   private void displayUserCreatedAlert() {
+      Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
+      userCreatedAlert.setTitle("New account created");
+      userCreatedAlert.setHeaderText("Account created successfully!");
+      userCreatedAlert.setContentText("Now you can log in to view your budgets.");
+      userCreatedAlert.showAndWait();
+      currentStage.close();
    }
 }
