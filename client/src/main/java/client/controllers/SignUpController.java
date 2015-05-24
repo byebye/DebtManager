@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -41,36 +42,44 @@ public class SignUpController implements Initializable {
             txtResult.setFill(Color.FIREBRICK);
             txtResult.setText("Passwords don't match");
             event.consume();
-         } else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
+         }
+         else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
             txtResult.setFill(Color.FIREBRICK);
             txtResult.setText("Bank account should contain 22 digits");
             event.consume();
-         } else {
+         }
+         else {
             String emailValue = txtFieldEmail.getText();
             String usernameValue = txtFieldUsername.getText();
             BigInteger bankAccountValue = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
             String passwordValue = txtFieldPassword.getText();
-            try{
+            try {
                AccessProvider ac = LoginController.ac;
                ac.signUp(new Email(emailValue), usernameValue, bankAccountValue, SHA1Hasher.hash(passwordValue));
-               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue), SHA1Hasher.hash(passwordValue));
+               LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),
+                                                                          SHA1Hasher.hash(passwordValue));
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");
                userCreatedAlert.setContentText("You will be automatically logged in.");
                userCreatedAlert.setOnHidden(hiddenEvent -> {
                   try {
-                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(emailValue);
-                     budgetsListWindow.show();
                      Stage stage = (Stage) btnCancel.getScene().getWindow();
+                     Stage loginWindow = (Stage) stage.getOwner();
+                     loginWindow.hide();
                      stage.close();
-                  }catch (Exception e){
+                     BudgetsListWindow budgetsListWindow = new BudgetsListWindow(emailValue);
+                     budgetsListWindow.setOnHidden(e -> loginWindow.show());
+                     budgetsListWindow.show();
+                  }
+                  catch (Exception e) {
                      e.printStackTrace();
                   }
                });
                userCreatedAlert.showAndWait();
 
-            } catch(Exception e){
+            }
+            catch (Exception e) {
                e.printStackTrace();
                txtResult.setText("User couldn't be created!");
             }

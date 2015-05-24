@@ -26,8 +26,6 @@ public class LoginController implements Initializable{
    TextField txtFieldEmail;
    @FXML
    PasswordField txtFieldPassword;
-   @FXML
-   Text txtReturnMessage;
 
    public static DBHandler dbController;
    public static AccessProvider ac;
@@ -58,8 +56,7 @@ public class LoginController implements Initializable{
          try {
             SignUpWindow signUpWindow = new SignUpWindow();
             Stage loginWindow = (Stage) btnSignUp.getScene().getWindow();
-            signUpWindow.setOnHidden(e -> loginWindow.show());
-            loginWindow.hide();
+            signUpWindow.initOwner(loginWindow);
             signUpWindow.showAndWait();
          } catch(Exception e){
             e.printStackTrace();
@@ -82,11 +79,9 @@ public class LoginController implements Initializable{
             budgetsListWindow.showAndWait();
             txtFieldEmail.clear();
             txtFieldPassword.clear();
-            txtReturnMessage.setText("");
          }
          catch(Exception e){
             e.printStackTrace();
-            txtReturnMessage.setText("Wrong login/password combination");
          }
       });
    }
