@@ -12,10 +12,9 @@ sleep 1
 $RMIREGISTRY -J-Djava.rmi.server.codebase=$URL/classes/common.jar  -J-Djava.rmi.server.useCodebaseOnly=false -J-Djava.security.policy=Allpermissions.policy &
 
 echo "Registry started"
-$JAVA -cp server/target/server-0.0.1.jar:common/target/common-0.0.1.jar:/home/z1111813/.m2/repository/org/jooq/jooq/3.5.4/jooq-3.5.4.jar:/home/z1111813/.m2/repository:/home/z1111813/.m2/repository/org/postgresql/postgresql/9.4-1201-jdbc41/postgresql-9.4-1201-jdbc41.jar  \
-      -Djava.security.policy=Allpermissions.policy \
-      -Djava.rmi.server.codebase=$URL/classes/common.jar \
-      -Djava.rmi.server.hostname=$HOST \
-      server.Server -u debtmanager -p debtmanager -d localhost/debtmanager
+$JAVA   -Djava.security.policy=Allpermissions.policy \
+        -Djava.rmi.server.codebase=$URL/classes/common.jar \
+        -Djava.rmi.server.hostname=$HOST \
+        -jar ./server_release/target/server-all-jar.jar  -u debtmanager -p debtmanager -d localhost/debtmanager &
 
 

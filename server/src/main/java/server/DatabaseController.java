@@ -27,7 +27,7 @@ public class DatabaseController implements DBHandler {
    private Connection connection;
    private DSLContext dbContext;
 
-   //lock that will be used to synchronize ALL operations on the database
+   // TODO lock that will be used to synchronize ALL operations on the database
    public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
    public DatabaseController() {

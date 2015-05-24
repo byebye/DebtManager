@@ -13,6 +13,26 @@
    <artifactId>server</artifactId>
    <version>0.0.1</version>
 
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+                  <fork>true</fork>
+                  <executable>${JAVA_1_8_HOME}/bin/javac</executable>
+                  <compilerVersion>1.8</compilerVersion>
+               </configuration>
+            </plugin>
+
+
+         </plugins>
+      </pluginManagement>
+   </build>
+
    <dependencies>
       <!-- classes from 'common' module -->
       <dependency>
