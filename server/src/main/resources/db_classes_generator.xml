@@ -20,7 +20,7 @@
     </generate>
 
     <target>
-      <packageName>tcs.javaproject.database.jooq</packageName>
+      <packageName>server.jooq</packageName>
 
       <!-- The destination directory of your generated classes -->
       <directory>../java</directory>

@@ -3,9 +3,6 @@
  */
 package server.jooq;
 
-import server.jooq.tables.*;
-import server.jooq.tables.records.*;
-
 /**
  * A class modelling foreign key relationships between tables of the <code>debtmanager</code> 
  * schema
@@ -24,61 +21,67 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
-	public static final org.jooq.Identity<BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = Identities0.IDENTITY_BANK_TRANSFERS;
-	public static final org.jooq.Identity<BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = Identities0.IDENTITY_BUDGETS;
-	public static final org.jooq.Identity<PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = Identities0.IDENTITY_PAYMENTS;
-	public static final org.jooq.Identity<UsersRecord, java.lang.Integer> IDENTITY_USERS = Identities0.IDENTITY_USERS;
+	public static final org.jooq.Identity<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = Identities0.IDENTITY_BANK_TRANSFERS;
+	public static final org.jooq.Identity<server.jooq.tables.records.BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = Identities0.IDENTITY_BUDGETS;
+	public static final org.jooq.Identity<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = Identities0.IDENTITY_PAYMENTS;
+	public static final org.jooq.Identity<server.jooq.tables.records.SettlementsRecord, java.lang.Integer> IDENTITY_SETTLEMENTS = Identities0.IDENTITY_SETTLEMENTS;
+	public static final org.jooq.Identity<server.jooq.tables.records.UsersRecord, java.lang.Integer> IDENTITY_USERS = Identities0.IDENTITY_USERS;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
-	public static final org.jooq.UniqueKey<BankTransfersRecord> BANK_TRANSFERS_PKEY = UniqueKeys0.BANK_TRANSFERS_PKEY;
-	public static final org.jooq.UniqueKey<BudgetsRecord> BUDGETS_PKEY = UniqueKeys0.BUDGETS_PKEY;
-	public static final org.jooq.UniqueKey<PaymentsRecord> PAYMENTS_PKEY = UniqueKeys0.PAYMENTS_PKEY;
-	public static final org.jooq.UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
-	public static final org.jooq.UniqueKey<UsersRecord> USERS_EMAIL_KEY = UniqueKeys0.USERS_EMAIL_KEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.BankTransfersRecord> BANK_TRANSFERS_PKEY = UniqueKeys0.BANK_TRANSFERS_PKEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.BudgetsRecord> BUDGETS_PKEY = UniqueKeys0.BUDGETS_PKEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.PaymentsRecord> PAYMENTS_PKEY = UniqueKeys0.PAYMENTS_PKEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.SettlementsRecord> SETTLEMENTS_PKEY = UniqueKeys0.SETTLEMENTS_PKEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
+	public static final org.jooq.UniqueKey<server.jooq.tables.records.UsersRecord> USERS_EMAIL_KEY = UniqueKeys0.USERS_EMAIL_KEY;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
-	public static final org.jooq.ForeignKey<BankTransfersRecord, BudgetsRecord> BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY;
-	public static final org.jooq.ForeignKey<BankTransfersRecord, UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY;
-	public static final org.jooq.ForeignKey<BankTransfersRecord, UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY;
-	public static final org.jooq.ForeignKey<BudgetsRecord, UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = ForeignKeys0.BUDGETS__BUDGETS_OWNER_ID_FKEY;
-	public static final org.jooq.ForeignKey<PaymentsRecord, BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_BUDGET_ID_FKEY;
-	public static final org.jooq.ForeignKey<PaymentsRecord, UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_USER_ID_FKEY;
-	public static final org.jooq.ForeignKey<UserBudgetRecord, UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_USER_ID_FKEY;
-	public static final org.jooq.ForeignKey<UserBudgetRecord, BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.SettlementsRecord> BANK_TRANSFERS__BANK_TRANSFERS_SETTLE_ID_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_SETTLE_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = ForeignKeys0.BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.BudgetsRecord, server.jooq.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = ForeignKeys0.BUDGETS__BUDGETS_OWNER_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, server.jooq.tables.records.BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_BUDGET_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, server.jooq.tables.records.UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = ForeignKeys0.PAYMENTS__PAYMENTS_USER_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.SettlementsRecord, server.jooq.tables.records.BudgetsRecord> SETTLEMENTS__SETTLEMENTS_BUDGET_ID_FKEY = ForeignKeys0.SETTLEMENTS__SETTLEMENTS_BUDGET_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.UserBudgetRecord, server.jooq.tables.records.UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_USER_ID_FKEY;
+	public static final org.jooq.ForeignKey<server.jooq.tables.records.UserBudgetRecord, server.jooq.tables.records.BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = ForeignKeys0.USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends org.jooq.impl.AbstractKeys {
-		public static org.jooq.Identity<BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = createIdentity(BankTransfers.BANK_TRANSFERS, BankTransfers.BANK_TRANSFERS.ID);
-		public static org.jooq.Identity<BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = createIdentity(Budgets.BUDGETS, Budgets.BUDGETS.ID);
-		public static org.jooq.Identity<PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = createIdentity(Payments.PAYMENTS, Payments.PAYMENTS.ID);
-		public static org.jooq.Identity<UsersRecord, java.lang.Integer> IDENTITY_USERS = createIdentity(Users.USERS, Users.USERS.ID);
+		public static org.jooq.Identity<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> IDENTITY_BANK_TRANSFERS = createIdentity(server.jooq.tables.BankTransfers.BANK_TRANSFERS, server.jooq.tables.BankTransfers.BANK_TRANSFERS.ID);
+		public static org.jooq.Identity<server.jooq.tables.records.BudgetsRecord, java.lang.Integer> IDENTITY_BUDGETS = createIdentity(server.jooq.tables.Budgets.BUDGETS, server.jooq.tables.Budgets.BUDGETS.ID);
+		public static org.jooq.Identity<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> IDENTITY_PAYMENTS = createIdentity(server.jooq.tables.Payments.PAYMENTS, server.jooq.tables.Payments.PAYMENTS.ID);
+		public static org.jooq.Identity<server.jooq.tables.records.SettlementsRecord, java.lang.Integer> IDENTITY_SETTLEMENTS = createIdentity(server.jooq.tables.Settlements.SETTLEMENTS, server.jooq.tables.Settlements.SETTLEMENTS.ID);
+		public static org.jooq.Identity<server.jooq.tables.records.UsersRecord, java.lang.Integer> IDENTITY_USERS = createIdentity(server.jooq.tables.Users.USERS, server.jooq.tables.Users.USERS.ID);
 	}
 
 	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
-		public static final org.jooq.UniqueKey<BankTransfersRecord> BANK_TRANSFERS_PKEY = createUniqueKey(BankTransfers.BANK_TRANSFERS, BankTransfers.BANK_TRANSFERS.ID);
-		public static final org.jooq.UniqueKey<BudgetsRecord> BUDGETS_PKEY = createUniqueKey(Budgets.BUDGETS, Budgets.BUDGETS.ID);
-		public static final org.jooq.UniqueKey<PaymentsRecord> PAYMENTS_PKEY = createUniqueKey(Payments.PAYMENTS, Payments.PAYMENTS.ID);
-		public static final org.jooq.UniqueKey<UsersRecord> USERS_PKEY = createUniqueKey(Users.USERS, Users.USERS.ID);
-		public static final org.jooq.UniqueKey<UsersRecord> USERS_EMAIL_KEY = createUniqueKey(Users.USERS, Users.USERS.EMAIL);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.BankTransfersRecord> BANK_TRANSFERS_PKEY = createUniqueKey(server.jooq.tables.BankTransfers.BANK_TRANSFERS, server.jooq.tables.BankTransfers.BANK_TRANSFERS.ID);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.BudgetsRecord> BUDGETS_PKEY = createUniqueKey(server.jooq.tables.Budgets.BUDGETS, server.jooq.tables.Budgets.BUDGETS.ID);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.PaymentsRecord> PAYMENTS_PKEY = createUniqueKey(server.jooq.tables.Payments.PAYMENTS, server.jooq.tables.Payments.PAYMENTS.ID);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.SettlementsRecord> SETTLEMENTS_PKEY = createUniqueKey(server.jooq.tables.Settlements.SETTLEMENTS, server.jooq.tables.Settlements.SETTLEMENTS.ID);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.UsersRecord> USERS_PKEY = createUniqueKey(server.jooq.tables.Users.USERS, server.jooq.tables.Users.USERS.ID);
+		public static final org.jooq.UniqueKey<server.jooq.tables.records.UsersRecord> USERS_EMAIL_KEY = createUniqueKey(server.jooq.tables.Users.USERS, server.jooq.tables.Users.USERS.EMAIL);
 	}
 
 	private static class ForeignKeys0 extends org.jooq.impl.AbstractKeys {
-		public static final org.jooq.ForeignKey<BankTransfersRecord, BudgetsRecord> BANK_TRANSFERS__BANK_TRANSFERS_BUDGET_ID_FKEY = createForeignKey(Keys.BUDGETS_PKEY, BankTransfers.BANK_TRANSFERS, BankTransfers.BANK_TRANSFERS.BUDGET_ID);
-		public static final org.jooq.ForeignKey<BankTransfersRecord, UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = createForeignKey(Keys.USERS_PKEY, BankTransfers.BANK_TRANSFERS, BankTransfers.BANK_TRANSFERS.WHO);
-		public static final org.jooq.ForeignKey<BankTransfersRecord, UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = createForeignKey(Keys.USERS_PKEY, BankTransfers.BANK_TRANSFERS, BankTransfers.BANK_TRANSFERS.WHOM);
-		public static final org.jooq.ForeignKey<BudgetsRecord, UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = createForeignKey(Keys.USERS_PKEY, Budgets.BUDGETS, Budgets.BUDGETS.OWNER_ID);
-		public static final org.jooq.ForeignKey<PaymentsRecord, BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = createForeignKey(Keys.BUDGETS_PKEY, Payments.PAYMENTS, Payments.PAYMENTS.BUDGET_ID);
-		public static final org.jooq.ForeignKey<PaymentsRecord, UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = createForeignKey(Keys.USERS_PKEY, Payments.PAYMENTS, Payments.PAYMENTS.USER_ID);
-		public static final org.jooq.ForeignKey<UserBudgetRecord, UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = createForeignKey(Keys.USERS_PKEY, UserBudget.USER_BUDGET, UserBudget.USER_BUDGET.USER_ID);
-		public static final org.jooq.ForeignKey<UserBudgetRecord, BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = createForeignKey(Keys.BUDGETS_PKEY, UserBudget.USER_BUDGET, UserBudget.USER_BUDGET.BUDGET_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.SettlementsRecord> BANK_TRANSFERS__BANK_TRANSFERS_SETTLE_ID_FKEY = createForeignKey(server.jooq.Keys.SETTLEMENTS_PKEY, server.jooq.tables.BankTransfers.BANK_TRANSFERS, server.jooq.tables.BankTransfers.BANK_TRANSFERS.SETTLE_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHO_FKEY = createForeignKey(server.jooq.Keys.USERS_PKEY, server.jooq.tables.BankTransfers.BANK_TRANSFERS, server.jooq.tables.BankTransfers.BANK_TRANSFERS.WHO);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.BankTransfersRecord, server.jooq.tables.records.UsersRecord> BANK_TRANSFERS__BANK_TRANSFERS_WHOM_FKEY = createForeignKey(server.jooq.Keys.USERS_PKEY, server.jooq.tables.BankTransfers.BANK_TRANSFERS, server.jooq.tables.BankTransfers.BANK_TRANSFERS.WHOM);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.BudgetsRecord, server.jooq.tables.records.UsersRecord> BUDGETS__BUDGETS_OWNER_ID_FKEY = createForeignKey(server.jooq.Keys.USERS_PKEY, server.jooq.tables.Budgets.BUDGETS, server.jooq.tables.Budgets.BUDGETS.OWNER_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, server.jooq.tables.records.BudgetsRecord> PAYMENTS__PAYMENTS_BUDGET_ID_FKEY = createForeignKey(server.jooq.Keys.BUDGETS_PKEY, server.jooq.tables.Payments.PAYMENTS, server.jooq.tables.Payments.PAYMENTS.BUDGET_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, server.jooq.tables.records.UsersRecord> PAYMENTS__PAYMENTS_USER_ID_FKEY = createForeignKey(server.jooq.Keys.USERS_PKEY, server.jooq.tables.Payments.PAYMENTS, server.jooq.tables.Payments.PAYMENTS.USER_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.SettlementsRecord, server.jooq.tables.records.BudgetsRecord> SETTLEMENTS__SETTLEMENTS_BUDGET_ID_FKEY = createForeignKey(server.jooq.Keys.BUDGETS_PKEY, server.jooq.tables.Settlements.SETTLEMENTS, server.jooq.tables.Settlements.SETTLEMENTS.BUDGET_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.UserBudgetRecord, server.jooq.tables.records.UsersRecord> USER_BUDGET__USER_BUDGET_USER_ID_FKEY = createForeignKey(server.jooq.Keys.USERS_PKEY, server.jooq.tables.UserBudget.USER_BUDGET, server.jooq.tables.UserBudget.USER_BUDGET.USER_ID);
+		public static final org.jooq.ForeignKey<server.jooq.tables.records.UserBudgetRecord, server.jooq.tables.records.BudgetsRecord> USER_BUDGET__USER_BUDGET_BUDGET_ID_FKEY = createForeignKey(server.jooq.Keys.BUDGETS_PKEY, server.jooq.tables.UserBudget.USER_BUDGET, server.jooq.tables.UserBudget.USER_BUDGET.BUDGET_ID);
 	}
 }

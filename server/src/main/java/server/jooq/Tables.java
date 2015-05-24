@@ -3,8 +3,6 @@
  */
 package server.jooq;
 
-import server.jooq.tables.*;
-
 /**
  * Convenience access to all tables in debtmanager
  */
@@ -21,25 +19,30 @@ public class Tables {
 	/**
 	 * The table debtmanager.bank_transfers
 	 */
-	public static final BankTransfers BANK_TRANSFERS = BankTransfers.BANK_TRANSFERS;
+	public static final server.jooq.tables.BankTransfers BANK_TRANSFERS = server.jooq.tables.BankTransfers.BANK_TRANSFERS;
 
 	/**
 	 * The table debtmanager.budgets
 	 */
-	public static final Budgets BUDGETS = Budgets.BUDGETS;
+	public static final server.jooq.tables.Budgets BUDGETS = server.jooq.tables.Budgets.BUDGETS;
 
 	/**
 	 * The table debtmanager.payments
 	 */
-	public static final Payments PAYMENTS = Payments.PAYMENTS;
+	public static final server.jooq.tables.Payments PAYMENTS = server.jooq.tables.Payments.PAYMENTS;
+
+	/**
+	 * The table debtmanager.settlements
+	 */
+	public static final server.jooq.tables.Settlements SETTLEMENTS = server.jooq.tables.Settlements.SETTLEMENTS;
 
 	/**
 	 * The table debtmanager.user_budget
 	 */
-	public static final UserBudget USER_BUDGET = UserBudget.USER_BUDGET;
+	public static final server.jooq.tables.UserBudget USER_BUDGET = server.jooq.tables.UserBudget.USER_BUDGET;
 
 	/**
 	 * The table debtmanager.users
 	 */
-	public static final Users USERS = Users.USERS;
+	public static final server.jooq.tables.Users USERS = server.jooq.tables.Users.USERS;
 }
