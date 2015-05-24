@@ -16,7 +16,7 @@ public class ParticipantDetailsWindow extends Stage {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ParticipantDetailsWindow.fxml"));
       Parent root = fxmlLoader.load();
       ParticipantDetailsController controller = fxmlLoader.<ParticipantDetailsController>getController();
-      controller.setBudgetId(budget.getId());
+      controller.setBudget(budget);
       controller.setParticipant(participant);
       setTitle(budget.getName() + " participant details");
       setScene(new Scene(root));

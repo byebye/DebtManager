@@ -18,6 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -65,6 +66,11 @@ public class BudgetController implements Initializable {
       txtBudgetDescription.setText(budget.getDescription());
       this.userId = userId;
       this.budgetWindow = budgetWindow;
+      if (budget.getOwner().getId() != LoginController.currentUser.getId()) {
+         btnAddParticipant.setDisable(true);
+         btnSettle.setDisable(true);
+         btnBudgetDelete.setDisable(true);
+      }
    }
 
    @Override
@@ -89,7 +95,7 @@ public class BudgetController implements Initializable {
 
       btnAddPayment.setOnAction(event -> {
          try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId);
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId, participantsList);
             addPaymentWindow.initOwner(btnAddPayment.getScene().getWindow());
             addPaymentWindow.setOnHidden(e -> fillTabUnaccPayments());
             addPaymentWindow.show();
@@ -185,18 +191,25 @@ public class BudgetController implements Initializable {
       tabUnaccPayments.setRowFactory(param -> {
          TableRow<Payment> row = new TableRow<>();
          row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Payment payment = row.getItem();
-               try {
-                  PaymentWindow paymentWindow = new PaymentWindow(payment, participantsList);
-                  paymentWindow.initOwner(btnAddParticipant.getScene().getWindow());
-                  paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
-                  paymentWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
+            if (row.isEmpty())
+               return;
+            Payment payment = row.getItem();
+            if (budget.getOwner().getId() == LoginController.currentUser.getId()
+                || payment.getUserId() == LoginController.currentUser.getId()) {
+               if (mouseEvent.getClickCount() == 2) {
+                  try {
+                     PaymentWindow paymentWindow = new PaymentWindow(budget, payment, participantsList);
+                     paymentWindow.initOwner(btnAddParticipant.getScene().getWindow());
+                     paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
+                     paymentWindow.show();
+                  }
+                  catch (IOException e) {
+                     e.printStackTrace();
+                  }
                }
             }
+            // TODO else: you have no rights to edit this payment (special color or information)
+
          });
          return row;
       });
@@ -270,7 +283,7 @@ public class BudgetController implements Initializable {
       tabParticipants.getColumns().get(2).setVisible(true);
    }
 
-   public static class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+   public class CheckBoxTableCell extends TableCell<Payment, Boolean> {
 
       private final CheckBox checkBox = new CheckBox();
 
@@ -288,10 +301,13 @@ public class BudgetController implements Initializable {
          if(!empty) {
             checkBox.setSelected(true);
             setGraphic(checkBox);
+            if (LoginController.currentUser.getId() == budget.getOwner().getId())
+               checkBox.setDisable(false);
+            else
+               checkBox.setDisable(true);
          }
          else
             setGraphic(null);
       }
-
    }
 }

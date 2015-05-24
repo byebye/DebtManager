@@ -58,6 +58,7 @@ public class SignUpController implements Initializable {
                ac.signUp(new Email(emailValue), usernameValue, bankAccountValue, SHA1Hasher.hash(passwordValue));
                LoginController.dbController = (DBHandler) ac.getDBHandler(new Email(emailValue),
                                                                           SHA1Hasher.hash(passwordValue));
+               LoginController.currentUser = LoginController.dbController.getUserByEmail(txtFieldEmail.getText());
                Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
                userCreatedAlert.setTitle("Success");
                userCreatedAlert.setHeaderText("User created successfully!");

@@ -1,5 +1,6 @@
 package client.controllers;
 
+import common.Budget;
 import common.DBHandler;
 import common.User;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ public class ParticipantDetailsController implements Initializable {
    public Button btnCloseWindow;
 
    private User participant;
-   private int budgetId;
+   private Budget budget;
    private static DBHandler dbController = LoginController.dbController;
 
    public void setParticipant(User participant) {
@@ -36,8 +37,11 @@ public class ParticipantDetailsController implements Initializable {
       bankAccountField.setText(participant.getBankAccount());
    }
 
-   public void setBudgetId(int budgetId) {
-      this.budgetId = budgetId;
+   public void setBudget(Budget budget) {
+      this.budget = budget;
+      if (LoginController.currentUser.getId() != budget.getOwner().getId()) {
+         btnRemoveParticipant.setDisable(true);
+      }
    }
 
    @Override
@@ -48,7 +52,7 @@ public class ParticipantDetailsController implements Initializable {
       });
       btnRemoveParticipant.setOnAction(event -> {
          try {
-            dbController.removeParticipant(budgetId, participant.getId());
+            dbController.removeParticipant(budget.getId(), participant.getId());
             Stage stage = (Stage) btnRemoveParticipant.getScene().getWindow();
             stage.close();
          }

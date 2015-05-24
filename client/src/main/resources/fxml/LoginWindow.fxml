@@ -8,11 +8,11 @@
 
 <GridPane id="2" focusTraversable="true" hgap="5.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="325.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
    <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" />
+      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="200.0" prefWidth="200.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="55.0" minHeight="40.0" prefHeight="45.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="75.0" minHeight="25.0" prefHeight="50.0" vgrow="SOMETIMES" />
@@ -25,26 +25,10 @@
             <Font size="14.0" />
          </font>
       </Text>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" textAlignment="RIGHT" />
-         </children>
-      </HBox>
-      <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-         <children>
-            <Button fx:id="btnLogIn" mnemonicParsing="false" text="Log in" />
-         </children>
-      </HBox>
-      <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
-         <children>
-            <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign up" />
-         </children>
-      </HBox>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" GridPane.rowIndex="1" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" textAlignment="RIGHT" GridPane.rowIndex="2" />
+      <Button fx:id="btnLogIn" mnemonicParsing="false" text="Log in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign up" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

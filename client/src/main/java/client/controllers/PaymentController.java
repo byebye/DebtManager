@@ -1,5 +1,6 @@
 package client.controllers;
 
+import common.Budget;
 import common.DBHandler;
 import common.Payment;
 import common.User;
@@ -17,7 +18,7 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class PaymentController implements Initializable {
-   private Payment payment;
+
    @FXML
    private Text txtPaymentName;
    @FXML
@@ -31,8 +32,14 @@ public class PaymentController implements Initializable {
 
    private static DBHandler dbController = LoginController.dbController;
 
+   private Payment payment;
+   private Budget budget;
+
    public void setPayment(Payment payment) {
       this.payment = payment;
+   }
+   public void setBudget(Budget budget) {
+      this.budget = budget;
    }
 
    public void setParticipantsList(ObservableList<User> participants) {
@@ -40,6 +47,8 @@ public class PaymentController implements Initializable {
       boxChooseWho.setItems(participants);
       User current = participants.filtered(user -> user.getId() == payment.getUserId()).get(0);
       boxChooseWho.setValue(current);
+      if (budget.getOwner().getId() != LoginController.currentUser.getId())
+         boxChooseWho.setDisable(true);
    }
 
    public void setObjectsText() {

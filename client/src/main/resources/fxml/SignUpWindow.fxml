@@ -8,7 +8,7 @@
 
 <GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="350.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SignUpController">
   <columnConstraints>
-    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="150.0" prefWidth="150.0" />
   </columnConstraints>
   <rowConstraints>
@@ -60,41 +60,13 @@
             <Insets />
          </GridPane.margin>
       </PasswordField>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="3">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="5">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repeat password:" />
-         </children>
-      </HBox>
-      <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
-         <children>
-            <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" />
-         </children>
-      </HBox>
-      <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="6">
-         <children>
-            <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" />
-         </children>
-      </HBox>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" GridPane.rowIndex="1" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" GridPane.rowIndex="2" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" GridPane.rowIndex="3" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" GridPane.rowIndex="4" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repeat password:" GridPane.rowIndex="5" />
+      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

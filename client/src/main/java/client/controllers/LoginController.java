@@ -2,10 +2,7 @@ package client.controllers;
 
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
-import common.AccessProvider;
-import common.DBHandler;
-import common.Email;
-import common.SHA1Hasher;
+import common.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -29,6 +26,7 @@ public class LoginController implements Initializable{
 
    public static DBHandler dbController;
    public static AccessProvider ac;
+   public static User currentUser;
 
    private static final String host = "localhost"; //"michalglapa.student.tcs.uj.edu.pl";
 
@@ -71,7 +69,7 @@ public class LoginController implements Initializable{
             String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
 
             dbController = (DBHandler) ac.getDBHandler(new Email(txtFieldEmail.getText()), passwordHash);
-
+            currentUser = dbController.getUserByEmail(txtFieldEmail.getText());
             BudgetsListWindow budgetsListWindow = new BudgetsListWindow(txtFieldEmail.getText());
             Stage loginWindow = (Stage) btnLogIn.getScene().getWindow();
             budgetsListWindow.setOnHidden(e -> loginWindow.show());

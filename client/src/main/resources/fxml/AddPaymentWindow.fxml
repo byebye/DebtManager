@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="201.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.AddPaymentController">
+<GridPane alignment="CENTER_RIGHT" hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="235.0" prefWidth="350.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.AddPaymentController">
+   <columnConstraints>
+      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="100.0" minWidth="75.0" prefWidth="75.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="230.0" minWidth="230.0" prefWidth="230.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="40.0" prefHeight="40.0" valignment="CENTER" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+   </rowConstraints>
    <children>
-      <Text layoutX="22.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add payment">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add payment" GridPane.halignment="LEFT">
          <font>
-            <Font size="19.0" />
+            <Font size="16.0" />
          </font>
       </Text>
-      <TextField fx:id="txtFieldAmount" layoutX="86.0" layoutY="128.0" prefHeight="25.0" prefWidth="256.0" />
-      <Text layoutX="22.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Amount:" />
-      <TextArea fx:id="txtAreaWhat" layoutX="86.0" layoutY="58.0" prefHeight="63.0" prefWidth="256.0" />
-      <Text layoutX="38.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="What:" />
-      <Button fx:id="btnAddPayment" layoutX="298.0" layoutY="168.0" mnemonicParsing="false" text="Add" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Who:" textAlignment="RIGHT" GridPane.rowIndex="1" />
+      <TextArea fx:id="txtAreaWhat" prefHeight="40.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="What:" GridPane.rowIndex="2" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Amount:" GridPane.rowIndex="3" />
+      <Button fx:id="btnAddPayment" alignment="CENTER" mnemonicParsing="false" text="Add" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+      <Button fx:id="btnCancel" mnemonicParsing="false" text="Remove" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
+      <TextField fx:id="txtFieldAmount" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <ComboBox fx:id="boxChooseWho" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
    </children>
-</Pane>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</GridPane>
