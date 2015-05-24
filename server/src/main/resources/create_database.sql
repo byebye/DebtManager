@@ -32,7 +32,7 @@ CREATE TABLE payments(
    user_id       int REFERENCES users(id),
    description   varchar(200),
    amount        numeric(6,2) NOT NULL,
-   settlement_id int REFERENCES settlements(id) DEFAULT NULL
+   settlement_id int REFERENCES settlements(id) DEFAULT NULL,
    accounted     boolean DEFAULT FALSE
 );
 
