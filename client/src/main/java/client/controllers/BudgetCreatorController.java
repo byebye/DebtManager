@@ -120,6 +120,8 @@ public class BudgetCreatorController implements Initializable {
          super.updateItem(item, empty);
          if (!empty)
             setGraphic(btnRemove);
+         else
+            setGraphic(null);
       }
    }
 }

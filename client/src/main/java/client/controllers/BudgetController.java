@@ -25,6 +25,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class BudgetController implements Initializable {
@@ -84,9 +85,6 @@ public class BudgetController implements Initializable {
          catch(Exception e){
                e.printStackTrace();
          }
-         //dbController.settleUnaccountedPayments(budget.getId());
-         //fillTabUnaccPayments();
-         //fillTabAccPayments();
       });
 
       btnAddPayment.setOnAction(event -> {
@@ -119,15 +117,26 @@ public class BudgetController implements Initializable {
       });
 
       btnBudgetDelete.setOnAction(event -> {
-         // TODO window to confirm deletion;
-         try {
-            dbController.deleteBudget(budget);
+         Alert userCreatedAlert = new Alert(Alert.AlertType.CONFIRMATION);
+         userCreatedAlert.setTitle("Confirm deletion");
+         userCreatedAlert.setHeaderText("Are you sure you want to delete this budget?");
+         userCreatedAlert.setContentText("This operation cannot be undone.");
+         Optional<ButtonType> result = userCreatedAlert.showAndWait();
+         if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+               try {
+                  dbController.deleteBudget(budget);
+               }
+               catch (RemoteException e) {
+                  e.printStackTrace();
+               }
+               Stage stage = (Stage) btnBudgetDelete.getScene().getWindow();
+               stage.close();
+            }
+            catch (Exception e) {
+               e.printStackTrace();
+            }
          }
-         catch (RemoteException e) {
-            e.printStackTrace();
-         }
-         Stage stage = (Stage) btnBudgetDelete.getScene().getWindow();
-         stage.close();
       });
 
       //Table

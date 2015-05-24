@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane focusTraversable="true" hgap="5.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="325.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
+<GridPane id="2" focusTraversable="true" hgap="5.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="225.0" prefWidth="325.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.LoginController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="200.0" prefWidth="200.0" />
@@ -18,8 +18,8 @@
       <RowConstraints maxHeight="75.0" minHeight="25.0" prefHeight="50.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <PasswordField fx:id="txtFieldPassword" alignment="CENTER" promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <TextField fx:id="txtFieldEmail" alignment="CENTER" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <PasswordField fx:id="txtFieldPassword" alignment="CENTER" promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Please log in to view your budgets" textAlignment="CENTER" wrappingWidth="285.0" GridPane.columnSpan="2">
          <font>
             <Font size="14.0" />
