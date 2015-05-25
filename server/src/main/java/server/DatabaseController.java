@@ -331,8 +331,6 @@ public class DatabaseController implements DBHandler {
 
         List<BankTransfer> neededTransfers = new ArrayList<>();
 
-        System.out.println(usersAboveAverage.size()+ " " + usersBellowAverage.size());
-
         while(!usersBellowAverage.isEmpty() && !usersAboveAverage.isEmpty()){
             int userBellow = usersBellowAverage.remove(0), userAbove = usersAboveAverage.remove(0);
             neededTransfers.add(new BankTransfer(getUserById(userBellow),getUserById(userAbove),BigDecimal.valueOf(sum/userNum-userSpend.get(userBellow)),0));//drop paymentId field
@@ -346,7 +344,7 @@ public class DatabaseController implements DBHandler {
          int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
                .values(budgetId)
                .returning(Settlements.SETTLEMENTS.ID)
-               .execute();
+               .fetchOne().getId();
 
          for(BankTransfer bk: neededTransfers) {
             dbContext.insertInto(

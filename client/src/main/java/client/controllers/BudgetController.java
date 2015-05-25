@@ -89,6 +89,8 @@ public class BudgetController implements Initializable {
             settleWindow.initOwner(btnSettle.getScene().getWindow());
             settleWindow.showAndWait();
             paymentsToSettle.clear();
+            settleHistory.clear();
+            fillTabSettleHistory();
          }
          catch(Exception e){
                e.printStackTrace();
