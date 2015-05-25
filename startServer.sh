@@ -1,12 +1,11 @@
-HOST=michalglapa.student.tcs.uj.edu.pl
+HOST=ec2-52-24-181-183.us-west-2.compute.amazonaws.com
 URL=http://$HOST
-JDK=~/jdk1.8.0_45/bin
-JAVA=$JDK/java
-RMIREGISTRY=$JDK/rmiregistry
+JAVA=java
+RMIREGISTRY=rmiregistry
 JAR=./server_release/target/server-all-jar.jar
 
 
-cp common/target/common*.jar ~/public_html/classes/common.jar
+cp common/target/common*.jar ~/WWW/classes/common.jar
 
 killall rmiregistry
 
@@ -17,6 +16,6 @@ echo "Registry started"
 $JAVA   -Djava.security.policy=Allpermissions.policy \
         -Djava.rmi.server.codebase=$URL/classes/common.jar \
         -Djava.rmi.server.hostname=$HOST \
-        -jar $JAR  -u debtmanager -p debtmanager -d localhost/debtmanager &
+        -jar $JAR  -u debtmanager -p debtmanager -d debtmanagerdb2.cl0gzsk409pj.us-west-2.rds.amazonaws.com &
 
 
