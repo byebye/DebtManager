@@ -21,7 +21,10 @@ public class SettleWindow extends Stage {
       controller.setBudget(budget,paymentsToSettle,parentController);
       controller.fillAllTables();
       setTitle("DeptManager - settle " + budget.getName());
-      setScene(new Scene(root));
+      Scene scene = new Scene(root);
+      setScene(scene);
+
       initModality(Modality.WINDOW_MODAL);
+      scene.getWindow().setOnCloseRequest(event->controller.clearTable());
    }
 }

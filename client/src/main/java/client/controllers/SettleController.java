@@ -52,6 +52,10 @@ public class SettleController implements Initializable {
       tabSettleView.setItems(bankTransfers);
    }
 
+   public void clearTable(){
+      bankTransfers.clear();
+   }
+
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
