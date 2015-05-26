@@ -66,7 +66,8 @@ public class SettleController implements Initializable {
       btnConfirm.setOnAction(event -> {
          try {
             List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
-            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable);
+            List<BankTransfer> bankTransfersSerializable = new ArrayList<>(bankTransfers);
+            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable);
             parentController.fillAllTables();
             bankTransfers.clear();
             Stage stage = (Stage) btnConfirm.getScene().getWindow();

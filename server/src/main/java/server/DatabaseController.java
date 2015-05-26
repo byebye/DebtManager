@@ -245,16 +245,19 @@ public class DatabaseController implements DBHandler {
             dbContext.select(Settlements.SETTLEMENTS.ID,Settlements.SETTLEMENTS.TERM)
                      .from(Settlements.SETTLEMENTS)
                      .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))
+                     .orderBy(Settlements.SETTLEMENTS.ID.desc())
                      .fetch();
 
       for(Record2<Integer,java.sql.Date> settlement: result){
          int numPaidBankTransfers = dbContext.selectCount()
                                              .from(BankTransfers.BANK_TRANSFERS)
                                              .where(BankTransfers.BANK_TRANSFERS.PAID.equal(true))
-                                             .execute();
+                                             .and(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+                                             .fetchOne().value1();
          int numAllBankTransfers = dbContext.selectCount()
-                                            .from(BankTransfers.BANK_TRANSFERS)
-                                            .execute();
+                                             .from(BankTransfers.BANK_TRANSFERS)
+                                             .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+                                             .fetchOne().value1();
 
          double amount = 0.0;
          for(Payment p: getPaymentsBySettlementId(settlement.value1()))
@@ -341,38 +344,32 @@ public class DatabaseController implements DBHandler {
                 usersAboveAverage.add(userAbove);
         }
 
-         int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
-               .values(budgetId)
-               .returning(Settlements.SETTLEMENTS.ID)
-               .fetchOne().getId();
-
-         for(BankTransfer bk: neededTransfers) {
-            dbContext.insertInto(
-                        BankTransfers.BANK_TRANSFERS,
-                        BankTransfers.BANK_TRANSFERS.SETTLE_ID,
-                        BankTransfers.BANK_TRANSFERS.WHO,
-                        BankTransfers.BANK_TRANSFERS.WHOM,
-                        BankTransfers.BANK_TRANSFERS.AMOUNT
-                  ).values(settleId,bk.getWhoId(),bk.getWhomId(),bk.getAmount())
-                  .execute();
-         }
-
-       for(Payment p: unaccountedPayments){
-          dbContext.update(Payments.PAYMENTS)
-                   .set(Payments.PAYMENTS.SETTLEMENT_ID,settleId)
-                   .where(Payments.PAYMENTS.ID.equal(p.getId()))
-                   .execute();
-       }
-
         return neededTransfers;
     }
 
-    public void settleUnaccountedPayments(int budgetId, List<Payment> payments) {
+    public void settleUnaccountedPayments(int budgetId, List<Payment> payments, List<BankTransfer> bankTransfers) {
+       int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
+             .values(budgetId)
+             .returning(Settlements.SETTLEMENTS.ID)
+             .fetchOne().getId();
         for (Payment payment : payments)
             dbContext.update(Payments.PAYMENTS)
                     .set(Payments.PAYMENTS.ACCOUNTED, true)
+                    .set(Payments.PAYMENTS.SETTLEMENT_ID, settleId)
                     .where(Payments.PAYMENTS.ID.equal(payment.getId()))
                     .execute();
+
+
+       for(BankTransfer bk: bankTransfers) {
+          dbContext.insertInto(
+                BankTransfers.BANK_TRANSFERS,
+                BankTransfers.BANK_TRANSFERS.SETTLE_ID,
+                BankTransfers.BANK_TRANSFERS.WHO,
+                BankTransfers.BANK_TRANSFERS.WHOM,
+                BankTransfers.BANK_TRANSFERS.AMOUNT
+          ).values(settleId,bk.getWhoId(),bk.getWhomId(),bk.getAmount())
+                .execute();
+       }
     }
 
     public void removeParticipant(int budgetId, int userId) {
