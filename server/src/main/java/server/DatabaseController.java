@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
-   private String dbUser = "debtmanager"; // "z1111813";
-   private String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
-   private String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
+   private static String dbUser = "debtmanager"; // "z1111813";
+   private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
+   private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
    private Connection connection;
    private DSLContext dbContext;
 
