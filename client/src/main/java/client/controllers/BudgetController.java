@@ -194,6 +194,24 @@ public class BudgetController implements Initializable {
          });
          return row;
       });
+      tabSettleHistory.setRowFactory(param -> {
+         TableRow<Settlement> row = new TableRow<>();
+         row.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+               Settlement settlement = row.getItem();
+               try {
+                  SettlementDetailsWindow settlementDetailsWindow = new SettlementDetailsWindow(settlement,budget);
+                  settlementDetailsWindow.initOwner(btnAddParticipant.getScene().getWindow());
+                  settlementDetailsWindow.setOnHidden(event->fillTabSettleHistory());
+                  settlementDetailsWindow.show();
+               }
+               catch (IOException e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+         return row;
+      });
       tabUnaccPayments.setItems(unaccountedPayments);
       tabAccPayments.setItems(accountedPayments);
       tabUnaccPayments.setRowFactory(param -> {
@@ -243,6 +261,7 @@ public class BudgetController implements Initializable {
    }
 
    void fillTabSettleHistory(){
+      settleHistory.clear();
       try {
          settleHistory.addAll(dbController.getAllSettlements(budget.getId()));
       }catch(Exception e){

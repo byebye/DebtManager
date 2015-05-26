@@ -336,7 +336,7 @@ public class DatabaseController implements DBHandler {
 
         while(!usersBellowAverage.isEmpty() && !usersAboveAverage.isEmpty()){
             int userBellow = usersBellowAverage.remove(0), userAbove = usersAboveAverage.remove(0);
-            neededTransfers.add(new BankTransfer(getUserById(userBellow),getUserById(userAbove),BigDecimal.valueOf(sum/userNum-userSpend.get(userBellow)),0));//drop paymentId field
+            neededTransfers.add(new BankTransfer(getUserById(userBellow),getUserById(userAbove),BigDecimal.valueOf(sum/userNum-userSpend.get(userBellow))));//drop paymentId field
             userSpend.put(userAbove,userSpend.get(userAbove)-(sum/userNum-userSpend.get(userBellow)));
             if(userSpend.get(userAbove) < sum/userNum)
                 usersBellowAverage.add(userAbove);
@@ -449,6 +449,34 @@ public class DatabaseController implements DBHandler {
       }
 
       return othersBankTransfers;
+   }
+
+   public List<BankTransfer> getBankTransfersBySettlementId(int settlementId){
+      List<BankTransfer> bankTransfers = new ArrayList<>();
+      Result<Record5<Integer,Integer,Integer,BigDecimal,Boolean>> result =
+            dbContext.select(
+                  BankTransfers.BANK_TRANSFERS.ID,
+                  BankTransfers.BANK_TRANSFERS.WHO,
+                  BankTransfers.BANK_TRANSFERS.WHOM,
+                  BankTransfers.BANK_TRANSFERS.AMOUNT,
+                  BankTransfers.BANK_TRANSFERS.PAID)
+               .from(BankTransfers.BANK_TRANSFERS)
+               .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlementId))
+               .fetch();
+
+      for(Record5<Integer,Integer,Integer,BigDecimal,Boolean> bankTransfer: result)
+         bankTransfers.add(new BankTransfer(bankTransfer.value1(),getUserById(bankTransfer.value2()),getUserById(bankTransfer.value3()),bankTransfer.value4(),bankTransfer.value5().booleanValue()?"paid":"waiting"));
+
+      return bankTransfers;
+   }
+
+   public void setAsPaid(List<Integer> bankTrasnfers){
+      for(Integer id: bankTrasnfers){
+         dbContext.update(BankTransfers.BANK_TRANSFERS)
+                  .set(BankTransfers.BANK_TRANSFERS.PAID,true)
+                  .where(BankTransfers.BANK_TRANSFERS.ID.equal(id))
+                  .execute();
+      }
    }
 
 }
