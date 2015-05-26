@@ -16,6 +16,6 @@ echo "Registry started"
 $JAVA   -Djava.security.policy=Allpermissions.policy \
         -Djava.rmi.server.codebase=$URL/classes/common.jar \
         -Djava.rmi.server.hostname=$HOST \
-        -jar $JAR  -u debtmanager -p debtmanager -d debtmanagerdb2.cl0gzsk409pj.us-west-2.rds.amazonaws.com &
+        -jar $JAR  -u debtmanager -p debtmanager -d debtmanagerdb2.cl0gzsk409pj.us-west-2.rds.amazonaws.com/debtmanager &
 
 

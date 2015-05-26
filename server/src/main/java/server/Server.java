@@ -30,7 +30,7 @@ public class Server {
         try {
             String name = "AccessProvider";
             AccessProvider ac = new BasicAccessProvider(dbController);
-            AccessProvider stub = (AccessProvider) UnicastRemoteObject.exportObject(ac, 0);
+            AccessProvider stub = (AccessProvider) UnicastRemoteObject.exportObject(ac, 1100);
 
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(name, stub);
