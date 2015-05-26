@@ -379,4 +379,76 @@ public class DatabaseController implements DBHandler {
                .execute();
    }
 
+   public List<BankTransfer> getMyBankTransfers(int userId){
+      List<BankTransfer> myBankTransfers = new ArrayList<>();
+      Result<Record4<Integer,Integer,BigDecimal,Boolean>> result =
+         dbContext.select(
+                        BankTransfers.BANK_TRANSFERS.SETTLE_ID,
+                        BankTransfers.BANK_TRANSFERS.WHOM,
+                        BankTransfers.BANK_TRANSFERS.AMOUNT,
+                        BankTransfers.BANK_TRANSFERS.PAID
+                  ).from(BankTransfers.BANK_TRANSFERS)
+                  .where(BankTransfers.BANK_TRANSFERS.WHO.equal(userId))
+                  .fetch();
+
+      for(Record4<Integer,Integer,BigDecimal,Boolean> bankTransfer: result){
+         int budgetId =
+               dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
+                        .from(Settlements.SETTLEMENTS)
+                        .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value1()))
+                        .fetchOne().value1();
+
+
+         String budgetName =
+               dbContext.select(Budgets.BUDGETS.NAME)
+                        .from(Budgets.BUDGETS)
+                        .where(Budgets.BUDGETS.ID.equal(budgetId))
+                        .fetchOne().value1();
+
+         User whom = getUserById(bankTransfer.value2());
+
+         String status = bankTransfer.value4().booleanValue()?"paid":"waiting";
+
+         myBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
+      }
+
+      return myBankTransfers;
+   }
+
+   public List<BankTransfer> getOthersBankTransfers(int userId){
+      List<BankTransfer> othersBankTransfers = new ArrayList<>();
+      Result<Record4<Integer,Integer,BigDecimal,Boolean>> result =
+            dbContext.select(
+                  BankTransfers.BANK_TRANSFERS.SETTLE_ID,
+                  BankTransfers.BANK_TRANSFERS.WHO,
+                  BankTransfers.BANK_TRANSFERS.AMOUNT,
+                  BankTransfers.BANK_TRANSFERS.PAID
+            ).from(BankTransfers.BANK_TRANSFERS)
+                  .where(BankTransfers.BANK_TRANSFERS.WHOM.equal(userId))
+                  .fetch();
+
+      for(Record4<Integer,Integer,BigDecimal,Boolean> bankTransfer: result){
+         int budgetId =
+               dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
+                     .from(Settlements.SETTLEMENTS)
+                     .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value1()))
+                     .fetchOne().value1();
+
+
+         String budgetName =
+               dbContext.select(Budgets.BUDGETS.NAME)
+                     .from(Budgets.BUDGETS)
+                     .where(Budgets.BUDGETS.ID.equal(budgetId))
+                     .fetchOne().value1();
+
+         User whom = getUserById(bankTransfer.value2());
+
+         String status = bankTransfer.value4().booleanValue()?"paid":"waiting";
+
+         othersBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
+      }
+
+      return othersBankTransfers;
+   }
+
 }

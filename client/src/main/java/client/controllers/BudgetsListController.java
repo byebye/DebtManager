@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.windows.BankTransfersWindow;
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
 import common.Budget;
@@ -30,9 +31,7 @@ public class BudgetsListController implements Initializable {
    @FXML
    public Text txtUserName;
    @FXML
-   private Button btnLogout;
-   @FXML
-   private Button btnCreateNewBudget;
+   private Button btnLogout, btnCreateNewBudget, btnManageBankTransfers;
    @FXML
    private TableColumn colName, colDescription;
    @FXML
@@ -68,6 +67,16 @@ public class BudgetsListController implements Initializable {
 
       btnLogout.setOnAction(event -> currentStage.close());
 
+      btnManageBankTransfers.setOnAction(event->{
+         try{
+            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow(userId);
+            bankTransfersWindow.initOwner(currentStage);
+            bankTransfersWindow.showAndWait();
+         }catch(Exception e){
+            e.printStackTrace();
+         }
+      });
+
       btnCreateNewBudget.setOnAction(event -> {
          try {
             BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow(userId);
@@ -100,8 +109,7 @@ public class BudgetsListController implements Initializable {
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
                   budgetWindow.initOwner(currentStage);
                   budgetWindow.show();
-               }
-               catch (IOException e) {
+               } catch (IOException e) {
                   e.printStackTrace();
                }
             }
