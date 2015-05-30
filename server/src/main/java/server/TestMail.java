@@ -15,7 +15,7 @@ public class TestMail {
       email.addTo("uaaabbjjkl@gmail.com");
       email.setFrom("debtmanager@managedebtsfor.me");
       email.setSubject("Hello World");
-      email.setText("My first email with SendGrid Java!");
+      email.setText("My first email with SendGrid Java!  ");
 
       try {
          SendGrid.Response response = sg.send(email);
