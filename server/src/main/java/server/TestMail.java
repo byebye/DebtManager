@@ -7,7 +7,7 @@ import com.sendgrid.SendGridException;
  * Created by glapul on 30.05.15.
  */
 public class TestMail {
-   public static void main() {
+   public static void main(String [] args) {
       SendGrid sg = new SendGrid("debtmanager", "debtmanager1");
 
       SendGrid.Email email = new SendGrid.Email();
