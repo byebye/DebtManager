@@ -251,7 +251,7 @@ public class DatabaseController implements DBHandler {
       for(Record2<Integer,java.sql.Date> settlement: result){
          int numPaidBankTransfers = dbContext.selectCount()
                                              .from(BankTransfers.BANK_TRANSFERS)
-                                             .where(BankTransfers.BANK_TRANSFERS.PAID.equal(true))
+                                             .where(BankTransfers.BANK_TRANSFERS.PAID.equal(2))
                                              .and(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
                                              .fetchOne().value1();
          int numAllBankTransfers = dbContext.selectCount()
@@ -381,7 +381,7 @@ public class DatabaseController implements DBHandler {
 
    public List<BankTransfer> getMyBankTransfers(int userId){
       List<BankTransfer> myBankTransfers = new ArrayList<>();
-      Result<Record4<Integer,Integer,BigDecimal,Boolean>> result =
+      Result<Record4<Integer,Integer,BigDecimal,Integer>> result =
          dbContext.select(
                         BankTransfers.BANK_TRANSFERS.SETTLE_ID,
                         BankTransfers.BANK_TRANSFERS.WHOM,
@@ -391,7 +391,7 @@ public class DatabaseController implements DBHandler {
                   .where(BankTransfers.BANK_TRANSFERS.WHO.equal(userId))
                   .fetch();
 
-      for(Record4<Integer,Integer,BigDecimal,Boolean> bankTransfer: result){
+      for(Record4<Integer,Integer,BigDecimal,Integer> bankTransfer: result){
          int budgetId =
                dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
                         .from(Settlements.SETTLEMENTS)
@@ -407,7 +407,10 @@ public class DatabaseController implements DBHandler {
 
          User whom = getUserById(bankTransfer.value2());
 
-         String status = bankTransfer.value4().booleanValue()?"paid":"waiting";
+         String status;
+         if(bankTransfer.value4() == 0)status = "not paid";
+         else if(bankTransfer.value4() == 1)status = "not confirmed";
+         else status = "OK";
 
          myBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
       }
@@ -417,7 +420,7 @@ public class DatabaseController implements DBHandler {
 
    public List<BankTransfer> getOthersBankTransfers(int userId){
       List<BankTransfer> othersBankTransfers = new ArrayList<>();
-      Result<Record4<Integer,Integer,BigDecimal,Boolean>> result =
+      Result<Record4<Integer,Integer,BigDecimal,Integer>> result =
             dbContext.select(
                   BankTransfers.BANK_TRANSFERS.SETTLE_ID,
                   BankTransfers.BANK_TRANSFERS.WHO,
@@ -427,7 +430,7 @@ public class DatabaseController implements DBHandler {
                   .where(BankTransfers.BANK_TRANSFERS.WHOM.equal(userId))
                   .fetch();
 
-      for(Record4<Integer,Integer,BigDecimal,Boolean> bankTransfer: result){
+      for(Record4<Integer,Integer,BigDecimal,Integer> bankTransfer: result){
          int budgetId =
                dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
                      .from(Settlements.SETTLEMENTS)
@@ -443,7 +446,10 @@ public class DatabaseController implements DBHandler {
 
          User whom = getUserById(bankTransfer.value2());
 
-         String status = bankTransfer.value4().booleanValue()?"paid":"waiting";
+         String status;
+         if(bankTransfer.value4() == 0)status = "not paid";
+         else if(bankTransfer.value4() == 1)status = "not confirmed";
+         else status = "OK";
 
          othersBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
       }
@@ -453,7 +459,7 @@ public class DatabaseController implements DBHandler {
 
    public List<BankTransfer> getBankTransfersBySettlementId(int settlementId){
       List<BankTransfer> bankTransfers = new ArrayList<>();
-      Result<Record5<Integer,Integer,Integer,BigDecimal,Boolean>> result =
+      Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
             dbContext.select(
                   BankTransfers.BANK_TRANSFERS.ID,
                   BankTransfers.BANK_TRANSFERS.WHO,
@@ -464,16 +470,29 @@ public class DatabaseController implements DBHandler {
                .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlementId))
                .fetch();
 
-      for(Record5<Integer,Integer,Integer,BigDecimal,Boolean> bankTransfer: result)
-         bankTransfers.add(new BankTransfer(bankTransfer.value1(),getUserById(bankTransfer.value2()),getUserById(bankTransfer.value3()),bankTransfer.value4(),bankTransfer.value5().booleanValue()?"paid":"waiting"));
+      for(Record5<Integer,Integer,Integer,BigDecimal,Integer> bankTransfer: result) {
+         String status;
+         if(bankTransfer.value5() == 0)status = "not paid";
+         else if(bankTransfer.value5() == 1)status = "not confirmed";
+         else status = "OK";
+         bankTransfers.add(
+               new BankTransfer(
+                     bankTransfer.value1(),
+                     getUserById(bankTransfer.value2()),
+                     getUserById(bankTransfer.value3()),
+                     bankTransfer.value4(),
+                     status
+               )
+         );
+      }
 
       return bankTransfers;
    }
 
-   public void setAsPaid(List<Integer> bankTrasnfers){
-      for(Integer id: bankTrasnfers){
+   public void setAsPaid(List<Integer> bankTransfers){
+      for(Integer id: bankTransfers){
          dbContext.update(BankTransfers.BANK_TRANSFERS)
-                  .set(BankTransfers.BANK_TRANSFERS.PAID,true)
+                  .set(BankTransfers.BANK_TRANSFERS.PAID,2)
                   .where(BankTransfers.BANK_TRANSFERS.ID.equal(id))
                   .execute();
       }
