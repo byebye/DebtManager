@@ -48,5 +48,5 @@ CREATE TABLE bank_transfers (
    who           int REFERENCES users(id) NOT NULL,
    whom          int REFERENCES users(id) NOT NULL,
    amount        numeric(6, 2) NOT NULL,
-   paid          boolean DEFAULT FALSE
+   paid          int DEFAULT 0
 );
