@@ -44,9 +44,7 @@
                                 <manifest>
                                     <mainClass>client.windows.LoginWindow</mainClass>
                                 </manifest>
-                                <manifestEntries>
-                                    <Permissions>all-permissions</Permissions>
-                                </manifestEntries>
+                                <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                             </archive>
                             <descriptors>
                                 <descriptor>assemblyDescriptor.xml</descriptor>
