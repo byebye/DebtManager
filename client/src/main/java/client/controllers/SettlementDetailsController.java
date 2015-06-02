@@ -78,7 +78,7 @@ public class SettlementDetailsController implements Initializable {
       }
 
       try{
-         dbController.setAsPaid(bankTransfersToSet);
+         dbController.setBankTransferStatus(bankTransfersToSet,2);
       }catch(Exception e){
          e.printStackTrace();
       }

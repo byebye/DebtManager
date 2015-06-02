@@ -7,8 +7,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -36,7 +39,7 @@ public class BankTransfersController implements Initializable {
 
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<BankTransfer> contentList = FXCollections.observableArrayList();
-
+   private boolean ifMyTransfersActive = false;
    private int userId;
 
    public void setUser(int user){
@@ -53,12 +56,14 @@ public class BankTransfersController implements Initializable {
       //MenuItem
       itemMyTransfers.setOnAction(event->{
          loadMyTransfers();
+         ifMyTransfersActive = true;
          txtTitle.setText("My transfers");
          tabBankTransfers.setVisible(true);
       });
 
       itemOthersTransfers.setOnAction(event->{
          loadOthersTransfers();
+         ifMyTransfersActive = false;
          txtTitle.setText("Others transfers");
          tabBankTransfers.setVisible(true);
       });
@@ -68,7 +73,7 @@ public class BankTransfersController implements Initializable {
       colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("whoAcc"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer,BigDecimal>("amount"));
       colStatus.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("status"));
-      //TODO: action buttons
+      colAction.setCellFactory(param -> new UpdateStatusButtonCell());
       tabBankTransfers.setItems(contentList);
    }
 
@@ -87,6 +92,34 @@ public class BankTransfersController implements Initializable {
          contentList.addAll(dbController.getOthersBankTransfers(userId));
       }catch(Exception e){
          e.printStackTrace();
+      }
+   }
+
+   private class UpdateStatusButtonCell extends TableCell<User, Button> {
+      final Button btnUpdateStatus = new Button();
+
+      public UpdateStatusButtonCell() {
+         btnUpdateStatus.setText("Update");
+         btnUpdateStatus.setOnAction(event->{
+            try {
+               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(), userId);
+               if(ifMyTransfersActive)
+                  loadMyTransfers();
+               else loadOthersTransfers();
+
+            }catch (Exception e){
+               e.printStackTrace();
+            }
+         });
+      }
+
+      @Override
+      protected void updateItem(Button item, boolean empty) {
+         super.updateItem(item, empty);
+         if (!empty)
+            setGraphic(btnUpdateStatus);
+         else
+            setGraphic(null);
       }
    }
 }

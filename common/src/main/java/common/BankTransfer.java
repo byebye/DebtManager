@@ -13,12 +13,14 @@ public class BankTransfer implements Serializable {
    private boolean accept = false;
 
    public BankTransfer(User who, User whom, BigDecimal amount) {
+      this.id = id;
       this.who = who;
       this.whom = whom;
       this.amount = amount;
    }
 
-   public BankTransfer(String budgetName, User who, BigDecimal amount, int status){
+   public BankTransfer(int id,String budgetName, User who, BigDecimal amount, int status){
+      this.id = id;
       this.budgetName = budgetName;
       this.who = who;
       this.amount = amount;

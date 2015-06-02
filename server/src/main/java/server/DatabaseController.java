@@ -381,8 +381,9 @@ public class DatabaseController implements DBHandler {
 
    public List<BankTransfer> getMyBankTransfers(int userId){
       List<BankTransfer> myBankTransfers = new ArrayList<>();
-      Result<Record4<Integer,Integer,BigDecimal,Integer>> result =
+      Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
          dbContext.select(
+                        BankTransfers.BANK_TRANSFERS.ID,
                         BankTransfers.BANK_TRANSFERS.SETTLE_ID,
                         BankTransfers.BANK_TRANSFERS.WHOM,
                         BankTransfers.BANK_TRANSFERS.AMOUNT,
@@ -391,11 +392,11 @@ public class DatabaseController implements DBHandler {
                   .where(BankTransfers.BANK_TRANSFERS.WHO.equal(userId))
                   .fetch();
 
-      for(Record4<Integer,Integer,BigDecimal,Integer> bankTransfer: result){
+      for(Record5<Integer,Integer,Integer,BigDecimal,Integer> bankTransfer: result){
          int budgetId =
                dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
                         .from(Settlements.SETTLEMENTS)
-                        .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value1()))
+                        .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value2()))
                         .fetchOne().value1();
 
 
@@ -405,9 +406,9 @@ public class DatabaseController implements DBHandler {
                         .where(Budgets.BUDGETS.ID.equal(budgetId))
                         .fetchOne().value1();
 
-         User whom = getUserById(bankTransfer.value2());
+         User whom = getUserById(bankTransfer.value3());
 
-         myBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),bankTransfer.value4()));
+         myBankTransfers.add(new BankTransfer(bankTransfer.value1(),budgetName,whom,bankTransfer.value4(),bankTransfer.value5()));
       }
 
       return myBankTransfers;
@@ -415,8 +416,9 @@ public class DatabaseController implements DBHandler {
 
    public List<BankTransfer> getOthersBankTransfers(int userId){
       List<BankTransfer> othersBankTransfers = new ArrayList<>();
-      Result<Record4<Integer,Integer,BigDecimal,Integer>> result =
+      Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
             dbContext.select(
+                  BankTransfers.BANK_TRANSFERS.ID,
                   BankTransfers.BANK_TRANSFERS.SETTLE_ID,
                   BankTransfers.BANK_TRANSFERS.WHO,
                   BankTransfers.BANK_TRANSFERS.AMOUNT,
@@ -425,11 +427,11 @@ public class DatabaseController implements DBHandler {
                   .where(BankTransfers.BANK_TRANSFERS.WHOM.equal(userId))
                   .fetch();
 
-      for(Record4<Integer,Integer,BigDecimal,Integer> bankTransfer: result){
+      for(Record5<Integer,Integer,Integer,BigDecimal,Integer> bankTransfer: result){
          int budgetId =
                dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
                      .from(Settlements.SETTLEMENTS)
-                     .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value1()))
+                     .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value2()))
                      .fetchOne().value1();
 
 
@@ -439,9 +441,9 @@ public class DatabaseController implements DBHandler {
                      .where(Budgets.BUDGETS.ID.equal(budgetId))
                      .fetchOne().value1();
 
-         User whom = getUserById(bankTransfer.value2());
+         User whom = getUserById(bankTransfer.value3());
 
-         othersBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),bankTransfer.value4()));
+         othersBankTransfers.add(new BankTransfer(bankTransfer.value1(),budgetName,whom,bankTransfer.value4(),bankTransfer.value5()));
       }
 
       return othersBankTransfers;
@@ -475,13 +477,29 @@ public class DatabaseController implements DBHandler {
       return bankTransfers;
    }
 
-   public void setAsPaid(List<Integer> bankTransfers){
+   public void setBankTransferStatus(List<Integer> bankTransfers,int status){
       for(Integer id: bankTransfers){
          dbContext.update(BankTransfers.BANK_TRANSFERS)
-                  .set(BankTransfers.BANK_TRANSFERS.PAID,2)
+                  .set(BankTransfers.BANK_TRANSFERS.PAID,status)
                   .where(BankTransfers.BANK_TRANSFERS.ID.equal(id))
                   .execute();
       }
+   }
+
+   @Override
+   public void updateBankTransferStatus(int bankTransferId, int userId) {
+      System.out.println(bankTransferId);
+      List<Integer> content = new ArrayList<>();
+      content.add(bankTransferId);
+      int whoId =
+            dbContext.select(BankTransfers.BANK_TRANSFERS.WHO)
+            .from(BankTransfers.BANK_TRANSFERS)
+            .where(BankTransfers.BANK_TRANSFERS.ID.equal(bankTransferId))
+            .fetchOne().value1();
+
+      if(whoId == userId)
+         setBankTransferStatus(content,1);
+      else setBankTransferStatus(content,2);
    }
 
 }
