@@ -11,6 +11,10 @@ git pull
 export JAVA_1_8_HOME=/usr
 mvn package
 cp common/target/common*.jar ~/WWW/classes/common.jar
+cp client_release/target/client-all-jar.jar ~/WWW/classes/client-all-jar.jar
+cp client.jnlp ~/WWW/classes/client.jnlp
+jarsigner -keystore ~/debtmanagerKeystore ~/WWW/classses/client-all-jar.jar  debtmanagerKey
+
 
 killall java
 killall rmiregistry

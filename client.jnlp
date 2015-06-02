@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://managedebtsfor.me/classes/" href="client.jnlp">
+    <information>
+        <title>Debtmanager</title>
+        <vendor>managedebtsfor.me</vendor>
+        <homepage href="http://managedebtsfor.me" />
+        <description>A simple app for managing debts</description>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.8+" />
+        <jar href="client-all-jar.jar" />
+    </resources>
+    <application-desc main-class="client.windows.LoginWindow">
+        <param name="host" value="managedebtsfor.me">
+    </application-desc>
+</jnlp>
