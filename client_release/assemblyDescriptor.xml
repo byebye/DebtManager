@@ -12,7 +12,7 @@
     <dependencySets>
         <dependencySet>
             <unpack>true</unpack> <!-- unpack , then repack the jars -->
-            <useTransitiveDependencies>true</useTransitiveDependencies> <!-- do pull in any transitive dependencies -->
+            <useTransitiveDependencies>true</useTransitiveDependencies> <!-- docd clie   pull in any transitive dependencies -->
         </dependencySet>
     </dependencySets>
 </assembly>

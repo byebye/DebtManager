@@ -22,6 +22,7 @@ public class LoginWindow extends Application {
 
       controller = fxmlLoader.<LoginController>getController();
       final String host = getParameters().getNamed().get("host");
+      System.out.println("host =" +host);
       controller.connectWithRMIHost(host);
       controller.setStage(primaryStage);
 
