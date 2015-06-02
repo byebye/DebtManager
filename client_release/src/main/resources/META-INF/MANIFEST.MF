@@ -1,1 +1,2 @@
 Permissions: all-permissions
+Main-Class: client.windows.LoginWindow
