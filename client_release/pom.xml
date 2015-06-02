@@ -43,8 +43,10 @@
                             <archive>
                                 <manifest>
                                     <mainClass>client.windows.LoginWindow</mainClass>
-                                    <permissions>all-permissions</permissions>
                                 </manifest>
+                                <manifestEntries>
+                                    <Permissions>all-permissions</Permissions>
+                                </manifestEntries>
                             </archive>
                             <descriptors>
                                 <descriptor>assemblyDescriptor.xml</descriptor>
@@ -55,6 +57,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
