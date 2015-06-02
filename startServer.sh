@@ -5,10 +5,13 @@ RMIREGISTRY=rmiregistry
 JAR=./server_release/target/server-all-jar.jar
 
 
-cp common/target/common*.jar ~/WWW/classes/common.jar
+
+git pull
 
 export JAVA_1_8_HOME=/usr
 mvn package
+cp common/target/common*.jar ~/WWW/classes/common.jar
+
 killall java
 killall rmiregistry
 
