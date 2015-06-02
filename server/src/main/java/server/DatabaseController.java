@@ -407,12 +407,7 @@ public class DatabaseController implements DBHandler {
 
          User whom = getUserById(bankTransfer.value2());
 
-         String status;
-         if(bankTransfer.value4() == 0)status = "not paid";
-         else if(bankTransfer.value4() == 1)status = "not confirmed";
-         else status = "OK";
-
-         myBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
+         myBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),bankTransfer.value4()));
       }
 
       return myBankTransfers;
@@ -446,12 +441,7 @@ public class DatabaseController implements DBHandler {
 
          User whom = getUserById(bankTransfer.value2());
 
-         String status;
-         if(bankTransfer.value4() == 0)status = "not paid";
-         else if(bankTransfer.value4() == 1)status = "not confirmed";
-         else status = "OK";
-
-         othersBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),status));
+         othersBankTransfers.add(new BankTransfer(budgetName,whom,bankTransfer.value3(),bankTransfer.value4()));
       }
 
       return othersBankTransfers;
@@ -471,17 +461,13 @@ public class DatabaseController implements DBHandler {
                .fetch();
 
       for(Record5<Integer,Integer,Integer,BigDecimal,Integer> bankTransfer: result) {
-         String status;
-         if(bankTransfer.value5() == 0)status = "not paid";
-         else if(bankTransfer.value5() == 1)status = "not confirmed";
-         else status = "OK";
          bankTransfers.add(
                new BankTransfer(
                      bankTransfer.value1(),
                      getUserById(bankTransfer.value2()),
                      getUserById(bankTransfer.value3()),
                      bankTransfer.value4(),
-                     status
+                     bankTransfer.value5()
                )
          );
       }

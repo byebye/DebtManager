@@ -7,7 +7,7 @@ public class BankTransfer implements Serializable {
    private User who, whom;
    private BigDecimal amount;
    private String budgetName;
-   private String status;
+   private int status;
    private String whoAcc;
    private int id;
    private boolean accept = false;
@@ -18,7 +18,7 @@ public class BankTransfer implements Serializable {
       this.amount = amount;
    }
 
-   public BankTransfer(String budgetName, User who, BigDecimal amount, String status){
+   public BankTransfer(String budgetName, User who, BigDecimal amount, int status){
       this.budgetName = budgetName;
       this.who = who;
       this.amount = amount;
@@ -28,7 +28,7 @@ public class BankTransfer implements Serializable {
       System.out.println(who.getName());
    }
 
-   public BankTransfer(int id,User who, User whom, BigDecimal amount, String status){
+   public BankTransfer(int id,User who, User whom, BigDecimal amount, int status){
       this.who = who;
       this.whom = whom;
       this.amount = amount;
@@ -37,7 +37,13 @@ public class BankTransfer implements Serializable {
    }
 
    public String getBudgetName(){return budgetName;}
-   public String getStatus(){return status;}
+   public String getStatus() {
+      if (status == 0) return "not paid";
+      if (status == 1) return "not confirmed";
+      return "OK";
+   }
+
+   public int getStatusId(){return status;}
    public String getWhoAcc(){return whoAcc;}
 
    public String getWho() {
