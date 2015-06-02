@@ -6,16 +6,16 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SettleController">
+<Pane fx:id="chkboxSendViaMail" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SettleController">
    <children>
       <Text layoutX="29.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Settle">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
-      <Button fx:id="btnConfirm" layoutX="322.0" layoutY="371.0" mnemonicParsing="false" text="Confirm" />
-      <Button fx:id="btnDecline" layoutX="10.0" layoutY="370.0" mnemonicParsing="false" text="Decline" />
-      <TableView fx:id="tabSettleView" layoutX="1.0" layoutY="59.0" prefHeight="303.0" prefWidth="500.0">
+      <Button fx:id="btnConfirm" layoutX="20.0" layoutY="360.0" mnemonicParsing="false" text="Confirm" />
+      <Button fx:id="btnDecline" layoutX="414.0" layoutY="360.0" mnemonicParsing="false" text="Decline" />
+      <TableView fx:id="tabSettleView" layoutX="1.0" layoutY="59.0" prefHeight="275.0" prefWidth="500.0">
         <columns>
           <TableColumn fx:id="colWho" prefWidth="105.0" text="Who" />
           <TableColumn fx:id="colWhom" prefWidth="89.0" text="Whom" />
@@ -24,5 +24,6 @@
             <TableColumn fx:id="colConfirm" prefWidth="40.0" />
         </columns>
       </TableView>
+      <CheckBox layoutX="20.0" layoutY="340.0" mnemonicParsing="false" text="Send via mail" />
    </children>
 </Pane>
