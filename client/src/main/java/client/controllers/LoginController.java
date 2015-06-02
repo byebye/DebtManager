@@ -5,9 +5,11 @@ import client.windows.SignUpWindow;
 import common.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import javax.naming.AuthenticationException;
@@ -32,9 +34,19 @@ public class LoginController implements Initializable{
    private static String host;
 
    private Stage currentStage;
+   private Scene scene;
 
    public void setStage(Stage stage) {
       currentStage = stage;
+   }
+
+   public void setScene(Scene scene) {
+      this.scene = scene;
+      scene.setOnKeyPressed(event->{
+         if(event.getCode().compareTo(KeyCode.ENTER) == 0){
+            btnLogIn.fire();
+         }
+      });
    }
 
    public void setDbController(DBHandler dbhandler){
@@ -98,6 +110,6 @@ public class LoginController implements Initializable{
       budgetsListWindow.setOnHidden(e -> currentStage.show());
       currentStage.hide();
       txtFieldPassword.clear();
-      budgetsListWindow.showAndWait();
+      budgetsListWindow.show();
    }
 }

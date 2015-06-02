@@ -19,15 +19,16 @@ public class LoginWindow extends Application {
    public void start(Stage primaryStage) throws Exception {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();
-
+      Scene scene = new Scene(root);
       controller = fxmlLoader.<LoginController>getController();
       final String host = getParameters().getNamed().get("host");
       System.out.println("host =" +host);
       controller.connectWithRMIHost(host);
       controller.setStage(primaryStage);
-
+      controller.setScene(scene);
       primaryStage.setTitle("DebtManager - Log in");
-      primaryStage.setScene(new Scene(root));
+
+      primaryStage.setScene(scene);
       primaryStage.show();
    }
 
