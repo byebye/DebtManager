@@ -144,6 +144,23 @@ public class DatabaseController implements DBHandler {
       dbContext.delete(Payments.PAYMENTS)
                .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId()))
                .execute();
+      Result<Record1<Integer>> settlements =
+            dbContext.select(Settlements.SETTLEMENTS.ID)
+                     .from(Settlements.SETTLEMENTS)
+                     .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budget.getId()))
+                     .fetch();
+
+      for(Record1<Integer> settlement: settlements){
+         dbContext.delete(BankTransfers.BANK_TRANSFERS)
+                  .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+                  .execute();
+
+         dbContext.delete(Settlements.SETTLEMENTS)
+                  .where(Settlements.SETTLEMENTS.ID.equal(settlement.value1()))
+                  .execute();
+      }
+
+
       dbContext.delete(Budgets.BUDGETS)
                .where(Budgets.BUDGETS.ID.equal(budget.getId()))
                .execute();
