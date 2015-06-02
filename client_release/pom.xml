@@ -43,6 +43,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>client.windows.LoginWindow</mainClass>
+                                    <Permissions>all-permissions</Permissions>
                                 </manifest>
                             </archive>
                             <descriptors>
