@@ -28,7 +28,7 @@ public class DatabaseController implements DBHandler {
 
    private DatabaseController(){}
 
-   public static void createInstance(String dbUser, String dbPassword, String Url) throws InstantiationException {
+   public static void createInstance(String dbUser, String dbPassword, String url) throws InstantiationException {
       if(onlyInstance != null)
          throw new InstantiationException("instance already created");
       DatabaseController.dbUser = dbUser;
