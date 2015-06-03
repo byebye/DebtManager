@@ -30,10 +30,10 @@
       <TableView fx:id="tabBankTransfers" layoutX="50.0" layoutY="133.0" prefHeight="200.0" prefWidth="500.0" visible="false">
         <columns>
           <TableColumn fx:id="colBudgetName" prefWidth="124.0" text="Budget" />
-          <TableColumn fx:id="colWho" prefWidth="269.0" text="Who" />
+          <TableColumn fx:id="colWho" prefWidth="249.0" text="Who" />
             <TableColumn fx:id="colAmount" prefWidth="66.0" text="Amount" />
-            <TableColumn fx:id="colStatus" prefWidth="20.0" />
-            <TableColumn fx:id="colAction" prefWidth="20.0" />
+            <TableColumn fx:id="colStatus" prefWidth="30.0" />
+            <TableColumn fx:id="colAction" prefWidth="30.0" />
         </columns>
       </TableView>
       <Button fx:id="btnClose" layoutX="502.0" layoutY="361.0" mnemonicParsing="false" text="Close" />

@@ -134,15 +134,17 @@ public class BankTransfersController implements Initializable {
       ImageView confirmImageView = new ImageView();
 
       public UpdateStatusButtonCell() {
+         setPadding(new Insets(0, 0, 0, 0));
          Image image1 = new Image(getClass().getClass().getResourceAsStream("/graphics/pay.png"));
          payImageView.setImage(image1);
          payImageView.setPreserveRatio(true);
-         payImageView.setFitHeight(20);
+         payImageView.setFitHeight(15);
          Image image2 = new Image(getClass().getClass().getResourceAsStream("/graphics/ok.png"));
          confirmImageView.setImage(image2);
          confirmImageView.setPreserveRatio(true);
-         confirmImageView.setFitHeight(20);
-         btnUpdateStatus.setMaxHeight(20);
+         confirmImageView.setFitHeight(15);
+         btnUpdateStatus.setPrefSize(25,25);
+         btnUpdateStatus.setPadding(new Insets(0,0,0,0));
          btnUpdateStatus.setOnAction(event->{
             try {
                dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(), userId);
@@ -159,7 +161,7 @@ public class BankTransfersController implements Initializable {
       @Override
       protected void updateItem(Button item, boolean empty) {
          super.updateItem(item, empty);
-         if (!empty) {
+         if (!empty && item != null) {
             int statusId = ((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getStatusId();
             if (!ifMyTransfersActive && statusId != 2) {
                btnUpdateStatus.setGraphic(confirmImageView);
