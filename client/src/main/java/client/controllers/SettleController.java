@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -28,6 +29,8 @@ public class SettleController implements Initializable {
    TableColumn colWho,colWhom,colAmount,colAccNumber;
    @FXML
    Button btnConfirm, btnDecline;
+   @FXML
+   CheckBox chkbxSendViaMail;
 
    private static DBHandler dbController = LoginController.dbController;
    private static ObservableList<BankTransfer> bankTransfers = FXCollections.observableArrayList();
@@ -67,7 +70,7 @@ public class SettleController implements Initializable {
          try {
             List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
             List<BankTransfer> bankTransfersSerializable = new ArrayList<>(bankTransfers);
-            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable, false);
+            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable,chkbxSendViaMail.isSelected());
             parentController.fillAllTables();
             bankTransfers.clear();
             Stage stage = (Stage) btnConfirm.getScene().getWindow();
