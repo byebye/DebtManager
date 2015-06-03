@@ -1,5 +1,6 @@
 package client.controllers;
 
+import com.sun.xml.internal.ws.api.message.Packet;
 import common.BankTransfer;
 import common.DBHandler;
 import common.User;
@@ -8,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -72,7 +74,7 @@ public class BankTransfersController implements Initializable {
       colBudgetName.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("budgetName"));
       colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("whoAcc"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer,BigDecimal>("amount"));
-      colStatus.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("status"));
+      colStatus.setCellFactory(param->new StatusImageCell());
       colAction.setCellFactory(param -> new UpdateStatusButtonCell());
       tabBankTransfers.setItems(contentList);
    }
@@ -95,11 +97,52 @@ public class BankTransfersController implements Initializable {
       }
    }
 
-   private class UpdateStatusButtonCell extends TableCell<User, Button> {
+   private class StatusImageCell extends TableCell<BankTransfer,ImageView>{
+      ImageView imageView = new ImageView();
+      public StatusImageCell(){
+         imageView.setPreserveRatio(true);
+         imageView.setFitHeight(20);
+      }
+
+      @Override
+      protected void updateItem(ImageView item, boolean empty) {
+         super.updateItem(item, empty);
+         if (!empty) {
+            int statusId = ((BankTransfer)StatusImageCell.this.getTableRow().getItem()).getStatusId();
+            String path = "/graphics/";
+            if(statusId == 0)
+               path += "notpaid.png";
+            if(statusId == 1)
+               path += "waiting.png";
+            if(statusId == 2)
+               path += "paid.png";
+
+            Image image = new Image(getClass().getClass().getResourceAsStream(path));
+            imageView.setImage(image);
+            setGraphic(imageView);
+
+         }
+         else
+            setGraphic(null);
+      }
+
+   }
+
+   private class UpdateStatusButtonCell extends TableCell<BankTransfer, Button> {
       final Button btnUpdateStatus = new Button();
+      ImageView payImageView = new ImageView();
+      ImageView confirmImageView = new ImageView();
 
       public UpdateStatusButtonCell() {
-         btnUpdateStatus.setText("Update");
+         Image image1 = new Image(getClass().getClass().getResourceAsStream("/graphics/pay.png"));
+         payImageView.setImage(image1);
+         payImageView.setPreserveRatio(true);
+         payImageView.setFitHeight(20);
+         Image image2 = new Image(getClass().getClass().getResourceAsStream("/graphics/ok.png"));
+         confirmImageView.setImage(image2);
+         confirmImageView.setPreserveRatio(true);
+         confirmImageView.setFitHeight(20);
+         btnUpdateStatus.setMaxHeight(20);
          btnUpdateStatus.setOnAction(event->{
             try {
                dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(), userId);
@@ -116,8 +159,17 @@ public class BankTransfersController implements Initializable {
       @Override
       protected void updateItem(Button item, boolean empty) {
          super.updateItem(item, empty);
-         if (!empty)
-            setGraphic(btnUpdateStatus);
+         if (!empty) {
+            int statusId = ((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getStatusId();
+            if (!ifMyTransfersActive && statusId != 2) {
+               btnUpdateStatus.setGraphic(confirmImageView);
+               setGraphic(btnUpdateStatus);
+            } else if (ifMyTransfersActive && statusId == 0){
+               btnUpdateStatus.setGraphic(payImageView);
+               setGraphic(btnUpdateStatus);
+            }
+            else setGraphic(null);
+         }
          else
             setGraphic(null);
       }
