@@ -2,6 +2,7 @@ package server;
 
 import common.AccessProvider;
 
+import javax.xml.crypto.Data;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -11,14 +12,15 @@ import java.rmi.server.UnicastRemoteObject;
  * Created by glapul on 16.05.15.
  */
 public class Server {
-    private static DatabaseController dbController;
+    static DatabaseController dbController;
     private static String dbUser, dbPassword, url;
 
     public static void main (String [] args) {
         try {
             parseArguments(args);
             System.out.println("Connecting to " + url + " as " + dbUser);
-            dbController = new DatabaseController(dbUser, dbPassword, url);
+            DatabaseController.createInstance(dbUser, dbPassword, url);
+            dbController = DatabaseController.getInstance();
         }
         catch (Exception e) {
             System.err.println("Could not connect to the database");

@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
+
+   private static DatabaseController onlyInstance;
    private static String dbUser = "debtmanager"; // "z1111813";
    private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
    private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
@@ -24,15 +26,21 @@ public class DatabaseController implements DBHandler {
    // TODO lock that will be used to synchronize ALL operations on the database
    public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
-   public DatabaseController() {
-      connect();
-   }
+   private DatabaseController(){}
 
-   public DatabaseController(String dbUser, String dbPassword, String url) {
-      this.dbUser = dbUser;
-      this.dbPassword = dbPassword;
-      this.url = url;
-      connect();
+   public static void createInstance(String dbUser, String dbPassword, String Url) throws InstantiationException {
+      if(onlyInstance != null)
+         throw new InstantiationException("instance already created");
+      DatabaseController.dbUser = dbUser;
+      DatabaseController.dbPassword = dbPassword;
+      DatabaseController.url = url;
+      onlyInstance = new DatabaseController();
+      onlyInstance.connect();
+   }
+   public static DatabaseController getInstance() {
+      if(onlyInstance == null)
+         throw new NullPointerException();
+      return onlyInstance;
    }
 
    private void connect() {
@@ -90,6 +98,18 @@ public class DatabaseController implements DBHandler {
       final String name = result.get(0).value2();
       final String bankAccount = result.get(0).value3().toString();
       return new User(userId, name, email, bankAccount);
+   }
+
+   public String getBudgetName(int id) {
+      Result<Record1<String>> result =
+            dbContext.select(Budgets.BUDGETS.NAME)
+                  .from(Budgets.BUDGETS)
+                  .where(Budgets.BUDGETS.ID.equal(id))
+                  .fetch();
+      if (result.isEmpty())
+         throw new NoSuchElementException("No such budget");
+      final String name = result.get(0).value1();
+      return name;
    }
 
    @Override
@@ -330,7 +350,7 @@ public class DatabaseController implements DBHandler {
       return payments;
    }
 
-    public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
+   public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
         List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
         Map<Integer,Double> userSpend = new HashMap<>();
         double sum = 0;
@@ -364,7 +384,7 @@ public class DatabaseController implements DBHandler {
         return neededTransfers;
     }
 
-    public void settleUnaccountedPayments(int budgetId, List<Payment> payments, List<BankTransfer> bankTransfers) {
+   public void settleUnaccountedPayments(int budgetId, List<Payment> payments, List<BankTransfer> bankTransfers, boolean sendEmails) {
        int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
              .values(budgetId)
              .returning(Settlements.SETTLEMENTS.ID)
@@ -387,9 +407,11 @@ public class DatabaseController implements DBHandler {
           ).values(settleId,bk.getWhoId(),bk.getWhomId(),bk.getAmount())
                 .execute();
        }
+      if(sendEmails)
+         new Thread(new BankTransferEmailSender(budgetId, bankTransfers)).run();
     }
 
-    public void removeParticipant(int budgetId, int userId) {
+   public void removeParticipant(int budgetId, int userId) {
       dbContext.delete(UserBudget.USER_BUDGET)
                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
                .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
