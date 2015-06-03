@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseController implements DBHandler {
+
+   private static DatabaseController onlyInstance;
    private static String dbUser = "debtmanager"; // "z1111813";
    private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
    private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
@@ -24,15 +26,21 @@ public class DatabaseController implements DBHandler {
    // TODO lock that will be used to synchronize ALL operations on the database
    public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
-   public DatabaseController() {
-      connect();
-   }
+   private DatabaseController(){}
 
-   public DatabaseController(String dbUser, String dbPassword, String url) {
-      this.dbUser = dbUser;
-      this.dbPassword = dbPassword;
-      this.url = url;
-      connect();
+   public static void createInstance(String dbUser, String dbPassword, String url) throws InstantiationException {
+      if(onlyInstance != null)
+         throw new InstantiationException("instance already created");
+      DatabaseController.dbUser = dbUser;
+      DatabaseController.dbPassword = dbPassword;
+      DatabaseController.url = url;
+      onlyInstance = new DatabaseController();
+      onlyInstance.connect();
+   }
+   public static DatabaseController getInstance() {
+      if(onlyInstance == null)
+         throw new NullPointerException();
+      return onlyInstance;
    }
 
    private void connect() {
@@ -48,7 +56,7 @@ public class DatabaseController implements DBHandler {
    }
 
    @Override
-   public boolean validateUserPassword(Email email, String passwordHash) {
+   public synchronized boolean validateUserPassword(Email email, String passwordHash) {
       Result<Record1<String>> result =
               dbContext.select(Users.USERS.PASSWORD_HASH)
                        .from(Users.USERS)
@@ -60,7 +68,7 @@ public class DatabaseController implements DBHandler {
       return passwordHash.equals(expectedPassword);
    }
 
-   public User getUserByEmail(String email) {
+   public synchronized User getUserByEmail(String email) {
       Result<Record3<Integer, String, BigInteger>> result =
               dbContext.select(Users.USERS.ID,
                                Users.USERS.NAME,
@@ -76,7 +84,7 @@ public class DatabaseController implements DBHandler {
       return new User(id, name, email, bankAccount);
    }
 
-   public User getUserById(int userId) {
+   public synchronized User getUserById(int userId) {
       Result<Record3<String, String, BigInteger>> result =
               dbContext.select(Users.USERS.EMAIL,
                                Users.USERS.NAME,
@@ -92,8 +100,20 @@ public class DatabaseController implements DBHandler {
       return new User(userId, name, email, bankAccount);
    }
 
+   public synchronized String getBudgetName(int id) {
+      Result<Record1<String>> result =
+            dbContext.select(Budgets.BUDGETS.NAME)
+                  .from(Budgets.BUDGETS)
+                  .where(Budgets.BUDGETS.ID.equal(id))
+                  .fetch();
+      if (result.isEmpty())
+         throw new NoSuchElementException("No such budget");
+      final String name = result.get(0).value1();
+      return name;
+   }
+
    @Override
-   public boolean createUser(User user, String passwordHash) {
+   public synchronized boolean createUser(User user, String passwordHash) {
       BigInteger bankAccount = new BigInteger(user.getBankAccount());
       dbContext.insertInto(Users.USERS,
                            Users.USERS.EMAIL,
@@ -106,7 +126,7 @@ public class DatabaseController implements DBHandler {
    }
 
 
-   public boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) {
+   public synchronized boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) {
       dbContext.insertInto(Users.USERS,
                            Users.USERS.EMAIL,
                            Users.USERS.NAME,
@@ -117,7 +137,7 @@ public class DatabaseController implements DBHandler {
       return true;
    }
 
-   public boolean createBudget(Budget budget) {
+   public synchronized boolean createBudget(Budget budget) {
       final BudgetsRecord result =
               dbContext.insertInto(Budgets.BUDGETS,
                                    Budgets.BUDGETS.NAME,
@@ -137,7 +157,7 @@ public class DatabaseController implements DBHandler {
       return true;
    }
 
-   public boolean deleteBudget(Budget budget) {
+   public synchronized boolean deleteBudget(Budget budget) {
       dbContext.delete(UserBudget.USER_BUDGET)
                .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budget.getId()))
                .execute();
@@ -168,7 +188,7 @@ public class DatabaseController implements DBHandler {
 
    }
 
-   public List<Budget> getAllBudgets(int userId) {
+   public synchronized List<Budget> getAllBudgets(int userId) {
       Result<Record4<Integer, Integer, String, String>> result =
               dbContext.select(Budgets.BUDGETS.ID,
                                Budgets.BUDGETS.OWNER_ID,
@@ -195,7 +215,7 @@ public class DatabaseController implements DBHandler {
       return budgets;
    }
 
-   public List<User> getBudgetParticipants(int budgetId) {
+   public synchronized List<User> getBudgetParticipants(int budgetId) {
       Result<Record4<Integer, String, String, BigInteger>> result =
               dbContext.select(Users.USERS.ID,
                                Users.USERS.NAME,
@@ -217,7 +237,7 @@ public class DatabaseController implements DBHandler {
       return participants;
    }
 
-   public void addBudgetParticipants(int budgetId, List<User> users) {
+   public synchronized void addBudgetParticipants(int budgetId, List<User> users) {
       for (User user : users) {
          dbContext.insertInto(UserBudget.USER_BUDGET,
                               UserBudget.USER_BUDGET.BUDGET_ID,
@@ -227,7 +247,7 @@ public class DatabaseController implements DBHandler {
       }
    }
 
-   public void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
+   public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
       dbContext.insertInto(Payments.PAYMENTS,
                            Payments.PAYMENTS.BUDGET_ID,
                            Payments.PAYMENTS.AMOUNT,
@@ -240,7 +260,7 @@ public class DatabaseController implements DBHandler {
                .execute();
    }
 
-   public void updatePayment(int paymentId, int userId, BigDecimal amount, String what) {
+   public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String what) {
       dbContext.update(Payments.PAYMENTS)
                .set(Payments.PAYMENTS.AMOUNT, amount)
                .set(Payments.PAYMENTS.USER_ID, userId)
@@ -249,13 +269,13 @@ public class DatabaseController implements DBHandler {
                .execute();
    }
 
-   public void deletePayment(int paymentId) {
+   public synchronized void deletePayment(int paymentId) {
       dbContext.delete(Payments.PAYMENTS)
                .where(Payments.PAYMENTS.ID.equal(paymentId))
                .execute();
    }
 
-   public List<Settlement> getAllSettlements(int budgetId){
+   public synchronized List<Settlement> getAllSettlements(int budgetId){
       List<Settlement> settlements = new ArrayList<>();
 
       Result<Record2<Integer,java.sql.Date>> result =
@@ -286,7 +306,7 @@ public class DatabaseController implements DBHandler {
       return settlements;
    }
 
-   public List<Payment> getPaymentsBySettlementId(int settlementId){
+   public synchronized List<Payment> getPaymentsBySettlementId(int settlementId){
       List<Payment> payments = new ArrayList<>();
       Result<Record1<Integer>> result =
             dbContext.select(Payments.PAYMENTS.ID)
@@ -308,7 +328,7 @@ public class DatabaseController implements DBHandler {
       return payments;
    }
 
-   public List<Payment> getAllPayments(int budgetId, boolean accounted) {
+   public synchronized List<Payment> getAllPayments(int budgetId, boolean accounted) {
       Result<Record4<Integer, Integer, String, BigDecimal>> result =
               dbContext.select(Payments.PAYMENTS.ID,
                                Payments.PAYMENTS.USER_ID,
@@ -330,7 +350,7 @@ public class DatabaseController implements DBHandler {
       return payments;
    }
 
-    public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
+   public synchronized List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
         List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
         Map<Integer,Double> userSpend = new HashMap<>();
         double sum = 0;
@@ -364,7 +384,7 @@ public class DatabaseController implements DBHandler {
         return neededTransfers;
     }
 
-    public void settleUnaccountedPayments(int budgetId, List<Payment> payments, List<BankTransfer> bankTransfers) {
+   public synchronized void settleUnaccountedPayments(int budgetId, List<Payment> payments, List<BankTransfer> bankTransfers, boolean sendEmails) {
        int settleId = dbContext.insertInto(Settlements.SETTLEMENTS,Settlements.SETTLEMENTS.BUDGET_ID)
              .values(budgetId)
              .returning(Settlements.SETTLEMENTS.ID)
@@ -387,16 +407,18 @@ public class DatabaseController implements DBHandler {
           ).values(settleId,bk.getWhoId(),bk.getWhomId(),bk.getAmount())
                 .execute();
        }
+      if(sendEmails)
+         new Thread(new BankTransferEmailSender(budgetId, bankTransfers)).run();
     }
 
-    public void removeParticipant(int budgetId, int userId) {
+   public synchronized void removeParticipant(int budgetId, int userId) {
       dbContext.delete(UserBudget.USER_BUDGET)
                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
                .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
                .execute();
    }
 
-   public List<BankTransfer> getMyBankTransfers(int userId){
+   public synchronized List<BankTransfer> getMyBankTransfers(int userId){
       List<BankTransfer> myBankTransfers = new ArrayList<>();
       Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
          dbContext.select(
@@ -431,7 +453,7 @@ public class DatabaseController implements DBHandler {
       return myBankTransfers;
    }
 
-   public List<BankTransfer> getOthersBankTransfers(int userId){
+   public synchronized List<BankTransfer> getOthersBankTransfers(int userId){
       List<BankTransfer> othersBankTransfers = new ArrayList<>();
       Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
             dbContext.select(
@@ -466,7 +488,7 @@ public class DatabaseController implements DBHandler {
       return othersBankTransfers;
    }
 
-   public List<BankTransfer> getBankTransfersBySettlementId(int settlementId){
+   public synchronized List<BankTransfer> getBankTransfersBySettlementId(int settlementId){
       List<BankTransfer> bankTransfers = new ArrayList<>();
       Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
             dbContext.select(
@@ -494,7 +516,8 @@ public class DatabaseController implements DBHandler {
       return bankTransfers;
    }
 
-   public void setBankTransferStatus(List<Integer> bankTransfers,int status){
+   @Override
+   public synchronized void setBankTransferStatus(List<Integer> bankTransfers,int status){
       for(Integer id: bankTransfers){
          dbContext.update(BankTransfers.BANK_TRANSFERS)
                   .set(BankTransfers.BANK_TRANSFERS.PAID,status)
@@ -504,7 +527,7 @@ public class DatabaseController implements DBHandler {
    }
 
    @Override
-   public void updateBankTransferStatus(int bankTransferId, int userId) {
+   public synchronized void updateBankTransferStatus(int bankTransferId, int userId) {
       System.out.println(bankTransferId);
       List<Integer> content = new ArrayList<>();
       content.add(bankTransferId);

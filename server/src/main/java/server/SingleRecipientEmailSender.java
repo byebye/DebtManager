@@ -9,18 +9,17 @@ import common.Email;
  */
 public class SingleRecipientEmailSender {
 
-   private static final String SendGridUserName = "debtmanager",
-                               SendGridPassword = "debtmanager1";
-   private static SendGrid sg;
+   private static final String sendGridUserName = "debtmanager",
+                               sendGridPassword = "debtmanager1";
+   private SendGrid sg;
 
    public static class EmailNotSentException extends Exception {}
 
-   static {
-      sg = new SendGrid(SendGridUserName, SendGridPassword);
+   public SingleRecipientEmailSender() {
+      sg = new SendGrid(sendGridUserName, sendGridPassword);
    }
 
-
-   public static void send(Email from, Email to, String subject, String text) throws EmailNotSentException{
+   public void send(Email from, Email to, String subject, String text) throws EmailNotSentException{
       SendGrid.Email email = new SendGrid.Email();
 
       email.addTo(to.getAddress());
