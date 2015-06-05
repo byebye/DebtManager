@@ -1,6 +1,7 @@
 package server;
 
 import common.*;
+import jdk.nashorn.internal.objects.NativeUint16Array;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import server.jooq.tables.*;
@@ -8,6 +9,8 @@ import server.jooq.tables.records.BudgetsRecord;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,6 +20,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DatabaseController implements DBHandler {
 
    private static DatabaseController onlyInstance;
+   private static DBHandler exportedInstance;
    private static String dbUser = "debtmanager"; // "z1111813";
    private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
    private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
@@ -37,10 +41,26 @@ public class DatabaseController implements DBHandler {
       onlyInstance = new DatabaseController();
       onlyInstance.connect();
    }
+
+   public static void createExportedInstance() {
+      try {
+         exportedInstance = (DBHandler) UnicastRemoteObject.exportObject(DatabaseController.getInstance(), 1100);
+      }
+      catch (RemoteException re) {
+         System.out.println("Exporting DBHandler failed");
+      }
+   }
+
    public static DatabaseController getInstance() {
       if(onlyInstance == null)
          throw new NullPointerException();
       return onlyInstance;
+   }
+
+   public static DBHandler getExportedInstance() {
+      if(exportedInstance == null)
+         throw new NullPointerException();
+      return exportedInstance;
    }
 
    private void connect() {
