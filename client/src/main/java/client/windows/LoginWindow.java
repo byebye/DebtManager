@@ -22,7 +22,7 @@ public class LoginWindow extends Application {
       Scene scene = new Scene(root);
       controller = fxmlLoader.<LoginController>getController();
       final String host = getParameters().getNamed().get("host");
-      System.out.println("host =" +host);
+      System.out.println("host = " + host);
       controller.connectWithRMIHost(host);
       controller.setStage(primaryStage);
       controller.setScene(scene);

@@ -18,6 +18,7 @@
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="50.0" minHeight="25.0" prefHeight="50.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
@@ -65,8 +66,9 @@
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" GridPane.rowIndex="3" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" GridPane.rowIndex="4" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repeat password:" GridPane.rowIndex="5" />
-      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
-      <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign Up" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnCancel" mnemonicParsing="false" text="Cancel" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="BOTTOM" />
+      <Label fx:id="errorLabel" textAlignment="RIGHT" textFill="#d60f0f" GridPane.columnSpan="2" GridPane.rowIndex="6" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

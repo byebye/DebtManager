@@ -4,10 +4,7 @@ import common.Email;
 import common.SHA1Hasher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -19,12 +16,15 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class SignUpController implements Initializable {
+
    @FXML
    TextField txtFieldEmail, txtFieldUsername, txtFieldBankAccount;
    @FXML
    PasswordField txtFieldPassword, txtFieldRepPassword;
    @FXML
    Button btnSignUp, btnCancel;
+   @FXML
+   Label errorLabel;
 
    private Stage currentStage;
    private LoginController loginController;
@@ -43,15 +43,39 @@ public class SignUpController implements Initializable {
       btnCancel.setOnAction(event -> currentStage.close());
 
       btnSignUp.setOnAction(event -> {
-         if (!txtFieldPassword.getText().equals(txtFieldRepPassword.getText())) {
-//            txtResult.setFill(Color.FIREBRICK);
-//            txtResult.setText("Passwords don't match");
-            event.consume();
+         errorLabel.setText("");
+         txtFieldEmail.setStyle("-fx-border-color: transparent;");
+         txtFieldUsername.setStyle("-fx-border-color: transparent;");
+         txtFieldBankAccount.setStyle("-fx-border-color: transparent;");
+         txtFieldPassword.setStyle("-fx-border-color: transparent;");
+         txtFieldRepPassword.setStyle("-fx-border-color: transparent;");
+         if (!Email.isValid(txtFieldEmail.getText())) {
+            errorLabel.setText("Invalid email address");
+            txtFieldEmail.setStyle("-fx-border-color: #d60f0f;");
+            txtFieldEmail.requestFocus();
+         }
+         else if(txtFieldUsername.getText().isEmpty()) {
+            errorLabel.setText("User name should not be empty");
+            txtFieldUsername.setStyle("-fx-border-color: #d60f0f;");
+            txtFieldUsername.requestFocus();
          }
          else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
-//            txtResult.setFill(Color.FIREBRICK);
-//            txtResult.setText("Bank account should contain 22 digits");
+            txtFieldBankAccount.requestFocus();
+            txtFieldBankAccount.setStyle("-fx-border-color: #d60f0f;");
+            errorLabel.setText("Invalid bank account number");
             event.consume();
+         }
+         else if (!txtFieldPassword.getText().equals(txtFieldRepPassword.getText())) {
+            errorLabel.setText("Passwords don't match");
+            txtFieldPassword.requestFocus();
+            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
+            txtFieldRepPassword.setStyle("-fx-border-color: #d60f0f;");
+            event.consume();
+         }
+         else if(txtFieldPassword.getText().isEmpty()) {
+            errorLabel.setText("Password should not be empty");
+            txtFieldPassword.requestFocus();
+            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
          }
          else {
             try {
@@ -61,7 +85,7 @@ public class SignUpController implements Initializable {
             }
             catch (Exception e) {
                e.printStackTrace();
-//               txtResult.setText("User couldn't be created!");
+               errorLabel.setText("User couldn't be created, try again");
             }
          }
       });

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.*?>
@@ -15,6 +16,7 @@
       <RowConstraints maxHeight="55.0" minHeight="40.0" prefHeight="45.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="75.0" minHeight="25.0" prefHeight="50.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
@@ -27,8 +29,9 @@
       </Text>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" GridPane.rowIndex="1" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" textAlignment="RIGHT" GridPane.rowIndex="2" />
-      <Button fx:id="btnLogIn" mnemonicParsing="false" text="Log in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
-      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign up" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnLogIn" mnemonicParsing="false" text="Log in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
+      <Button fx:id="btnSignUp" mnemonicParsing="false" text="Sign up" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM" />
+      <Label fx:id="errorLabel" text="" textAlignment="RIGHT" textFill="#d60f0f" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -19,7 +20,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable{
+public class LoginController implements Initializable {
 
    @FXML
    Button btnSignUp, btnLogIn;
@@ -27,6 +28,8 @@ public class LoginController implements Initializable{
    TextField txtFieldEmail;
    @FXML
    PasswordField txtFieldPassword;
+   @FXML
+   Label errorLabel;
 
    public static DBHandler dbController;
    public static AccessProvider ac;
@@ -89,10 +92,20 @@ public class LoginController implements Initializable{
             System.setSecurityManager(new SecurityManager());
 
          try {
+            errorLabel.setText("");
+            txtFieldEmail.setStyle("-fx-border-color: transparent;");
+            txtFieldPassword.setStyle("-fx-border-color: transparent;");
             tryToLogIn();
             displayBudgetsListWindow();
          }
-         catch (Exception e) {
+         catch (AuthenticationException | IllegalArgumentException e) {
+            errorLabel.setText("Incorrect email or password");
+            txtFieldEmail.setStyle("-fx-border-color: #d60f0f;");
+            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
+            txtFieldEmail.requestFocus();
+         }
+         catch (IOException e) {
+            errorLabel.setText("Connection with server error");
             e.printStackTrace();
          }
       });
