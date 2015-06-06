@@ -14,17 +14,19 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SettleWindow extends Stage {
-   public SettleWindow(Budget budget,ObservableList<Payment> paymentsToSettle,BudgetController parentController) throws IOException {
+   public SettleWindow(Budget budget, ObservableList<Payment> paymentsToSettle,
+                       BudgetController parentController) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SettleWindow.fxml"));
       Parent root = fxmlLoader.load();
       SettleController controller = fxmlLoader.<SettleController>getController();
-      controller.setBudget(budget,paymentsToSettle,parentController);
-      controller.fillAllTables();
-      setTitle("DeptManager - settle " + budget.getName());
-      Scene scene = new Scene(root);
-      setScene(scene);
 
+      controller.setStage(this);
+      controller.setBudget(budget, paymentsToSettle, parentController);
+      controller.fillAllTables();
+
+      setTitle("DeptManager - settle " + budget.getName());
+      setScene(new Scene(root));
+      setOnCloseRequest(event -> controller.clearTable());
       initModality(Modality.WINDOW_MODAL);
-      scene.getWindow().setOnCloseRequest(event->controller.clearTable());
    }
 }

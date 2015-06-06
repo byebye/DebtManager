@@ -23,14 +23,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class SettleController implements Initializable {
+
    @FXML
    TableView<BankTransfer> tabSettleView;
    @FXML
-   TableColumn colWho,colWhom,colAmount,colAccNumber;
+   TableColumn colWho, colWhom, colAmount, colAccNumber;
    @FXML
    Button btnConfirm, btnDecline;
    @FXML
-   CheckBox chkbxSendViaMail;
+   CheckBox checkBoxSendViaMail;
 
    private static DBHandler dbController = LoginController.dbController;
    private static ObservableList<BankTransfer> bankTransfers = FXCollections.observableArrayList();
@@ -38,13 +39,19 @@ public class SettleController implements Initializable {
    private BudgetController parentController;
    private ObservableList<Payment> paymentsToSettle;
 
-   public void setBudget(Budget budget, ObservableList<Payment> paymentsToSettle, BudgetController parentController){
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
+
+   public void setBudget(Budget budget, ObservableList<Payment> paymentsToSettle, BudgetController parentController) {
       this.budget = budget;
       this.paymentsToSettle = paymentsToSettle;
       this.parentController = parentController;
    }
 
-   public void fillAllTables(){
+   public void fillAllTables() {
       try {
          List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
          bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsSerializable));
@@ -55,7 +62,7 @@ public class SettleController implements Initializable {
       tabSettleView.setItems(bankTransfers);
    }
 
-   public void clearTable(){
+   public void clearTable() {
       bankTransfers.clear();
    }
 
@@ -70,21 +77,20 @@ public class SettleController implements Initializable {
          try {
             List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
             List<BankTransfer> bankTransfersSerializable = new ArrayList<>(bankTransfers);
-            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable,chkbxSendViaMail.isSelected());
+            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable,
+                                                   checkBoxSendViaMail.isSelected());
             parentController.fillAllTables();
             bankTransfers.clear();
-            Stage stage = (Stage) btnConfirm.getScene().getWindow();
-            stage.close();
+            currentStage.close();
          }
          catch (RemoteException e) {
             e.printStackTrace();
          }
       });
 
-      btnDecline.setOnAction(event->{
+      btnDecline.setOnAction(event -> {
          bankTransfers.clear();
-         Stage stage = (Stage) btnDecline.getScene().getWindow();
-         stage.close();
+         currentStage.close();
       });
    }
 }
