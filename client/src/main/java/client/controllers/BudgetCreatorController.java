@@ -53,6 +53,7 @@ public class BudgetCreatorController implements Initializable {
       colParticipantEmail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       colAction.setCellFactory(param -> new RemoveParticipantCell());
       tabParticipants.setItems(participantsList);
+      participantsList.add(owner);
 
       btnAddUser.setOnAction(event -> {
          errorLabel.setText("");
@@ -106,14 +107,11 @@ public class BudgetCreatorController implements Initializable {
       public RemoveParticipantCell() {
          setPadding(new Insets(0, 0, 0, 0));
          btnRemove.setGraphic(loadRemoveImage());
-         if(getTableRow().getIndex() == 0)
-            btnRemove.setDisable(true);
-         else {
-            btnRemove.setOnAction(event -> {
-               User participant = (User) RemoveParticipantCell.this.getTableRow().getItem();
-               participantsList.remove(participant);
-            });
-         }
+         btnRemove.setOnAction(event -> {
+            User participant = (User) RemoveParticipantCell.this.getTableRow().getItem();
+            participantsList.remove(participant);
+         });
+
       }
 
       public ImageView loadRemoveImage() {
@@ -127,8 +125,11 @@ public class BudgetCreatorController implements Initializable {
       @Override
       protected void updateItem(Boolean item, boolean empty) {
          super.updateItem(item, empty);
-         if (!empty)
+         if (!empty) {
             setGraphic(btnRemove);
+            if (RemoveParticipantCell.this.getTableRow().getIndex() == 0)
+               btnRemove.setDisable(true);
+         }
          else
             setGraphic(null);
       }

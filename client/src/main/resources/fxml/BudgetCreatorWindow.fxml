@@ -29,8 +29,8 @@
             <TableView fx:id="tabParticipants" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="134.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
                 <TableColumn fx:id="colParticipantName" minWidth="150.0" prefWidth="223.0" text="Name" />
-                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="65.0" prefWidth="143.0" text="Email" />
-                  <TableColumn fx:id="colAction" maxWidth="30.0" minWidth="3.0" prefWidth="3.0" resizable="false" sortable="false" />
+                <TableColumn fx:id="colParticipantEmail" editable="false" minWidth="50.0" prefWidth="120.0" text="Email" />
+                  <TableColumn fx:id="colAction" maxWidth="25.0" minWidth="25.0" prefWidth="25.0" resizable="false" sortable="false" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
