@@ -5,6 +5,7 @@ import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
 import common.Budget;
 import common.DBHandler;
+import common.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -39,7 +40,7 @@ public class BudgetsListController implements Initializable {
 
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
-   private int userId = LoginController.currentUser.getId();
+   private final User currentUser = LoginController.currentUser;
 
    private Stage currentStage;
 
@@ -50,7 +51,7 @@ public class BudgetsListController implements Initializable {
    public void fillBudgetsTable() {
       budgets.clear();
       try {
-         budgets.addAll(dbController.getAllBudgets(userId));
+         budgets.addAll(dbController.getAllBudgets(currentUser.getId()));
       }
       catch (RemoteException e) {
          displayUnableToConnectWithServerAlert();
@@ -68,7 +69,7 @@ public class BudgetsListController implements Initializable {
 
    @Override
    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-      txtUserName.setText(LoginController.currentUser.getName());
+      txtUserName.setText(currentUser.getName());
 
       btnLogout.setOnAction(event -> currentStage.close());
 
@@ -76,7 +77,7 @@ public class BudgetsListController implements Initializable {
 
       btnManageBankTransfers.setOnAction(event -> {
          try {
-            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow(userId);
+            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow();
             bankTransfersWindow.initOwner(currentStage);
             bankTransfersWindow.showAndWait();
          }
@@ -87,7 +88,7 @@ public class BudgetsListController implements Initializable {
 
       btnCreateNewBudget.setOnAction(event -> {
          try {
-            BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow(userId);
+            BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow();
             budgetCreatorWindow.initOwner(currentStage);
             budgetCreatorWindow.showAndWait();
             fillBudgetsTable();
@@ -113,7 +114,7 @@ public class BudgetsListController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                Budget budget = row.getItem();
                try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
+                  BudgetWindow budgetWindow = new BudgetWindow(budget);
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
                   budgetWindow.initOwner(currentStage);
                   budgetWindow.show();

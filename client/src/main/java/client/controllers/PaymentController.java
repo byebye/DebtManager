@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.view.ErrorHighlighter;
 import common.Budget;
 import common.DBHandler;
 import common.Payment;
@@ -24,20 +25,28 @@ public class PaymentController implements Initializable {
    @FXML
    private TextField txtFieldAmount;
    @FXML
-   public ComboBox boxChooseWho;
+   private ComboBox boxChooseWho;
    @FXML
    private TextArea txtAreaWhat;
    @FXML
    private Button btnUpdate, btnRemove;
+   @FXML
+   private Label errorLabel;
 
    private static DBHandler dbController = LoginController.dbController;
 
    private Payment payment;
    private Budget budget;
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
 
    public void setPayment(Payment payment) {
       this.payment = payment;
    }
+
    public void setBudget(Budget budget) {
       this.budget = budget;
    }
@@ -47,7 +56,7 @@ public class PaymentController implements Initializable {
       boxChooseWho.setItems(participants);
       User current = participants.filtered(user -> user.getId() == payment.getUserId()).get(0);
       boxChooseWho.setValue(current);
-      if (budget.getOwner().getId() != LoginController.currentUser.getId())
+      if (budget.getOwner().equals(LoginController.currentUser))
          boxChooseWho.setDisable(true);
    }
 
@@ -59,6 +68,12 @@ public class PaymentController implements Initializable {
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
+      TextFormatter<String> onlyNumberFormatter = new TextFormatter<>(change -> {
+         change.setText(change.getText().replaceAll("[^0-9.]", ""));
+         return change;
+      });
+      txtFieldAmount.setTextFormatter(onlyNumberFormatter);
+
       Callback<ListView<User>, ListCell<User>> cellFactory = param -> new ListCell<User>() {
          @Override
          protected void updateItem(User user, boolean empty) {
@@ -69,19 +84,22 @@ public class PaymentController implements Initializable {
       };
       boxChooseWho.setButtonCell(cellFactory.call(null));
       boxChooseWho.setCellFactory(cellFactory);
-      
+
       btnUpdate.setOnAction(event -> {
-         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
+         errorLabel.setText("");
+         ErrorHighlighter.unhighlitghtFields(txtFieldAmount);
+
+         BigDecimal amount = getAmount();
+         if (amount == null)
+            return;
          User chosenUser = (User) boxChooseWho.getSelectionModel().getSelectedItem();
          final int who = chosenUser.getId();
          try {
-            dbController.updatePayment(payment.getId(), who,
-                                       amount,
-                                       txtAreaWhat.getText());
-            Stage stage = (Stage) btnUpdate.getScene().getWindow();
-            stage.close();
+            dbController.updatePayment(payment.getId(), who, amount, txtAreaWhat.getText());
+            currentStage.close();
          }
          catch (RemoteException e) {
+            errorLabel.setText("Server connection error");
             e.printStackTrace();
          }
       });
@@ -89,12 +107,23 @@ public class PaymentController implements Initializable {
       btnRemove.setOnAction(event -> {
          try {
             dbController.deletePayment(payment.getId());
-            Stage stage = (Stage) btnRemove.getScene().getWindow();
-            stage.close();
+            currentStage.close();
          }
          catch (RemoteException e) {
+            errorLabel.setText("Server connection error");
             e.printStackTrace();
          }
       });
+   }
+
+   private BigDecimal getAmount() {
+      try {
+         return BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
+      }
+      catch (NumberFormatException e) {
+         errorLabel.setText("Invalid amount value");
+         ErrorHighlighter.highlightInvalidFields(txtFieldAmount);
+         return null;
+      }
    }
 }

@@ -14,7 +14,9 @@ public class AddUserToBudgetWindow extends Stage {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/AddUserToBudgetWindow.fxml"));
       Parent root = fxmlLoader.load();
       AddUserToBudgetController controller = fxmlLoader.<AddUserToBudgetController>getController();
+
       controller.setParent(budgetWindow);
+
       setTitle("DeptManager - add user");
       setScene(new Scene(root));
       initModality(Modality.WINDOW_MODAL);

@@ -1,6 +1,7 @@
 package client.controllers;
 
 //import com.sun.xml.internal.ws.api.message.Packet;
+
 import common.BankTransfer;
 import common.DBHandler;
 import common.User;
@@ -9,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -29,41 +28,41 @@ public class BankTransfersController implements Initializable {
    @FXML
    MenuButton menuChooseTransferType;
    @FXML
-   MenuItem itemMyTransfers,itemOthersTransfers;
+   MenuItem itemMyTransfers, itemOthersTransfers;
    @FXML
    Text txtTitle;
    @FXML
    TableView tabBankTransfers;
    @FXML
-   TableColumn colBudgetName,colWho,colAmount,colAction,colStatus;
+   TableColumn colBudgetName, colWho, colAmount, colAction, colStatus;
    @FXML
    Button btnClose;
 
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<BankTransfer> contentList = FXCollections.observableArrayList();
    private boolean ifMyTransfersActive = false;
-   private int userId;
+   private final User currentUser = LoginController.currentUser;
 
-   public void setUser(int user){
-      this.userId = user;
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
    }
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
-      btnClose.setOnAction(event->{
-         Stage stage = (Stage) btnClose.getScene().getWindow();
-         stage.close();
-      });
+      btnClose.setOnAction(event -> currentStage.close());
+
       //MenuItem
-      itemMyTransfers.setOnAction(event->{
+      itemMyTransfers.setOnAction(event -> {
          loadMyTransfers();
          ifMyTransfersActive = true;
          txtTitle.setText("My transfers");
          tabBankTransfers.setVisible(true);
       });
 
-      itemOthersTransfers.setOnAction(event->{
+      itemOthersTransfers.setOnAction(event -> {
          loadOthersTransfers();
          ifMyTransfersActive = false;
          txtTitle.setText("Others transfers");
@@ -71,35 +70,38 @@ public class BankTransfersController implements Initializable {
       });
 
       //Table
-      colBudgetName.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("budgetName"));
-      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("whoAcc"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer,BigDecimal>("amount"));
-      colStatus.setCellFactory(param->new StatusImageCell());
+      colBudgetName.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("budgetName"));
+      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whoAcc"));
+      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
+      colStatus.setCellFactory(param -> new StatusImageCell());
       colAction.setCellFactory(param -> new UpdateStatusButtonCell());
       tabBankTransfers.setItems(contentList);
    }
 
-   public void loadMyTransfers(){
+   public void loadMyTransfers() {
       contentList.clear();
       try {
-         contentList.addAll(dbController.getMyBankTransfers(userId));
-      }catch(Exception e){
+         contentList.addAll(dbController.getMyBankTransfers(currentUser.getId()));
+      }
+      catch (Exception e) {
          e.printStackTrace();
       }
    }
 
-   public void loadOthersTransfers(){
+   public void loadOthersTransfers() {
       contentList.clear();
       try {
-         contentList.addAll(dbController.getOthersBankTransfers(userId));
-      }catch(Exception e){
+         contentList.addAll(dbController.getOthersBankTransfers(currentUser.getId()));
+      }
+      catch (Exception e) {
          e.printStackTrace();
       }
    }
 
-   private class StatusImageCell extends TableCell<BankTransfer,ImageView>{
+   private class StatusImageCell extends TableCell<BankTransfer, ImageView> {
       ImageView imageView = new ImageView();
-      public StatusImageCell(){
+
+      public StatusImageCell() {
          imageView.setPreserveRatio(true);
          imageView.setFitHeight(20);
       }
@@ -108,24 +110,22 @@ public class BankTransfersController implements Initializable {
       protected void updateItem(ImageView item, boolean empty) {
          super.updateItem(item, empty);
          if (!empty) {
-            int statusId = ((BankTransfer)StatusImageCell.this.getTableRow().getItem()).getStatusId();
+            int statusId = ((BankTransfer) StatusImageCell.this.getTableRow().getItem()).getStatusId();
             String path = "/graphics/";
-            if(statusId == 0)
+            if (statusId == 0)
                path += "notpaid.png";
-            if(statusId == 1)
+            if (statusId == 1)
                path += "waiting.png";
-            if(statusId == 2)
+            if (statusId == 2)
                path += "paid.png";
 
             Image image = new Image(getClass().getClass().getResourceAsStream(path));
             imageView.setImage(image);
             setGraphic(imageView);
-
          }
          else
             setGraphic(null);
       }
-
    }
 
    private class UpdateStatusButtonCell extends TableCell<BankTransfer, Button> {
@@ -143,16 +143,18 @@ public class BankTransfersController implements Initializable {
          confirmImageView.setImage(image2);
          confirmImageView.setPreserveRatio(true);
          confirmImageView.setFitHeight(15);
-         btnUpdateStatus.setPrefSize(25,25);
-         btnUpdateStatus.setPadding(new Insets(0,0,0,0));
-         btnUpdateStatus.setOnAction(event->{
+         btnUpdateStatus.setPrefSize(25, 25);
+         btnUpdateStatus.setPadding(new Insets(0, 0, 0, 0));
+         btnUpdateStatus.setOnAction(event -> {
             try {
-               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(), userId);
-               if(ifMyTransfersActive)
+               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(),
+                                                     currentUser.getId());
+               if (ifMyTransfersActive)
                   loadMyTransfers();
                else loadOthersTransfers();
 
-            }catch (Exception e){
+            }
+            catch (Exception e) {
                e.printStackTrace();
             }
          });
@@ -166,7 +168,8 @@ public class BankTransfersController implements Initializable {
             if (!ifMyTransfersActive && statusId != 2) {
                btnUpdateStatus.setGraphic(confirmImageView);
                setGraphic(btnUpdateStatus);
-            } else if (ifMyTransfersActive && statusId == 0){
+            }
+            else if (ifMyTransfersActive && statusId == 0) {
                btnUpdateStatus.setGraphic(payImageView);
                setGraphic(btnUpdateStatus);
             }

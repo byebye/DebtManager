@@ -15,7 +15,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -53,22 +52,25 @@ public class BudgetController implements Initializable {
 
    private static DBHandler dbController = LoginController.dbController;
 
-   private Budget budget;
-   private int userId;
-   double spentMoneySum = 0;
-   private BudgetWindow budgetWindow;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
    private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
    private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
    private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
 
-   public void setBudget(Budget budget, int userId, BudgetWindow budgetWindow) {
+   private final User currentUser = LoginController.currentUser;
+   private Stage currentStage;
+   private Budget budget;
+   double spentMoneySum = 0;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
+
+   public void setBudget(Budget budget) {
       this.budget = budget;
       txtBudgetName.setText(budget.getName());
       txtBudgetDescription.setText(budget.getDescription());
-      this.userId = userId;
-      this.budgetWindow = budgetWindow;
-      if (budget.getOwner().getId() != LoginController.currentUser.getId()) {
+      if (!currentUser.equals(budget.getOwner())) {
          btnAddParticipant.setDisable(true);
          btnSettle.setDisable(true);
          btnBudgetDelete.setDisable(true);
@@ -86,21 +88,21 @@ public class BudgetController implements Initializable {
                   paymentsToSettle.add(p);
 
             SettleWindow settleWindow = new SettleWindow(budget, paymentsToSettle, this);
-            settleWindow.initOwner(btnSettle.getScene().getWindow());
+            settleWindow.initOwner(currentStage);
             settleWindow.showAndWait();
             paymentsToSettle.clear();
             settleHistory.clear();
             fillTabSettleHistory();
          }
          catch(Exception e){
-               e.printStackTrace();
+            e.printStackTrace();
          }
       });
 
       btnAddPayment.setOnAction(event -> {
          try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, userId, participantsList);
-            addPaymentWindow.initOwner(btnAddPayment.getScene().getWindow());
+            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, participantsList);
+            addPaymentWindow.initOwner(currentStage);
             addPaymentWindow.setOnHidden(e -> fillTabUnaccPayments());
             addPaymentWindow.show();
          }
@@ -111,8 +113,8 @@ public class BudgetController implements Initializable {
 
       btnAddParticipant.setOnAction(event -> {
          try {
-            AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow(budgetWindow);
-            addUserToBudgetWindow.initOwner(btnAddParticipant.getScene().getWindow());
+            AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow((BudgetWindow) currentStage);
+            addUserToBudgetWindow.initOwner(currentStage);
             addUserToBudgetWindow.setOnHidden(e -> fillTabUnaccPayments());
             addUserToBudgetWindow.show();
          }
@@ -121,17 +123,14 @@ public class BudgetController implements Initializable {
          }
       });
 
-      btnBudgetClose.setOnAction(event -> {
-         Stage stage = (Stage) btnBudgetClose.getScene().getWindow();
-         stage.close();
-      });
+      btnBudgetClose.setOnAction(event -> currentStage.close());
 
       btnBudgetDelete.setOnAction(event -> {
-         Alert userCreatedAlert = new Alert(Alert.AlertType.CONFIRMATION);
-         userCreatedAlert.setTitle("Confirm deletion");
-         userCreatedAlert.setHeaderText("Are you sure you want to delete this budget?");
-         userCreatedAlert.setContentText("This operation cannot be undone.");
-         Optional<ButtonType> result = userCreatedAlert.showAndWait();
+         Alert deleteBudgetAlert = new Alert(Alert.AlertType.CONFIRMATION);
+         deleteBudgetAlert.setTitle("Confirm deletion");
+         deleteBudgetAlert.setHeaderText("Are you sure you want to delete this budget?");
+         deleteBudgetAlert.setContentText("This operation cannot be undone.");
+         Optional<ButtonType> result = deleteBudgetAlert.showAndWait();
          if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                try {
@@ -140,8 +139,7 @@ public class BudgetController implements Initializable {
                catch (RemoteException e) {
                   e.printStackTrace();
                }
-               Stage stage = (Stage) btnBudgetDelete.getScene().getWindow();
-               stage.close();
+               currentStage.close();
             }
             catch (Exception e) {
                e.printStackTrace();
@@ -180,7 +178,7 @@ public class BudgetController implements Initializable {
                User participant = row.getItem();
                try {
                   ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant);
-                  participantWindow.initOwner(btnAddParticipant.getScene().getWindow());
+                  participantWindow.initOwner(currentStage);
                   participantWindow.setOnHidden(event -> {
                      fillTabParticipants();
                      fillTabUnaccPayments();
@@ -201,7 +199,7 @@ public class BudgetController implements Initializable {
                Settlement settlement = row.getItem();
                try {
                   SettlementDetailsWindow settlementDetailsWindow = new SettlementDetailsWindow(settlement,budget);
-                  settlementDetailsWindow.initOwner(btnAddParticipant.getScene().getWindow());
+                  settlementDetailsWindow.initOwner(currentStage);
                   settlementDetailsWindow.setOnHidden(event->fillTabSettleHistory());
                   settlementDetailsWindow.show();
                }
@@ -225,7 +223,7 @@ public class BudgetController implements Initializable {
                if (mouseEvent.getClickCount() == 2) {
                   try {
                      PaymentWindow paymentWindow = new PaymentWindow(budget, payment, participantsList);
-                     paymentWindow.initOwner(btnAddParticipant.getScene().getWindow());
+                     paymentWindow.initOwner(currentStage);
                      paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
                      paymentWindow.show();
                   }
@@ -235,7 +233,6 @@ public class BudgetController implements Initializable {
                }
             }
             // TODO else: you have no rights to edit this payment (special color or information)
-
          });
          return row;
       });
@@ -264,7 +261,8 @@ public class BudgetController implements Initializable {
       settleHistory.clear();
       try {
          settleHistory.addAll(dbController.getAllSettlements(budget.getId()));
-      }catch(Exception e){
+      }
+      catch(Exception e){
          System.out.println("Access denied");
          e.printStackTrace();
       }

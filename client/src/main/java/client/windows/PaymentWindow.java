@@ -18,10 +18,13 @@ public class PaymentWindow extends Stage {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PaymentWindow.fxml"));
         Parent root = fxmlLoader.load();
         PaymentController controller = fxmlLoader.<PaymentController>getController();
+
+        controller.setStage(this);
         controller.setBudget(budget);
         controller.setPayment(payment);
         controller.setParticipantsList(participants);
         controller.setObjectsText();
+
         setTitle("DeptManager - show payment details");
         setScene(new Scene(root));
         initModality(Modality.WINDOW_MODAL);

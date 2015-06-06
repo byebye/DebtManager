@@ -38,6 +38,12 @@ public class SignUpController implements Initializable {
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
+      TextFormatter<String> onlyDigitsFormatter = new TextFormatter<>(change -> {
+         change.setText(change.getText().replaceAll("[^0-9 ]", ""));
+         return change;
+      });
+      txtFieldBankAccount.setTextFormatter(onlyDigitsFormatter);
+
       //Buttons
       btnCancel.setOnAction(event -> currentStage.close());
 
