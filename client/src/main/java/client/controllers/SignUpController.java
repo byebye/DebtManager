@@ -1,12 +1,11 @@
 package client.controllers;
 
+import client.view.ErrorHighlighter;
 import common.Email;
 import common.SHA1Hasher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import javax.naming.AuthenticationException;
@@ -44,38 +43,29 @@ public class SignUpController implements Initializable {
 
       btnSignUp.setOnAction(event -> {
          errorLabel.setText("");
-         txtFieldEmail.setStyle("-fx-border-color: transparent;");
-         txtFieldUsername.setStyle("-fx-border-color: transparent;");
-         txtFieldBankAccount.setStyle("-fx-border-color: transparent;");
-         txtFieldPassword.setStyle("-fx-border-color: transparent;");
-         txtFieldRepPassword.setStyle("-fx-border-color: transparent;");
+         ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldUsername, txtFieldBankAccount, txtFieldPassword,
+                                             txtFieldRepPassword);
          if (!Email.isValid(txtFieldEmail.getText())) {
             errorLabel.setText("Invalid email address");
-            txtFieldEmail.setStyle("-fx-border-color: #d60f0f;");
-            txtFieldEmail.requestFocus();
+            ErrorHighlighter.highlightInvalidFields(txtFieldEmail);
          }
-         else if(txtFieldUsername.getText().isEmpty()) {
+         else if (txtFieldUsername.getText().isEmpty()) {
             errorLabel.setText("User name should not be empty");
-            txtFieldUsername.setStyle("-fx-border-color: #d60f0f;");
-            txtFieldUsername.requestFocus();
+            ErrorHighlighter.highlightInvalidFields(txtFieldUsername);
          }
          else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
-            txtFieldBankAccount.requestFocus();
-            txtFieldBankAccount.setStyle("-fx-border-color: #d60f0f;");
             errorLabel.setText("Invalid bank account number");
+            ErrorHighlighter.highlightInvalidFields(txtFieldBankAccount);
             event.consume();
          }
          else if (!txtFieldPassword.getText().equals(txtFieldRepPassword.getText())) {
             errorLabel.setText("Passwords don't match");
-            txtFieldPassword.requestFocus();
-            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
-            txtFieldRepPassword.setStyle("-fx-border-color: #d60f0f;");
+            ErrorHighlighter.highlightInvalidFields(txtFieldPassword, txtFieldRepPassword);
             event.consume();
          }
-         else if(txtFieldPassword.getText().isEmpty()) {
+         else if (txtFieldPassword.getText().isEmpty()) {
             errorLabel.setText("Password should not be empty");
-            txtFieldPassword.requestFocus();
-            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
+            ErrorHighlighter.highlightInvalidFields(txtFieldPassword);
          }
          else {
             try {
@@ -85,7 +75,7 @@ public class SignUpController implements Initializable {
             }
             catch (Exception e) {
                e.printStackTrace();
-               errorLabel.setText("User couldn't be created, try again");
+               errorLabel.setText("User couldn't be created! Try again");
             }
          }
       });

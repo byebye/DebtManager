@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.view.ErrorHighlighter;
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
 import common.*;
@@ -45,20 +46,20 @@ public class LoginController implements Initializable {
 
    public void setScene(Scene scene) {
       this.scene = scene;
-      scene.setOnKeyPressed(event->{
-         if(event.getCode().compareTo(KeyCode.ENTER) == 0){
+      scene.setOnKeyPressed(event -> {
+         if (event.getCode().compareTo(KeyCode.ENTER) == 0) {
             btnLogIn.fire();
          }
       });
    }
 
-   public void setDbController(DBHandler dbhandler){
+   public void setDbController(DBHandler dbhandler) {
       dbController = dbhandler;
    }
 
    public void connectWithRMIHost(String host) {
       this.host = (host == null ? "localhost" : host);
-      if(System.getSecurityManager() == null)
+      if (System.getSecurityManager() == null)
          System.setSecurityManager(new SecurityManager());
       try {
          ac = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
@@ -93,16 +94,13 @@ public class LoginController implements Initializable {
 
          try {
             errorLabel.setText("");
-            txtFieldEmail.setStyle("-fx-border-color: transparent;");
-            txtFieldPassword.setStyle("-fx-border-color: transparent;");
+            ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldPassword);
             tryToLogIn();
             displayBudgetsListWindow();
          }
          catch (AuthenticationException | IllegalArgumentException e) {
             errorLabel.setText("Incorrect email or password");
-            txtFieldEmail.setStyle("-fx-border-color: #d60f0f;");
-            txtFieldPassword.setStyle("-fx-border-color: #d60f0f;");
-            txtFieldEmail.requestFocus();
+            ErrorHighlighter.highlightInvalidFields(txtFieldEmail, txtFieldPassword);
          }
          catch (IOException e) {
             errorLabel.setText("Connection with server error");
