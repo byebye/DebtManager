@@ -34,7 +34,7 @@ public class PaymentController implements Initializable {
    private Label errorLabel;
 
    private static DBHandler dbController = LoginController.dbController;
-
+   private final User currentUser = LoginController.currentUser;
    private Payment payment;
    private Budget budget;
    private Stage currentStage;
@@ -56,7 +56,7 @@ public class PaymentController implements Initializable {
       boxChooseWho.setItems(participants);
       User current = participants.filtered(user -> user.getId() == payment.getUserId()).get(0);
       boxChooseWho.setValue(current);
-      if (budget.getOwner().equals(LoginController.currentUser))
+      if (!currentUser.equals(budget.getOwner()))
          boxChooseWho.setDisable(true);
    }
 

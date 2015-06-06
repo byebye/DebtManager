@@ -12,12 +12,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ParticipantDetailsWindow extends Stage {
-   public ParticipantDetailsWindow(Budget budget, User participant) throws IOException {
+   public ParticipantDetailsWindow(Budget budget, User participant, boolean hasUnaccountedPayments) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ParticipantDetailsWindow.fxml"));
       Parent root = fxmlLoader.load();
       ParticipantDetailsController controller = fxmlLoader.<ParticipantDetailsController>getController();
+
+      controller.setStage(this);
       controller.setBudget(budget);
-      controller.setParticipant(participant);
+      controller.setParticipant(participant, hasUnaccountedPayments);
+
       setTitle(budget.getName() + " participant details");
       setScene(new Scene(root));
       initModality(Modality.WINDOW_MODAL);

@@ -177,7 +177,10 @@ public class BudgetController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                User participant = row.getItem();
                try {
-                  ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant);
+                  boolean hasUnaccountedPayments = unaccountedPayments.filtered(
+                                                        payment -> payment.getUserId() == participant.getId()
+                                                   ).size() > 0;
+                  ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant, hasUnaccountedPayments);
                   participantWindow.initOwner(currentStage);
                   participantWindow.setOnHidden(event -> {
                      fillTabParticipants();
@@ -218,8 +221,7 @@ public class BudgetController implements Initializable {
             if (row.isEmpty())
                return;
             Payment payment = row.getItem();
-            if (budget.getOwner().getId() == LoginController.currentUser.getId()
-                || payment.getUserId() == LoginController.currentUser.getId()) {
+            if (currentUser.equals(budget.getOwner()) || payment.getUserId() == currentUser.getId()) {
                if (mouseEvent.getClickCount() == 2) {
                   try {
                      PaymentWindow paymentWindow = new PaymentWindow(budget, payment, participantsList);
@@ -262,7 +264,7 @@ public class BudgetController implements Initializable {
       try {
          settleHistory.addAll(dbController.getAllSettlements(budget.getId()));
       }
-      catch(Exception e){
+      catch(Exception e) {
          System.out.println("Access denied");
          e.printStackTrace();
       }
@@ -336,7 +338,7 @@ public class BudgetController implements Initializable {
          if(!empty) {
             checkBox.setSelected(true);
             setGraphic(checkBox);
-            if (LoginController.currentUser.getId() == budget.getOwner().getId())
+            if (currentUser.equals(budget.getOwner()))
                checkBox.setDisable(false);
             else
                checkBox.setDisable(true);
