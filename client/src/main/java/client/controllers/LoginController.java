@@ -6,11 +6,7 @@ import client.windows.SignUpWindow;
 import common.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
@@ -38,19 +34,9 @@ public class LoginController implements Initializable {
    private static String host;
 
    private Stage currentStage;
-   private Scene scene;
 
    public void setStage(Stage stage) {
       currentStage = stage;
-   }
-
-   public void setScene(Scene scene) {
-      this.scene = scene;
-      scene.setOnKeyPressed(event -> {
-         if (event.getCode().compareTo(KeyCode.ENTER) == 0) {
-            btnLogIn.fire();
-         }
-      });
    }
 
    public void setDbController(DBHandler dbhandler) {
@@ -66,8 +52,17 @@ public class LoginController implements Initializable {
       }
       catch (Exception e) {
          e.printStackTrace();
+         displayUnableToConnectWithServerAlert();
          System.exit(1);
       }
+   }
+
+   private void displayUnableToConnectWithServerAlert() {
+      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
+      unableToConnectAlert.setTitle("Unable to connect with server");
+      unableToConnectAlert.setHeaderText("Unable to connect with server!");
+      unableToConnectAlert.setContentText("Check your connection and try again.");
+      unableToConnectAlert.showAndWait();
    }
 
    public void fillDataFields(String email, String password) {
@@ -106,6 +101,11 @@ public class LoginController implements Initializable {
             errorLabel.setText("Connection with server error");
             e.printStackTrace();
          }
+      });
+
+      btnLogIn.setOnKeyPressed(event -> {
+         if (event.getCode().compareTo(KeyCode.ENTER) == 0)
+            btnLogIn.fire();
       });
    }
 

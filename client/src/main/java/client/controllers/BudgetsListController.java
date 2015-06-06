@@ -5,17 +5,13 @@ import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
 import common.Budget;
 import common.DBHandler;
-import common.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -29,15 +25,15 @@ import java.util.ResourceBundle;
 public class BudgetsListController implements Initializable {
 
    @FXML
-   public Text txtUserName;
+   private Text txtUserName;
    @FXML
-   private Button btnLogout, btnCreateNewBudget, btnManageBankTransfers;
+   private Button btnLogout, btnCreateNewBudget, btnRefreshList, btnManageBankTransfers;
    @FXML
    private TableColumn colName, colDescription;
    @FXML
    private TableColumn colPeople;
    @FXML
-   public TableColumn colOwner;
+   private TableColumn colOwner;
    @FXML
    private TableView<Budget> tabMyBudgets;
 
@@ -57,8 +53,17 @@ public class BudgetsListController implements Initializable {
          budgets.addAll(dbController.getAllBudgets(userId));
       }
       catch (RemoteException e) {
+         displayUnableToConnectWithServerAlert();
          e.printStackTrace();
       }
+   }
+
+   private void displayUnableToConnectWithServerAlert() {
+      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
+      unableToConnectAlert.setTitle("Unable to connect with server");
+      unableToConnectAlert.setHeaderText("Unable to connect with server!");
+      unableToConnectAlert.setContentText("Check your connection and try again.");
+      unableToConnectAlert.showAndWait();
    }
 
    @Override
@@ -67,12 +72,15 @@ public class BudgetsListController implements Initializable {
 
       btnLogout.setOnAction(event -> currentStage.close());
 
-      btnManageBankTransfers.setOnAction(event->{
-         try{
+      btnRefreshList.setOnAction(event -> fillBudgetsTable());
+
+      btnManageBankTransfers.setOnAction(event -> {
+         try {
             BankTransfersWindow bankTransfersWindow = new BankTransfersWindow(userId);
             bankTransfersWindow.initOwner(currentStage);
             bankTransfersWindow.showAndWait();
-         }catch(Exception e){
+         }
+         catch (Exception e) {
             e.printStackTrace();
          }
       });
@@ -109,7 +117,8 @@ public class BudgetsListController implements Initializable {
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
                   budgetWindow.initOwner(currentStage);
                   budgetWindow.show();
-               } catch (IOException e) {
+               }
+               catch (IOException e) {
                   e.printStackTrace();
                }
             }
