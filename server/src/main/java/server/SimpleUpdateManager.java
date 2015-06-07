@@ -37,7 +37,7 @@
 
          ArrayList<RemoteCallback> toDelete = new ArrayList<>();
 
-         for(RemoteCallback rc : callbacks) {
+         for (RemoteCallback rc : callbacks) {
             try {
                rc.call();
                System.out.println("  Called one listener");
@@ -47,9 +47,10 @@
             }
          }
 
-         for(RemoteCallback rc :toDelete)
-           unregister(rc);
+         for (RemoteCallback rc : toDelete)
+            unregister(rc);
 
          System.out.println("Called all listeners");
       }
+
    }

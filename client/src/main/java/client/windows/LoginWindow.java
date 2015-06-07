@@ -2,6 +2,7 @@ package client.windows;
 
 import client.SimpleCallback;
 import client.UpdateCallbackRegistrar;
+import client.UpdateLongpollingCallbackRegistrar;
 import client.controllers.LoginController;
 import common.CallbackManager;
 import common.RemoteCallback;
@@ -29,8 +30,13 @@ public class LoginWindow extends Application {
    public void start(Stage primaryStage) throws Exception {
 
       final String host = getParameters().getNamed().get("host");
-      UpdateCallbackRegistrar.setHost(host);
-      UpdateCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
+
+      //UpdateCallbackRegistrar.setHost(host);
+      //UpdateCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
+
+      UpdateLongpollingCallbackRegistrar.setHost(host);
+      UpdateLongpollingCallbackRegistrar.start();
+      UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();
