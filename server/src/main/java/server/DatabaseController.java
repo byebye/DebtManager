@@ -309,29 +309,35 @@ public class DatabaseController implements DBHandler {
    public synchronized List<Settlement> getAllSettlements(int budgetId){
       List<Settlement> settlements = new ArrayList<>();
 
-      Result<Record2<Integer,java.sql.Date>> result =
-            dbContext.select(Settlements.SETTLEMENTS.ID,Settlements.SETTLEMENTS.TERM)
+      try {
+         Result<Record2<Integer, java.sql.Date>> result =
+               dbContext.select(Settlements.SETTLEMENTS.ID, Settlements.SETTLEMENTS.TERM)
                      .from(Settlements.SETTLEMENTS)
                      .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))
                      .orderBy(Settlements.SETTLEMENTS.ID.desc())
                      .fetch();
 
-      for(Record2<Integer,java.sql.Date> settlement: result){
-         int numPaidBankTransfers = dbContext.selectCount()
-                                             .from(BankTransfers.BANK_TRANSFERS)
-                                             .where(BankTransfers.BANK_TRANSFERS.PAID.equal(2))
-                                             .and(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
-                                             .fetchOne().value1();
-         int numAllBankTransfers = dbContext.selectCount()
-                                             .from(BankTransfers.BANK_TRANSFERS)
-                                             .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
-                                             .fetchOne().value1();
+         for (Record2<Integer, java.sql.Date> settlement : result) {
+            int numPaidBankTransfers = dbContext.selectCount()
+                  .from(BankTransfers.BANK_TRANSFERS)
+                  .where(BankTransfers.BANK_TRANSFERS.PAID.equal(2))
+                  .and(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+                  .fetchOne().value1();
+            int numAllBankTransfers = dbContext.selectCount()
+                  .from(BankTransfers.BANK_TRANSFERS)
+                  .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+                  .fetchOne().value1();
 
-         double amount = 0.0;
-         for(Payment p: getPaymentsBySettlementId(settlement.value1()))
-            amount += p.getAmount();
+            double amount = 0.0;
+            for (Payment p : getPaymentsBySettlementId(settlement.value1()))
+               amount += p.getAmount();
 
-         settlements.add(new Settlement(settlement.value1(),budgetId,numPaidBankTransfers,numAllBankTransfers,settlement.value2().toString(),amount));
+            settlements.add(new Settlement(settlement.value1(), budgetId, numPaidBankTransfers, numAllBankTransfers, settlement.value2().toString(), amount));
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw e;
       }
 
       return settlements;
