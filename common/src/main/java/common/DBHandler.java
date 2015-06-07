@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface DBHandler extends Remote {
-   boolean validateUserPassword(Email email, String passwordHash) throws RemoteException;
    User getUserByEmail(String email) throws RemoteException;
    User getUserById(int userId) throws RemoteException;
    boolean createUser(User user, String passwordHash) throws RemoteException;

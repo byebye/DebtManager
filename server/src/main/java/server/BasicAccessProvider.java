@@ -12,17 +12,10 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class BasicAccessProvider implements AccessProvider {
 
-   //This should have been done differently! Storing dbController is unsafe
-   DatabaseController dbController;
-
-   BasicAccessProvider(DatabaseController dbController) {
-      this.dbController = dbController;
-   }
-
    @Override
    public Object getDBHandler(Email mail, String passwordHash) throws RemoteException, AuthenticationException {
 
-      if (dbController.validateUserPassword(mail, passwordHash)) {
+      if (DatabaseController.getInstance().validateUserPassword(mail, passwordHash)) {
          return DatabaseController.getExportedInstance();
       }
       throw new AuthenticationException();
@@ -31,7 +24,7 @@ public class BasicAccessProvider implements AccessProvider {
    @Override
    public void signUp(Email mail, String name, BigInteger bankAccount, String passwordHash) throws RemoteException, AuthenticationException {
 
-      if (!dbController.createUser(mail.getAddress(), name, bankAccount, passwordHash))
+      if (!DatabaseController.getInstance().createUser(mail.getAddress(), name, bankAccount, passwordHash))
          throw new AuthenticationException();
 
    }
