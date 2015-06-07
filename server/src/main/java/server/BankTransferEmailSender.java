@@ -17,7 +17,7 @@ public class BankTransferEmailSender implements Runnable{
    private static Email debtmanagerEmail;
 
    static {
-      debtmanagerEmail = new Email("noreply@managedebtsfor.me");
+      debtmanagerEmail = new Email("debtmanager-noreply@managedebtsfor.me");
    }
 
 
@@ -63,17 +63,18 @@ public class BankTransferEmailSender implements Runnable{
 
    private String createSenderText(BankTransfer transfer, User fromUser, User toUser) {
 
-      return "Hi " + fromUser.getName() + "\n" +
+      return "Hi " + fromUser.getName() + ",\n" +
             "\n" +
-            "Budget " + budgetName + " was settled and it turned out that you shall pay\n" +
+            "budget " + budgetName + " was settled and it turned out that you shall pay\n" +
             "\n" +
-            transfer.getAmount() + "to user " + toUser.getName() + " (" + toUser.getEmail() + ").\n" +
+            transfer.getAmount() + " to user " + toUser.getName() + " (" + toUser.getEmail() + ").\n" +
             "" +
             "\n" +
             "His/Her bank account number is\n" +
             toUser.getBankAccount() +
             "\n" +
-            "He/She was sent an email about it, so he/she is will be awaiting your payment\n" +
+            "He/She was sent an email about it, so he/she is will be awaiting your payment.\n" +
+            "After making the payment remember to confirm it in the app.\n" +
             "\n" +
             "Best wishes,\n" +
             "Debtmanager";
@@ -85,17 +86,17 @@ public class BankTransferEmailSender implements Runnable{
 
    private String createRecipientText(BankTransfer transfer, User fromUser, User toUser) {
 
-      return "Hi " + toUser.getName() + "\n" +
+      return "Hi " + toUser.getName() + ",\n" +
             "\n" +
-            "Budget " + budgetName + " was settled and it turned out that you shall BE PAID\n" +
+            "budget " + budgetName + " was settled and it turned out that you shall BE PAID\n" +
             "\n" +
-            transfer.getAmount() + "by " + fromUser.getName() + " (" + fromUser.getEmail() + ").\n" +
+            transfer.getAmount() + " by " + fromUser.getName() + " (" + fromUser.getEmail() + ").\n" +
             "" +
             "\n" +
             "Await a transfer from account\n" +
             fromUser.getBankAccount() +
             "\n" +
-            "Feel free to contact him/her if you will not receive the payment in a reasonable timeframe\n" +
+            "Feel free to contact him/her if you will not receive the payment in a reasonable timeframe.\nAfter receiving the payment please confirm it in the app." +
             "\n" +
             "Best wishes,\n" +
             "Debtmanager";
