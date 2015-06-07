@@ -115,7 +115,7 @@ public class BudgetsListController implements Initializable, SelfUpdating {
          }
       });
       tabMyBudgets.setItems(budgets);
-
+      tabMyBudgets.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
       tabMyBudgets.setRowFactory(param -> {
          TableRow<Budget> row = new TableRow<>();
          row.setOnMouseClicked(mouseEvent -> {
