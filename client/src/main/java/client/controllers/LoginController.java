@@ -18,6 +18,7 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
@@ -70,6 +71,7 @@ public class LoginController implements Initializable {
       }
 
       try {
+         LocateRegistry.createRegistry(1099);
          rc = new SimpleCallback();
          ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register((RemoteCallback) UnicastRemoteObject.exportObject(rc, 1100));
          System.out.println("Callback registered");
