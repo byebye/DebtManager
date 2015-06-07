@@ -19,7 +19,6 @@ public class BankTransfersWindow extends Stage {
       BankTransfersController controller = fxmlLoader.<BankTransfersController>getController();
 
       controller.setStage(this);
-      controller.update();
 
       setTitle("DeptManager - Manage bank transfers");
       setScene(new Scene(root));

@@ -553,7 +553,7 @@ public class DatabaseController implements DBHandler {
    }
 
    @Override
-   public void setBankTransfersStatus(int transferId, int status) throws RemoteException {
+   public synchronized void setBankTransfersStatus(int transferId, int status) throws RemoteException {
       System.out.println("Set transfer status " + transferId + " to " + status);
       dbContext.update(BankTransfers.BANK_TRANSFERS)
                .set(BankTransfers.BANK_TRANSFERS.PAID, status)
