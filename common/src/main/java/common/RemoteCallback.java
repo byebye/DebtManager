@@ -7,6 +7,6 @@ import java.util.concurrent.Callable;
 /**
  * Created by glapul on 07.06.15.
  */
-public interface RemoteCallback extends Remote {
-   void call() throws RemoteException;
+public interface RemoteCallback {
+   void call();
 }
