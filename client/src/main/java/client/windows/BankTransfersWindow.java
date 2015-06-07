@@ -22,6 +22,6 @@ public class BankTransfersWindow extends Stage {
 
       setTitle("DeptManager - Manage bank transfers");
       setScene(new Scene(root));
-      initModality(Modality.WINDOW_MODAL);
+      initModality(Modality.APPLICATION_MODAL);
    }
 }

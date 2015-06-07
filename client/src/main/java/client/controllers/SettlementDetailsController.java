@@ -25,61 +25,66 @@ public class SettlementDetailsController implements Initializable {
    @FXML
    Text txtDetails;
    @FXML
-   Button btnSetAsPaid,btnClose;
+   Button btnSetAsPaid, btnClose;
    @FXML
    TableView tabBankTransfers;
    @FXML
-   TableColumn colWho,colWhom,colAmount,colBankAccount,colConfirm,colStatus;
+   TableColumn colWho, colWhom, colAmount, colBankAccount, colConfirm, colStatus;
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<BankTransfer> contentList = FXCollections.observableArrayList();
 
+   private final User currentUser = LoginController.currentUser;
    private Settlement settlement;
    private Budget budget;
 
-   public void setData(Settlement settlement,Budget budget){
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
+   }
+
+   public void setData(Settlement settlement, Budget budget) {
       this.settlement = settlement;
       this.budget = budget;
    }
 
    @Override
    public void initialize(URL location, ResourceBundle resources) {
-      //Butons
-      btnClose.setOnAction(event->{
-         Stage stage = (Stage) btnClose.getScene().getWindow();
-         stage.close();
-      });
-
-      btnSetAsPaid.setOnAction(event->setAsPaid());//TODO: add confirmation window
+      //Buttons
+      btnClose.setOnAction(event -> currentStage.close());
+      btnSetAsPaid.setOnAction(event -> setAsPaid());//TODO: add confirmation window
 
       //Columns
-      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("who"));
-      colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("whom"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer,BigDecimal>("amount"));
-      colBankAccount.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("bankAccount"));
-      colStatus.setCellValueFactory(new PropertyValueFactory<BankTransfer,String>("status"));
-      colConfirm.setCellFactory(param->new CheckBoxTableCell());
+      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
+      colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
+      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
+      colBankAccount.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
+      colStatus.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("status"));
+      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
       //Table
       tabBankTransfers.setItems(contentList);
    }
 
-   public void fillContentList(){
-      try{
+   public void fillContentList() {
+      try {
          contentList.addAll(dbController.getBankTransfersBySettlementId(settlement.getSettlementId()));
-      }catch(Exception e){
+      }
+      catch (Exception e) {
          e.printStackTrace();
       }
    }
 
-   public void setAsPaid(){
+   public void setAsPaid() {
       List<Integer> bankTransfersToSet = new ArrayList<>();
-      for(BankTransfer bk: contentList){
-         if(bk.getAccept())
+      for (BankTransfer bk : contentList) {
+         if (bk.getAccept())
             bankTransfersToSet.add(bk.getId());
       }
 
-      try{
-         dbController.setBankTransferStatus(bankTransfersToSet,2);
-      }catch(Exception e){
+      try {
+         dbController.setBankTransferStatus(bankTransfersToSet, 2);
+      }
+      catch (Exception e) {
          e.printStackTrace();
       }
       contentList.clear();
@@ -93,7 +98,7 @@ public class SettlementDetailsController implements Initializable {
       public CheckBoxTableCell() {
          setAlignment(Pos.CENTER);
          checkBox.setOnAction(event -> {
-            BankTransfer bk = (BankTransfer)CheckBoxTableCell.this.getTableRow().getItem();
+            BankTransfer bk = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
             bk.setAccept(!bk.getAccept());
          });
       }
@@ -101,11 +106,14 @@ public class SettlementDetailsController implements Initializable {
       @Override
       public void updateItem(Boolean item, boolean empty) {
          super.updateItem(item, empty);
-         if(!empty) {
+         if (!empty) {
             checkBox.setSelected(false);
             setGraphic(checkBox);
 
-            if (LoginController.currentUser.getId() == budget.getOwner().getId())
+            BankTransfer bk = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
+
+            if (currentUser.equals(budget.getOwner())
+                || bk.getWhoId() == currentUser.getId() || bk.getWhomId() == currentUser.getId())
                checkBox.setDisable(false);
             else
                checkBox.setDisable(true);
