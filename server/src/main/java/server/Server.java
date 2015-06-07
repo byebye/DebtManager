@@ -73,6 +73,7 @@ public class Server {
             public void run() {
                 while(true) {
                     try {
+                        System.out.println("I will try calling all listeners");
                         sum.callAll();
                         TimeUnit.SECONDS.sleep(5);
                     }

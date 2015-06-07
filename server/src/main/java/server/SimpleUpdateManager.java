@@ -23,6 +23,7 @@ public class SimpleUpdateManager implements CallbackManager {
    @Override
    public synchronized void register(RemoteCallback uc) {
       callbacks.add(uc);
+      System.out.println("Callback registered");
    }
 
    @Override
@@ -45,5 +46,7 @@ public class SimpleUpdateManager implements CallbackManager {
 
       for(RemoteCallback rc :toDelete)
         unregister(rc);
+
+      System.out.println("Called all listeners");
    }
 }

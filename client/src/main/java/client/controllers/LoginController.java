@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -35,12 +36,20 @@ public class LoginController implements Initializable {
    public static AccessProvider ac;
    public static User currentUser;
    private static String host;
-   private RemoteCallback rc;
+   private RemoteCallback exp;
 
    private Stage currentStage;
 
    public void setStage(Stage stage) {
       currentStage = stage;
+      stage.setOnCloseRequest(event -> {
+         try {
+            UnicastRemoteObject.unexportObject(exp, true);
+         }
+         catch (NoSuchObjectException nsoe) {
+            nsoe.printStackTrace();
+         }
+      });
    }
 
    public void setDbController(DBHandler dbhandler) {
@@ -61,9 +70,10 @@ public class LoginController implements Initializable {
       }
 
       try {
-         rc = new SimpleCallback();
-         RemoteCallback exp = (RemoteCallback) UnicastRemoteObject.exportObject(rc, 1101);
+         SimpleCallback rc = new SimpleCallback();
+         exp = (RemoteCallback) UnicastRemoteObject.exportObject(rc, 1100);
          ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(exp);
+         System.out.println("Callback registered");
       }
       catch (RemoteException|NotBoundException re) {
          System.out.println("Cannot register callback");
