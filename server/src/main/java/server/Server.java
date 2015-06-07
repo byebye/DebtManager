@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class Server {
     static DatabaseController dbController;
     private static String dbUser, dbPassword, url;
+    static SimpleLongpollingHanger slh = setupHanger();
 
     public static void main (String [] args) {
         try {
@@ -39,7 +40,6 @@ public class Server {
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(name, stub);
 
-            SimpleLongpollingHanger slh = setupHanger();
             runUpdateDaemon(slh);
 
             System.out.println("Server running");
@@ -51,7 +51,7 @@ public class Server {
 
 
     private static SimpleLongpollingHanger setupHanger() {
-        SimpleLongpollingHanger slh = new SimpleLongpollingHanger();
+        slh = new SimpleLongpollingHanger();
         try {
             LongpollingHanger exp = (LongpollingHanger) UnicastRemoteObject.exportObject(slh, 1100);
             LocateRegistry.getRegistry().rebind(LongpollingHanger.NAME, exp);
@@ -72,7 +72,7 @@ public class Server {
                     try {
                         slh.unhangAll();
                         //sum.callAll();
-                        TimeUnit.SECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(60);
                     }
                     catch (InterruptedException ie) {
                         break;

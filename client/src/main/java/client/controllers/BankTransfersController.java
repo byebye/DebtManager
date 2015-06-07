@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class BankTransfersController implements Initializable {
+public class BankTransfersController implements Initializable, SelfUpdating {
    @FXML
    TableView tabToSend;
    @FXML
@@ -39,8 +39,11 @@ public class BankTransfersController implements Initializable {
    private final ObservableList<BankTransfer> toSendTransfers = FXCollections.observableArrayList();
    private final ObservableList<BankTransfer> toReceiveTransfers = FXCollections.observableArrayList();
    private final User currentUser = LoginController.currentUser;
-
    private Stage currentStage;
+
+   public Stage getStage() {
+      return currentStage;
+   }
 
    public void setStage(Stage stage) {
       currentStage = stage;

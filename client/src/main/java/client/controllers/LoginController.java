@@ -34,9 +34,16 @@ public class LoginController implements Initializable {
    private static String host;
    private Stage currentStage;
 
+
+   public Stage getStage() {
+      return currentStage;
+   }
+
    public void setStage(Stage stage) {
       currentStage = stage;
    }
+
+
 
    public void setDbController(DBHandler dbhandler) {
       dbController = dbhandler;

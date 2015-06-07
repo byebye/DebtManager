@@ -3,13 +3,15 @@ package client.controllers;
 import client.UpdateLongpollingCallbackRegistrar;
 import common.RemoteCallback;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 
 /**
  * Created by glapul on 07.06.15.
  */
 public interface SelfUpdating {
-   void update();
 
+   void update();
+   Stage getStage();
 
    default void subscribeForUpdates() {
       RemoteCallback rc = new RemoteCallback() {
@@ -21,9 +23,7 @@ public interface SelfUpdating {
          }
       };
       UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(rc);
+      getStage().setOnCloseRequest(event -> {UpdateLongpollingCallbackRegistrar.deregisterMostRecentCallback();});
    }
 
-   default void unsubscribeFromUpdates() {
-      UpdateLongpollingCallbackRegistrar.deregisterMostRecentCallback();
-   }
 }

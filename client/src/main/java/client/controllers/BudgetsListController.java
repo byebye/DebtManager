@@ -62,6 +62,11 @@ public class BudgetsListController implements Initializable, SelfUpdating {
       }
    }
 
+   @Override
+   public Stage getStage() {
+      return currentStage;
+   }
+
    private void displayUnableToConnectWithServerAlert() {
       Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
       unableToConnectAlert.setTitle("Unable to connect with server");

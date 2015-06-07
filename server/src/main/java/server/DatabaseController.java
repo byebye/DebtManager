@@ -172,6 +172,9 @@ public class DatabaseController implements DBHandler {
                   .values(budgetId, user.getId())
                   .execute();
       }
+
+      Server.slh.unhangAll();
+
       return true;
    }
 
@@ -202,8 +205,10 @@ public class DatabaseController implements DBHandler {
       dbContext.delete(Budgets.BUDGETS)
                .where(Budgets.BUDGETS.ID.equal(budget.getId()))
                .execute();
-      return true;
 
+      Server.slh.unhangAll();
+
+      return true;
    }
 
    public synchronized List<Budget> getAllBudgets(int userId) {
@@ -263,6 +268,8 @@ public class DatabaseController implements DBHandler {
                   .values(budgetId, user.getId())
                   .execute();
       }
+
+      Server.slh.unhangAll();
    }
 
    public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
@@ -276,6 +283,8 @@ public class DatabaseController implements DBHandler {
                        userId,
                        what)
                .execute();
+
+      Server.slh.unhangAll();
    }
 
    public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String what) {
@@ -285,12 +294,16 @@ public class DatabaseController implements DBHandler {
                .set(Payments.PAYMENTS.DESCRIPTION, what)
                .where(Payments.PAYMENTS.ID.equal(paymentId))
                .execute();
+
+      Server.slh.unhangAll();
    }
 
    public synchronized void deletePayment(int paymentId) {
       dbContext.delete(Payments.PAYMENTS)
                .where(Payments.PAYMENTS.ID.equal(paymentId))
                .execute();
+
+      Server.slh.unhangAll();
    }
 
    public synchronized List<Settlement> getAllSettlements(int budgetId){
@@ -427,6 +440,8 @@ public class DatabaseController implements DBHandler {
        }
       if(sendEmails)
          new Thread(new BankTransferEmailSender(budgetId, bankTransfers)).run();
+
+      Server.slh.unhangAll();
     }
 
    public synchronized void removeParticipant(int budgetId, int userId) {
@@ -434,6 +449,8 @@ public class DatabaseController implements DBHandler {
                .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
                .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
                .execute();
+
+      Server.slh.unhangAll();
    }
 
    public synchronized List<BankTransfer> getToSendBankTransfers(int userId){
@@ -565,5 +582,7 @@ public class DatabaseController implements DBHandler {
    public synchronized void setBankTransfersStatus(Map<Integer, Integer> bankTransfers) throws RemoteException {
       for(Map.Entry<Integer, Integer> transfer : bankTransfers.entrySet())
          setBankTransfersStatus(transfer.getKey(), transfer.getValue());
+
+      Server.slh.unhangAll();
    }
 }
