@@ -75,6 +75,8 @@ public class LoginController implements Initializable {
    public void initialize(URL location, ResourceBundle resources) {
       btnSignUp.setOnAction(event -> {
          try {
+            errorLabel.setText("");
+            ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldPassword);
             SignUpWindow signUpWindow = new SignUpWindow(this);
             signUpWindow.initOwner(currentStage);
             signUpWindow.showAndWait();
