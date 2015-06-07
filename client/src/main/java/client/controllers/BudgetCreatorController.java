@@ -70,10 +70,6 @@ public class BudgetCreatorController implements Initializable {
                ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
             }
 
-            else if(budgetName.getText().length() > 16){
-               errorLabel.setText("Budget name is too long. Maximal size is 16.");
-               ErrorHighlighter.highlightInvalidFields(budgetName);
-            }
             else
                participantsList.add(user);
          }
@@ -87,12 +83,17 @@ public class BudgetCreatorController implements Initializable {
          errorLabel.setText("");
          ErrorHighlighter.unhighlitghtFields(txtFieldEnterEmail);
          try {
-            List<User> participantsSerializable = new ArrayList<User>(participantsList);
-            Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsSerializable);
-            if (dbController.createBudget(budget))
-               currentStage.close();
-            else
-               errorLabel.setText("Budget couldn't be created! Try again");
+            if(budgetName.getText().length() > 16){
+               errorLabel.setText("Budget name is too long. Maximal size is 16.");
+               ErrorHighlighter.highlightInvalidFields(budgetName);
+            }else {
+               List<User> participantsSerializable = new ArrayList<User>(participantsList);
+               Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsSerializable);
+               if (dbController.createBudget(budget))
+                  currentStage.close();
+               else
+                  errorLabel.setText("Budget couldn't be created! Try again");
+            }
          }
          catch (RemoteException e) {
             e.printStackTrace();
