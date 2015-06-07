@@ -41,7 +41,7 @@
             try {
                rc.call();
                System.out.println("  Called one listener");
-            } catch (RemoteException re) {
+            } catch (Exception re) {
                re.printStackTrace();
                toDelete.add(rc);
             }

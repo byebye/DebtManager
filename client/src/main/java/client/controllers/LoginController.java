@@ -1,6 +1,5 @@
 package client.controllers;
 
-import client.SimpleCallback;
 import client.view.ErrorHighlighter;
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
@@ -14,12 +13,8 @@ import javafx.stage.Stage;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.NoSuchObjectException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {

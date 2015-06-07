@@ -68,7 +68,18 @@ public class SettlementDetailsController implements Initializable {
    public void fillContentList() {
       contentList.clear();
       try {
-         contentList.addAll(dbController.getBankTransfersBySettlementId(settlement.getSettlementId()));
+         List<BankTransfer> transfers = dbController.getBankTransfersBySettlementId(settlement.getSettlementId());
+         int it = 0;
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 0)
+               Collections.swap(transfers,it++,i);
+
+
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 1)
+               Collections.swap(transfers,it++,i);
+
+         contentList.addAll(transfers);
       }
       catch (Exception e) {
          e.printStackTrace();
