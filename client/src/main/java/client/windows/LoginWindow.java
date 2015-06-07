@@ -22,12 +22,9 @@ public class LoginWindow extends Application {
 
       final String host = getParameters().getNamed().get("host");
 
-      //UpdateCallbackRegistrar.setHost(host);
-      //UpdateCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
 
       UpdateLongpollingCallbackRegistrar.setHost(host);
       UpdateLongpollingCallbackRegistrar.start();
-      //UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();

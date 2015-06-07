@@ -1,16 +1,11 @@
 package client;
 
-import common.CallbackManager;
 import common.LongpollingHanger;
 import common.RemoteCallback;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Stack;
 
 /**
@@ -60,7 +55,7 @@ public abstract class UpdateLongpollingCallbackRegistrar {
            cmg = ((LongpollingHanger) LocateRegistry.getRegistry(host).lookup(LongpollingHanger.NAME));
          } catch (RemoteException | NotBoundException re) {
             re.printStackTrace();
-            System.out.println("Couldn't get the CallbackManager");
+            System.out.println("Couldn't get the longpollingCallbackManager");
             return;
          }
          System.out.println("Hanger thread running");
