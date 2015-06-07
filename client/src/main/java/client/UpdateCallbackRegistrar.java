@@ -3,6 +3,8 @@ package client;
 import common.CallbackManager;
 import common.RemoteCallback;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,6 +19,16 @@ public abstract class UpdateCallbackRegistrar {
 
    //list containing references to callbacks to prevent them from being garbage collected
    private static ArrayList<RemoteCallback> callbackList = new ArrayList<>();
+
+   static {
+      try {
+         System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
+         System.out.println(InetAddress.getLocalHost().getHostAddress());
+      }
+      catch (UnknownHostException uhe) {
+         uhe.printStackTrace();
+      }
+   }
 
    public static void setHost(String host) {
       UpdateCallbackRegistrar.host = host;
