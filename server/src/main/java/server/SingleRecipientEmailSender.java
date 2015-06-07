@@ -9,8 +9,14 @@ import common.Email;
  */
 public class SingleRecipientEmailSender {
 
-   private static final String sendGridUserName = "debtmanager",
-                               sendGridPassword = "debtmanager1";
+   private static final String sendGridUserName,
+                               sendGridPassword;
+
+   static {
+      sendGridUserName = System.getenv("SENDGRID_USERNAME");
+      sendGridPassword = System.getenv("SENDGRID_PASSWORD");
+   }
+   
    private SendGrid sg;
 
    public static class EmailNotSentException extends Exception {}
