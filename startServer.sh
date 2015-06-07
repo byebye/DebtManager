@@ -16,6 +16,8 @@ cp client.jnlp ~/WWW/classes/client.jnlp
 cp index.html ~/WWW/index.html
 jarsigner -keystore ~/debtmanagerKeystore ~/WWW/classes/client-all-jar.jar -storepass zlerocta -keypass zlerocta  debtmanagerKey
 
+./addEnvironmentVariables.sh
+
 
 killall java
 killall rmiregistry

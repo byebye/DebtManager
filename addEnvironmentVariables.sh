@@ -1,0 +1,2 @@
+export SENDGRID_USERNAME=debtmanager
+export SENDGRID_PASSWORD=debtmanager1

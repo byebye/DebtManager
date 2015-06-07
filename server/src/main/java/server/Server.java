@@ -2,6 +2,7 @@ package server;
 
 import common.AccessProvider;
 import common.CallbackManager;
+import common.LongpollingHanger;
 import common.RemoteCallback;
 import org.jooq.util.derby.sys.Sys;
 
@@ -42,8 +43,12 @@ public class Server {
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(name, stub);
 
-            SimpleUpdateManager sum = setupUpdateManager();
-            runUpdateDaemon(sum);
+            //left from callback-based approach
+            //SimpleUpdateManager sum = setupUpdateManager();
+            //runUpdateDaemon(sum);
+
+            SimpleLongpollingHanger slh = setupHanger();
+            runUpdateDaemon(slh);
 
             System.out.println("Server running");
         } catch (RemoteException rme) {
@@ -51,7 +56,8 @@ public class Server {
         }
     }
 
-    private static SimpleUpdateManager setupUpdateManager() {
+    //left from callback-based approach
+    /*private static SimpleUpdateManager setupUpdateManager() {
         String name = "UpdateManager";
         SimpleUpdateManager sum = new SimpleUpdateManager();
 
@@ -64,18 +70,31 @@ public class Server {
             re.printStackTrace();
         }
         return sum;
+    }*/
+
+    private static SimpleLongpollingHanger setupHanger() {
+        SimpleLongpollingHanger slh = new SimpleLongpollingHanger();
+        try {
+            LongpollingHanger exp = (LongpollingHanger) UnicastRemoteObject.exportObject(slh, 1100);
+            LocateRegistry.getRegistry().rebind(LongpollingHanger.NAME, exp);
+        }
+        catch(RemoteException re) {
+            System.out.println("Setting up longpolling hanger failed");
+            re.printStackTrace();
+        }
+        return slh;
     }
 
-    public static void runUpdateDaemon(SimpleUpdateManager sum) {
+    public static void runUpdateDaemon(SimpleLongpollingHanger slh) {
 
         Thread updateDaemon = new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true) {
                     try {
-                        System.out.println("I will try calling all listeners");
-                        sum.callAll();
-                        TimeUnit.SECONDS.sleep(5);
+                        slh.unhangAll();
+                        //sum.callAll();
+                        TimeUnit.SECONDS.sleep(10);
                     }
                     catch (InterruptedException ie) {
                         break;

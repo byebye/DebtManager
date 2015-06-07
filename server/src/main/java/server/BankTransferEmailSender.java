@@ -38,6 +38,7 @@ public class BankTransferEmailSender implements Runnable{
                   new Email(toUser.getEmail()),
                   createSenderSubject(),
                   createSenderText(transfer, fromUser, toUser));
+            System.out.println("Email from "+fromUser.getEmail() + " to " + toUser.getEmail() + " sent");
          }
          catch (SingleRecipientEmailSender.EmailNotSentException e) {
             System.out.println("Email from "+fromUser.getEmail() + " to " + toUser.getEmail() + " not sent");
@@ -48,6 +49,7 @@ public class BankTransferEmailSender implements Runnable{
                   new Email(fromUser.getEmail()),
                   createRecipientSubject(),
                   createRecipientText(transfer, fromUser, toUser));
+            System.out.println("Email from "+toUser.getEmail() + " to " + fromUser.getEmail() + " sent");
          }
          catch (SingleRecipientEmailSender.EmailNotSentException e) {
             System.out.println("Email from "+toUser.getEmail() + " to " + fromUser.getEmail() + " not sent");

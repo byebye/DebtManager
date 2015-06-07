@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class BankTransfersController implements Initializable {
-
    @FXML
    TableView tabToSend;
    @FXML

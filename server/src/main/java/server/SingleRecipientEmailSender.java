@@ -9,8 +9,15 @@ import common.Email;
  */
 public class SingleRecipientEmailSender {
 
-   private static final String sendGridUserName = "debtmanager",
-                               sendGridPassword = "debtmanager1";
+   private static final String sendGridUserName,
+                               sendGridPassword;
+
+   static {
+      sendGridUserName = System.getenv("SENDGRID_USERNAME");
+      sendGridPassword = System.getenv("SENDGRID_PASSWORD");
+      System.out.println(sendGridPassword + " "  + sendGridUserName);
+   }
+
    private SendGrid sg;
 
    public static class EmailNotSentException extends Exception {}
@@ -30,7 +37,7 @@ public class SingleRecipientEmailSender {
       try {
          SendGrid.Response response = sg.send(email);
          System.out.println(response.getMessage());
-         if(response.getMessage() != "success")
+         if(!response.getMessage().equals("success"))
             throw new EmailNotSentException();
       }
       catch (SendGridException e) {
