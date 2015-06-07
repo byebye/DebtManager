@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class SimpleLongpollingHanger implements LongpollingHanger{
    private final Object hanger = new Object();
 
-   public synchronized void hang() {
+   public void hang() {
       synchronized (hanger) {
          try{hanger.wait();}
          catch (InterruptedException ie) {}
