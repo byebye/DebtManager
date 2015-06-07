@@ -22,8 +22,8 @@ public interface SelfUpdating {
             });
          }
       };
-      UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(rc);
-      getStage().setOnCloseRequest(event -> {UpdateLongpollingCallbackRegistrar.deregisterMostRecentCallback();});
+      //UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(rc);
+      //getStage().setOnCloseRequest(event -> {UpdateLongpollingCallbackRegistrar.deregisterMostRecentCallback();});
    }
 
 }
