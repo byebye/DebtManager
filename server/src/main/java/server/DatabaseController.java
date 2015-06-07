@@ -1,7 +1,6 @@
 package server;
 
 import common.*;
-import jdk.nashorn.internal.objects.NativeUint16Array;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import server.jooq.tables.*;
@@ -536,29 +535,29 @@ public class DatabaseController implements DBHandler {
    }
 
    @Override
-   public synchronized void setBankTransferStatus(List<Integer> bankTransfers,int status){
-      for(Integer id: bankTransfers){
+   public synchronized void setBankTransfersStatus(Map<Integer, Integer> bankTransfers){
+      for(Map.Entry<Integer, Integer> transfer : bankTransfers.entrySet()) {
          dbContext.update(BankTransfers.BANK_TRANSFERS)
-                  .set(BankTransfers.BANK_TRANSFERS.PAID,status)
-                  .where(BankTransfers.BANK_TRANSFERS.ID.equal(id))
+                  .set(BankTransfers.BANK_TRANSFERS.PAID, transfer.getValue())
+                  .where(BankTransfers.BANK_TRANSFERS.ID.equal(transfer.getKey()))
                   .execute();
       }
    }
 
-   @Override
-   public synchronized void updateBankTransferStatus(int bankTransferId, int userId) {
-      System.out.println(bankTransferId);
-      List<Integer> content = new ArrayList<>();
-      content.add(bankTransferId);
-      int whoId =
-            dbContext.select(BankTransfers.BANK_TRANSFERS.WHO)
-            .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.ID.equal(bankTransferId))
-            .fetchOne().value1();
-
-      if(whoId == userId)
-         setBankTransferStatus(content,1);
-      else setBankTransferStatus(content,2);
-   }
+//   @Override
+//   public synchronized void updateBankTransferStatus(int bankTransferId, int userId) {
+//      System.out.println(bankTransferId);
+//      List<Integer> content = new ArrayList<>();
+//      content.add(bankTransferId);
+//      int whoId =
+//            dbContext.select(BankTransfers.BANK_TRANSFERS.WHO)
+//            .from(BankTransfers.BANK_TRANSFERS)
+//            .where(BankTransfers.BANK_TRANSFERS.ID.equal(bankTransferId))
+//            .fetchOne().value1();
+//
+//      if(whoId == userId)
+//         setBankTransfersStatus(content, 1);
+//      else setBankTransfersStatus(content, 2);
+//   }
 
 }

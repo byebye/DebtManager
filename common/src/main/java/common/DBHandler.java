@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 public interface DBHandler extends Remote {
    User getUserByEmail(String email) throws RemoteException;
@@ -28,6 +29,6 @@ public interface DBHandler extends Remote {
    List<BankTransfer> getMyBankTransfers(int userId) throws RemoteException;
    List<BankTransfer> getOthersBankTransfers(int userId) throws RemoteException;
    List<BankTransfer> getBankTransfersBySettlementId(int settlementId) throws RemoteException;
-   void setBankTransferStatus(List<Integer> bankTransfers,int status) throws RemoteException;
-   void updateBankTransferStatus(int bankTransferId,int userId) throws RemoteException;
+   void setBankTransfersStatus(Map<Integer, Integer> bankTransfers) throws RemoteException;
+//   void updateBankTransferStatus(int bankTransferId,int userId) throws RemoteException;
 }

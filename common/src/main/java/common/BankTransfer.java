@@ -7,24 +7,23 @@ public class BankTransfer implements Serializable {
    private User who, whom;
    private BigDecimal amount;
    private String budgetName;
-   private int status;
+   private Status status;
    private String whoAcc;
    private int id;
-   private boolean accept = false;
+   private boolean toUpdate = false;
 
    public BankTransfer(User who, User whom, BigDecimal amount) {
-      this.id = id;
       this.who = who;
       this.whom = whom;
       this.amount = amount;
    }
 
-   public BankTransfer(int id,String budgetName, User who, BigDecimal amount, int status){
+   public BankTransfer(int id, String budgetName, User who, BigDecimal amount, int status) {
       this.id = id;
       this.budgetName = budgetName;
       this.who = who;
       this.amount = amount;
-      this.status = status;
+      this.status = Status.fromValue(status);
       this.whoAcc =  who.getName()+" ("+who.getBankAccount()+")";
       System.out.println(whoAcc);
       System.out.println(who.getName());
@@ -34,24 +33,30 @@ public class BankTransfer implements Serializable {
       this.who = who;
       this.whom = whom;
       this.amount = amount;
-      this.status = status;
+      this.status = Status.fromValue(status);
       this.id = id;
    }
 
    public String getBudgetName(){return budgetName;}
-   public String getStatus() {
-      if (status == 0) return "not paid";
-      if (status == 1) return "not confirmed";
-      return "OK";
+   public void updateStatus(int updatingUser) {
+      if (updatingUser == who.getId())
+         status = Status.NotConfirmed;
+      else // budget owner or transfer receiver
+         status = Status.Confirmed;
+   }
+   public Status getStatus() {
+      return status;
+   }
+   public void setStatus(Status status) {
+      this.status = status;
    }
 
-   public int getStatusId(){return status;}
    public String getWhoAcc(){return whoAcc;}
 
    public String getWho() {
       return who.getName();
    }
-   public int getWhoId(){return who.getId();}
+   public int getWhoId() {return who.getId();}
 
    public String getWhom() {
       return whom.getName();
@@ -66,14 +71,49 @@ public class BankTransfer implements Serializable {
       return whom.getBankAccount();
    }
 
-   public void setAccept(boolean v){
-      accept = v;
+   public void setToUpdate(boolean v){
+      toUpdate = v;
    }
-   public boolean getAccept(){
-      return accept;
+   public boolean isToUpdate(){
+      return toUpdate;
    }
 
    public int getId(){
       return id;
+   }
+
+   public enum Status {
+      NotPaid(0),
+      NotConfirmed(1),
+      Confirmed(2);
+
+      int value;
+
+      Status(int value) {
+         this.value = value;
+      }
+
+      public int getValue() {
+         return value;
+      }
+
+      public static Status fromValue(int value) {
+         switch(value) {
+            case 0: return NotPaid;
+            case 1: return NotConfirmed;
+            case 2: return Confirmed;
+         }
+         return NotPaid;
+      }
+
+      @Override
+      public String toString() {
+         switch(value) {
+            case 0: return "not paid";
+            case 1: return "not confirmed";
+            case 2: return "confirmed";
+         }
+         return "";
+      }
    }
 }

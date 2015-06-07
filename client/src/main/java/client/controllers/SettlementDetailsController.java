@@ -13,9 +13,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by vsmasster on 26.05.15.
@@ -66,6 +64,7 @@ public class SettlementDetailsController implements Initializable {
    }
 
    public void fillContentList() {
+      contentList.clear();
       try {
          contentList.addAll(dbController.getBankTransfersBySettlementId(settlement.getSettlementId()));
       }
@@ -75,19 +74,19 @@ public class SettlementDetailsController implements Initializable {
    }
 
    public void setAsPaid() {
-      List<Integer> bankTransfersToSet = new ArrayList<>();
-      for (BankTransfer bk : contentList) {
-         if (bk.getAccept())
-            bankTransfersToSet.add(bk.getId());
-      }
+      Map<Integer, Integer> bankTransfersToSet = new HashMap<>();
+      for (BankTransfer transfer : contentList)
+         if (transfer.isToUpdate()) {
+            transfer.updateStatus(currentUser.getId());
+            bankTransfersToSet.put(transfer.getId(), transfer.getStatus().getValue());
+         }
 
       try {
-         dbController.setBankTransferStatus(bankTransfersToSet, 2);
+         dbController.setBankTransfersStatus(bankTransfersToSet);
       }
       catch (Exception e) {
          e.printStackTrace();
       }
-      contentList.clear();
       fillContentList();
    }
 
@@ -98,8 +97,8 @@ public class SettlementDetailsController implements Initializable {
       public CheckBoxTableCell() {
          setAlignment(Pos.CENTER);
          checkBox.setOnAction(event -> {
-            BankTransfer bk = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
-            bk.setAccept(!bk.getAccept());
+            BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
+            transfer.setToUpdate(!transfer.isToUpdate());
          });
       }
 
@@ -110,10 +109,9 @@ public class SettlementDetailsController implements Initializable {
             checkBox.setSelected(false);
             setGraphic(checkBox);
 
-            BankTransfer bk = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
-
+            BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
             if (currentUser.equals(budget.getOwner())
-                || bk.getWhoId() == currentUser.getId() || bk.getWhomId() == currentUser.getId())
+                || transfer.getWhoId() == currentUser.getId() || transfer.getWhomId() == currentUser.getId())
                checkBox.setDisable(false);
             else
                checkBox.setDisable(true);

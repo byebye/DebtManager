@@ -110,14 +110,14 @@ public class BankTransfersController implements Initializable {
       protected void updateItem(ImageView item, boolean empty) {
          super.updateItem(item, empty);
          if (!empty) {
-            int statusId = ((BankTransfer) StatusImageCell.this.getTableRow().getItem()).getStatusId();
+            BankTransfer transfer = (BankTransfer) StatusImageCell.this.getTableRow().getItem();
+            int statusId = transfer.getStatus().getValue();
             String path = "/graphics/";
-            if (statusId == 0)
-               path += "notpaid.png";
-            if (statusId == 1)
-               path += "waiting.png";
-            if (statusId == 2)
-               path += "paid.png";
+            switch(statusId) {
+               case 0: path += "notpaid.png"; break;
+               case 1: path += "waiting.png"; break;
+               case 2: path += "paid.png"; break;
+            }
 
             Image image = new Image(getClass().getClass().getResourceAsStream(path));
             imageView.setImage(image);
@@ -147,8 +147,8 @@ public class BankTransfersController implements Initializable {
          btnUpdateStatus.setPadding(new Insets(0, 0, 0, 0));
          btnUpdateStatus.setOnAction(event -> {
             try {
-               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(),
-                                                     currentUser.getId());
+//               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(),
+//                                                     currentUser.getId());
                if (ifMyTransfersActive)
                   loadMyTransfers();
                else loadOthersTransfers();
@@ -164,7 +164,8 @@ public class BankTransfersController implements Initializable {
       protected void updateItem(Button item, boolean empty) {
          super.updateItem(item, empty);
          if (!empty && item != null) {
-            int statusId = ((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getStatusId();
+            BankTransfer transfer = (BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem();
+            int statusId = transfer.getStatus().getValue();
             if (!ifMyTransfersActive && statusId != 2) {
                btnUpdateStatus.setGraphic(confirmImageView);
                setGraphic(btnUpdateStatus);
