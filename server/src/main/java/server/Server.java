@@ -1,12 +1,16 @@
 package server;
 
 import common.AccessProvider;
+import common.CallbackManager;
+import common.RemoteCallback;
+import org.jooq.util.derby.sys.Sys;
 
 import javax.xml.crypto.Data;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by glapul on 16.05.15.
@@ -32,16 +36,54 @@ public class Server {
 
         try {
             String name = "AccessProvider";
-            AccessProvider ac = new BasicAccessProvider(dbController);
+            AccessProvider ac = new BasicAccessProvider();
             AccessProvider stub = (AccessProvider) UnicastRemoteObject.exportObject(ac, 1100);
 
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(name, stub);
 
+            SimpleUpdateManager sum = setupUpdateManager();
+            runUpdateDaemon(sum);
+
             System.out.println("Server running");
         } catch (RemoteException rme) {
             rme.printStackTrace();
         }
+    }
+
+    private static SimpleUpdateManager setupUpdateManager() {
+        String name = "UpdateManager";
+        SimpleUpdateManager sum = new SimpleUpdateManager();
+
+        try {
+            CallbackManager exp = (CallbackManager) UnicastRemoteObject.exportObject(sum, 1100);
+            LocateRegistry.getRegistry().rebind(name, exp);
+        }
+        catch(RemoteException re) {
+            System.out.println("Setting up update manager failed");
+            re.printStackTrace();
+        }
+        return sum;
+    }
+
+    public static void runUpdateDaemon(SimpleUpdateManager sum) {
+
+        Thread updateDaemon = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        sum.callAll();
+                        TimeUnit.SECONDS.sleep(5);
+                    }
+                    catch (InterruptedException ie) {
+                        break;
+                    }
+                }
+            }
+        });
+        //updateDaemon.setDaemon(true);
+        updateDaemon.start();
     }
 
     private static void parseArguments(String[] args) {

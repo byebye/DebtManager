@@ -75,7 +75,6 @@ public class DatabaseController implements DBHandler {
       }
    }
 
-   @Override
    public synchronized boolean validateUserPassword(Email email, String passwordHash) {
       Result<Record1<String>> result =
               dbContext.select(Users.USERS.PASSWORD_HASH)

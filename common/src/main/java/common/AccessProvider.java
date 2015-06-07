@@ -24,9 +24,8 @@ public interface AccessProvider extends Remote {
     /** Method used to create an account on the server
      * @param mail user email
      * @param passwordHash SHA1Hasher generated hash of the password picked by an user
-     * @param iban user's InternationalBankAccountNumber
      * @throws RemoteException
-     * @throws AuthenticationException if a user with such email OR IBAN already exists
+     * @throws AuthenticationException if a user with such email already exists
      */
     public void signUp(Email mail, String name, BigInteger bankAccount, String passwordHash)
             throws RemoteException, AuthenticationException;

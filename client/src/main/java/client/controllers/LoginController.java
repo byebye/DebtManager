@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.SimpleCallback;
 import client.view.ErrorHighlighter;
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
@@ -13,8 +14,10 @@ import javafx.stage.Stage;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -32,6 +35,7 @@ public class LoginController implements Initializable {
    public static AccessProvider ac;
    public static User currentUser;
    private static String host;
+   private RemoteCallback rc;
 
    private Stage currentStage;
 
@@ -54,6 +58,16 @@ public class LoginController implements Initializable {
          e.printStackTrace();
          displayUnableToConnectWithServerAlert();
          System.exit(1);
+      }
+
+      try {
+         rc = new SimpleCallback();
+         RemoteCallback exp = (RemoteCallback) UnicastRemoteObject.exportObject(rc, 1100);
+         ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(exp);
+      }
+      catch (RemoteException|NotBoundException re) {
+         System.out.println("Cannot register callback");
+         re.printStackTrace();
       }
    }
 
