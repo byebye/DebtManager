@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class BudgetController implements Initializable, SelfUpdating {
 
@@ -284,7 +281,13 @@ public class BudgetController implements Initializable, SelfUpdating {
    void fillTabSettleHistory(){
       settleHistory.clear();
       try {
-         settleHistory.addAll(dbController.getAllSettlements(budget.getId()));
+         List<Settlement> settlements = dbController.getAllSettlements(budget.getId());
+         int it = 0;
+         for(int i=0;i<settlements.size();i++)
+            if(!settlements.get(i).getStatus().equals("OK"))
+               Collections.swap(settlements,it++,i);
+
+         settleHistory.addAll(settlements);
       }
       catch(Exception e) {
          System.out.println("Access denied");
