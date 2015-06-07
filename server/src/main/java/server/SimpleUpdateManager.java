@@ -2,6 +2,7 @@ package server;
 
 import common.CallbackManager;
 import common.RemoteCallback;
+import org.jooq.util.derby.sys.Sys;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -39,6 +40,7 @@ public class SimpleUpdateManager implements CallbackManager {
       for(RemoteCallback rc : callbacks) {
          try {
             rc.call();
+            System.out.println("  Called one listener");
          } catch (RemoteException re) {
             toDelete.add(rc);
          }
