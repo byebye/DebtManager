@@ -20,7 +20,7 @@
         <tabs>
           <Tab text="Transfers to send">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane fx:id="paneToSend" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <TableView fx:id="tabToSend" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
                           <columns>
@@ -38,7 +38,7 @@
           </Tab>
           <Tab text="Transfers to receive">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="154.0" prefWidth="354.0">
+              <AnchorPane fx:id="paneToReceive" minHeight="0.0" minWidth="0.0" prefHeight="154.0" prefWidth="354.0">
                      <children>
                         <TableView fx:id="tabToReceive" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
                            <columns>

@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class BankTransfersController implements Initializable {
@@ -82,9 +83,15 @@ public class BankTransfersController implements Initializable {
       return imageView;
    }
 
+   public void update(){
+      loadToReceiveTransfers();
+      loadToSendTransfers();
+   }
+
    public void loadToSendTransfers() {
       toSendTransfers.clear();
       try {
+         List<BankTransfer> transfers = dbController.getToSendBankTransfers(currentUser.getId());
          toSendTransfers.addAll(dbController.getToSendBankTransfers(currentUser.getId()));
       }
       catch (Exception e) {
