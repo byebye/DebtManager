@@ -37,25 +37,17 @@ public class LoginController implements Initializable {
    public static AccessProvider ac;
    public static User currentUser;
    private static String host;
-   public RemoteCallback rc;
-
    private Stage currentStage;
 
    public void setStage(Stage stage) {
       currentStage = stage;
-      stage.setOnCloseRequest(event -> {
-         try {
-            UnicastRemoteObject.unexportObject(rc, true);
-         }
-         catch (NoSuchObjectException nsoe) {
-            nsoe.printStackTrace();
-         }
-      });
    }
 
    public void setDbController(DBHandler dbhandler) {
       dbController = dbhandler;
    }
+
+
 
    public void connectWithRMIHost(String host) {
       this.host = (host == null ? "localhost" : host);
@@ -68,18 +60,6 @@ public class LoginController implements Initializable {
          e.printStackTrace();
          displayUnableToConnectWithServerAlert();
          System.exit(1);
-      }
-
-      try {
-         LocateRegistry.createRegistry(1099);
-         rc = new SimpleCallback();
-         UnicastRemoteObject.exportObject(rc, 1100);
-         ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(rc);
-         System.out.println("Callback registered");
-      }
-      catch (RemoteException|NotBoundException re) {
-         System.out.println("Cannot register callback");
-         re.printStackTrace();
       }
    }
 
@@ -133,6 +113,7 @@ public class LoginController implements Initializable {
          if (event.getCode().compareTo(KeyCode.ENTER) == 0)
             btnLogIn.fire();
       });
+
    }
 
    private void tryToLogIn() throws RemoteException, AuthenticationException {

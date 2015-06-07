@@ -13,9 +13,4 @@ public class SimpleCallback  implements RemoteCallback {
    public void call() throws RemoteException {
       System.out.println("Callback called");
    }
-
-   @Override
-   protected void finalize() {
-      System.out.println("Callback gc'd");
-   }
 }
