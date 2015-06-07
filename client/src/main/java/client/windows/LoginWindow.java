@@ -1,6 +1,7 @@
 package client.windows;
 
 import client.SimpleCallback;
+import client.UpdateCallbackRegistrar;
 import client.controllers.LoginController;
 import common.CallbackManager;
 import common.RemoteCallback;
@@ -23,22 +24,13 @@ public class LoginWindow extends Application {
       return controller;
    }
 
-   public RemoteCallback rc;
 
    @Override
    public void start(Stage primaryStage) throws Exception {
 
       final String host = getParameters().getNamed().get("host");
-      try {
-         rc = new SimpleCallback();
-         UnicastRemoteObject.exportObject(rc, 0);
-         ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(rc);
-         System.out.println("Callback registered");
-      }
-      catch (RemoteException |NotBoundException re) {
-         System.out.println("Cannot register callback");
-         re.printStackTrace();
-      }
+      UpdateCallbackRegistrar.setHost(host);
+      UpdateCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();
@@ -48,12 +40,14 @@ public class LoginWindow extends Application {
       controller.connectWithRMIHost(host);
       controller.setStage(primaryStage);
 
+
+
       primaryStage.setTitle("DebtManager - Log in");
       primaryStage.setScene(scene);
       primaryStage.show();
    }
 
    public static void main(String[] args) {
-      try{launch(args);} catch (Exception e) {}
+      try{launch(args);} catch (Exception e) {e.printStackTrace();}
    }
 }

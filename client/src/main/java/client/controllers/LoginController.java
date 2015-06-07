@@ -47,6 +47,8 @@ public class LoginController implements Initializable {
       dbController = dbhandler;
    }
 
+
+
    public void connectWithRMIHost(String host) {
       this.host = (host == null ? "localhost" : host);
       if (System.getSecurityManager() == null)
@@ -111,6 +113,7 @@ public class LoginController implements Initializable {
          if (event.getCode().compareTo(KeyCode.ENTER) == 0)
             btnLogIn.fire();
       });
+
    }
 
    private void tryToLogIn() throws RemoteException, AuthenticationException {
