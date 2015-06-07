@@ -73,7 +73,7 @@ public class BankTransferEmailSender implements Runnable{
             "His/Her bank account number is\n" +
             toUser.getBankAccount() +
             "\n" +
-            "He/She was sent an email about it, so he/she is will be awaiting your payment.\n" +
+            "He/She was sent an email about it, so he/she will be awaiting your payment.\n" +
             "After making the payment remember to confirm it in the app.\n" +
             "\n" +
             "Best wishes,\n" +
