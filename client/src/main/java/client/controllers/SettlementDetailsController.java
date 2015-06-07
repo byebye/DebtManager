@@ -60,7 +60,7 @@ public class SettlementDetailsController implements Initializable {
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
       colBankAccount.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
       colStatus.setCellFactory(param -> new StatusImageCell());
-            colConfirm.setCellFactory(param -> new CheckBoxTableCell());
+      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
       //Table
       tabBankTransfers.setItems(contentList);
    }
@@ -105,6 +105,8 @@ public class SettlementDetailsController implements Initializable {
          super.updateItem(item, empty);
          if (!empty) {
             BankTransfer transfer = (BankTransfer) StatusImageCell.this.getTableRow().getItem();
+            if (transfer == null)
+               return;
             int statusId = transfer.getStatus().getValue();
             String path = "/graphics/";
             switch(statusId) {

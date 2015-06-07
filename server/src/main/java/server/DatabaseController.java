@@ -515,28 +515,30 @@ public class DatabaseController implements DBHandler {
 
    public synchronized List<BankTransfer> getBankTransfersBySettlementId(int settlementId){
       List<BankTransfer> bankTransfers = new ArrayList<>();
+
+      int budgetId =
+              dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
+                       .from(Settlements.SETTLEMENTS)
+                       .where(Settlements.SETTLEMENTS.ID.equal(settlementId))
+                       .fetchOne().value1();
+      String budgetName =
+              dbContext.select(Budgets.BUDGETS.NAME)
+                       .from(Budgets.BUDGETS)
+                       .where(Budgets.BUDGETS.ID.equal(budgetId))
+                       .fetchOne().value1();
+
       Result<Record5<Integer,Integer,Integer,BigDecimal,Integer>> result =
-            dbContext.select(
-                  BankTransfers.BANK_TRANSFERS.ID,
-                  BankTransfers.BANK_TRANSFERS.WHO,
-                  BankTransfers.BANK_TRANSFERS.WHOM,
-                  BankTransfers.BANK_TRANSFERS.AMOUNT,
-                  BankTransfers.BANK_TRANSFERS.PAID)
-               .from(BankTransfers.BANK_TRANSFERS)
-               .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlementId))
-               .fetch();
+              dbContext.select(
+                          BankTransfers.BANK_TRANSFERS.ID,
+                          BankTransfers.BANK_TRANSFERS.WHO,
+                          BankTransfers.BANK_TRANSFERS.WHOM,
+                          BankTransfers.BANK_TRANSFERS.AMOUNT,
+                          BankTransfers.BANK_TRANSFERS.PAID)
+                       .from(BankTransfers.BANK_TRANSFERS)
+                       .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlementId))
+                       .fetch();
 
       for(Record5<Integer,Integer,Integer,BigDecimal,Integer> bankTransfer: result) {
-         int budgetId =
-                 dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
-                          .from(Settlements.SETTLEMENTS)
-                          .where(Settlements.SETTLEMENTS.ID.equal(bankTransfer.value2()))
-                          .fetchOne().value1();
-         String budgetName =
-                 dbContext.select(Budgets.BUDGETS.NAME)
-                          .from(Budgets.BUDGETS)
-                          .where(Budgets.BUDGETS.ID.equal(budgetId))
-                          .fetchOne().value1();
          bankTransfers.add(
                new BankTransfer(
                      bankTransfer.value1(),
@@ -548,13 +550,11 @@ public class DatabaseController implements DBHandler {
                )
          );
       }
-
       return bankTransfers;
    }
 
    @Override
    public synchronized void setBankTransfersStatus(int transferId, int status) throws RemoteException {
-      System.out.println("Set transfer status " + transferId + " to " + status);
       dbContext.update(BankTransfers.BANK_TRANSFERS)
                .set(BankTransfers.BANK_TRANSFERS.PAID, status)
                .where(BankTransfers.BANK_TRANSFERS.ID.equal(transferId))
@@ -564,6 +564,6 @@ public class DatabaseController implements DBHandler {
    @Override
    public synchronized void setBankTransfersStatus(Map<Integer, Integer> bankTransfers) throws RemoteException {
       for(Map.Entry<Integer, Integer> transfer : bankTransfers.entrySet())
-         setBankTransfersStatus(transfer.getValue(), transfer.getKey());
+         setBankTransfersStatus(transfer.getKey(), transfer.getValue());
    }
 }
