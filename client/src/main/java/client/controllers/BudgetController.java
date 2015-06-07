@@ -274,7 +274,7 @@ public class BudgetController implements Initializable {
       }
    }
 
-   public void fillAllTables() {
+   public void update() {
       fillTabParticipants();
       fillTabUnaccPayments();
       fillTabAccPayments();

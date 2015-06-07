@@ -18,7 +18,8 @@ public class Settlement implements Serializable{
       this.numPaidBankTransfers = numPaidBankTransfers;
       this.settlementId = settlementId;
       this.amount = amount;
-      this.status = numPaidBankTransfers + "/" + numAllBankTransfers;
+      if(numPaidBankTransfers != numAllBankTransfers)this.status = numPaidBankTransfers + "/" + numAllBankTransfers;
+      else this.status = "OK";
    }
 
    public int getBudgetId(){return budgetId;}

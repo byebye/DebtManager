@@ -8,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -57,8 +59,8 @@ public class SettlementDetailsController implements Initializable {
       colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
       colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
       colBankAccount.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
-      colStatus.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("status"));
-      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
+      colStatus.setCellFactory(param -> new StatusImageCell());
+            colConfirm.setCellFactory(param -> new CheckBoxTableCell());
       //Table
       tabBankTransfers.setItems(contentList);
    }
@@ -88,6 +90,36 @@ public class SettlementDetailsController implements Initializable {
          e.printStackTrace();
       }
       fillContentList();
+   }
+
+   private class StatusImageCell extends TableCell<BankTransfer, ImageView> {
+      ImageView imageView = new ImageView();
+
+      public StatusImageCell() {
+         imageView.setPreserveRatio(true);
+         imageView.setFitHeight(20);
+      }
+
+      @Override
+      protected void updateItem(ImageView item, boolean empty) {
+         super.updateItem(item, empty);
+         if (!empty) {
+            BankTransfer transfer = (BankTransfer) StatusImageCell.this.getTableRow().getItem();
+            int statusId = transfer.getStatus().getValue();
+            String path = "/graphics/";
+            switch(statusId) {
+               case 0: path += "notpaid.png"; break;
+               case 1: path += "waiting.png"; break;
+               case 2: path += "paid.png"; break;
+            }
+
+            Image image = new Image(getClass().getClass().getResourceAsStream(path));
+            imageView.setImage(image);
+            setGraphic(imageView);
+         }
+         else
+            setGraphic(null);
+      }
    }
 
    public class CheckBoxTableCell extends TableCell<Payment, Boolean> {

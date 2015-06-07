@@ -79,7 +79,7 @@ public class SettleController implements Initializable {
             List<BankTransfer> bankTransfersSerializable = new ArrayList<>(bankTransfers);
             dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable,
                                                    checkBoxSendViaMail.isSelected());
-            parentController.fillAllTables();
+            parentController.update();
             bankTransfers.clear();
             currentStage.close();
          }

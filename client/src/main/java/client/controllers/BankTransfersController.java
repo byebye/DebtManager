@@ -78,10 +78,17 @@ public class BankTransfersController implements Initializable {
       tabBankTransfers.setItems(contentList);
    }
 
+   public void update(){
+      if(ifMyTransfersActive)
+         loadMyTransfers();
+      else loadOthersTransfers();
+   }
+
    public void loadMyTransfers() {
       contentList.clear();
       try {
          contentList.addAll(dbController.getMyBankTransfers(currentUser.getId()));
+         ifMyTransfersActive = true;
       }
       catch (Exception e) {
          e.printStackTrace();
@@ -92,6 +99,7 @@ public class BankTransfersController implements Initializable {
       contentList.clear();
       try {
          contentList.addAll(dbController.getOthersBankTransfers(currentUser.getId()));
+         ifMyTransfersActive = false;
       }
       catch (Exception e) {
          e.printStackTrace();
@@ -147,7 +155,7 @@ public class BankTransfersController implements Initializable {
          btnUpdateStatus.setPadding(new Insets(0, 0, 0, 0));
          btnUpdateStatus.setOnAction(event -> {
             try {
-//               dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(),
+    //           dbController.updateBankTransferStatus(((BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem()).getId(),
 //                                                     currentUser.getId());
                if (ifMyTransfersActive)
                   loadMyTransfers();
@@ -163,7 +171,7 @@ public class BankTransfersController implements Initializable {
       @Override
       protected void updateItem(Button item, boolean empty) {
          super.updateItem(item, empty);
-         if (!empty && item != null) {
+         if (!empty) {
             BankTransfer transfer = (BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem();
             int statusId = transfer.getStatus().getValue();
             if (!ifMyTransfersActive && statusId != 2) {
