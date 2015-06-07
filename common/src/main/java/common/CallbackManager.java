@@ -9,5 +9,5 @@ import java.rmi.RemoteException;
 public interface CallbackManager extends Remote{
    void register(RemoteCallback uc) throws RemoteException;
    void unregister(RemoteCallback uc) throws RemoteException;
-   void callAll() throws RemoteException
+   void callAll() throws RemoteException;
 }
