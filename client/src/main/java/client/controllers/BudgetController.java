@@ -244,7 +244,6 @@ public class BudgetController implements Initializable, SelfUpdating {
          return row;
       });
       tabUnaccPayments.setItems(unaccountedPayments);
-      tabUnaccPayments.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
       tabAccPayments.setItems(accountedPayments);
       tabUnaccPayments.setRowFactory(param -> {
          TableRow<Payment> row = new TableRow<>();

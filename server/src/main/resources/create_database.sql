@@ -4,6 +4,13 @@ USE debtmanager;
 CREATE SCHEMA debtmanager;
 SET search_path TO debtmanager;
 
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS budgets;
+DROP TABLE IF EXISTS user_budget;
+DROP TABLE IF EXISTS settlements;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS bank_transfers;
+
 CREATE TABLE users (
    id            serial PRIMARY KEY,
    email         varchar(120) UNIQUE,
