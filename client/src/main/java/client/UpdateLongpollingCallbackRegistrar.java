@@ -39,6 +39,7 @@ public abstract class UpdateLongpollingCallbackRegistrar {
          throw new IllegalArgumentException("no host specified");
 
       callbackStack.push(rc);
+      System.out.println("Callback registered");
    }
 
    public synchronized static void deregisterMostRecentCallback() {
@@ -57,10 +58,12 @@ public abstract class UpdateLongpollingCallbackRegistrar {
             System.out.println("Couldn't get the CallbackManager");
             return;
          }
-
+         System.out.println("Hanger thread running");
          while(true) {
             try {
+               System.out.println("hang");
                cmg.hang();
+               System.out.println("unhang");
                UpdateLongpollingCallbackRegistrar.call();
             }
             catch (Exception e) {
@@ -75,8 +78,11 @@ public abstract class UpdateLongpollingCallbackRegistrar {
    private static synchronized void call() {
 
       try {
-         if(!callbackStack.empty())
+         System.out.println("Maybe will call something");
+         if(!callbackStack.empty()) {
+            System.out.println("Yes it called something");
             callbackStack.peek().call();
+         }
       }
       catch (RemoteException re) {} //it will never occur
    }
