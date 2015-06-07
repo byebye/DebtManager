@@ -36,7 +36,7 @@ public class LoginWindow extends Application {
 
       UpdateLongpollingCallbackRegistrar.setHost(host);
       UpdateLongpollingCallbackRegistrar.start();
-      UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
+      //UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(new SimpleCallback());
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
       Parent root = fxmlLoader.load();

@@ -1,10 +1,12 @@
 package client.controllers;
 
+import client.UpdateLongpollingCallbackRegistrar;
 import client.windows.BankTransfersWindow;
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
 import common.Budget;
 import common.DBHandler;
+import common.RemoteCallback;
 import common.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -44,8 +46,19 @@ public class BudgetsListController implements Initializable {
 
    private Stage currentStage;
 
-   public void setStage(Stage stage) {
+   public void setStage(Stage stage) throws RemoteException {
       currentStage = stage;
+
+      RemoteCallback rc = new RemoteCallback() {
+         @Override
+         public void call() throws RemoteException {
+            BudgetsListController.this.update();
+         }
+      };
+
+      rc.call();
+      UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(rc);
+
    }
 
    public void update() {
