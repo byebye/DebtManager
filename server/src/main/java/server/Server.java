@@ -1,12 +1,8 @@
 package server;
 
 import common.AccessProvider;
-import common.CallbackManager;
 import common.LongpollingHanger;
-import common.RemoteCallback;
-import org.jooq.util.derby.sys.Sys;
 
-import javax.xml.crypto.Data;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -43,10 +39,6 @@ public class Server {
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(name, stub);
 
-            //left from callback-based approach
-            //SimpleUpdateManager sum = setupUpdateManager();
-            //runUpdateDaemon(sum);
-
             SimpleLongpollingHanger slh = setupHanger();
             runUpdateDaemon(slh);
 
@@ -56,21 +48,7 @@ public class Server {
         }
     }
 
-    //left from callback-based approach
-    /*private static SimpleUpdateManager setupUpdateManager() {
-        String name = "UpdateManager";
-        SimpleUpdateManager sum = new SimpleUpdateManager();
 
-        try {
-            CallbackManager exp = (CallbackManager) UnicastRemoteObject.exportObject(sum, 1100);
-            LocateRegistry.getRegistry().rebind(name, exp);
-        }
-        catch(RemoteException re) {
-            System.out.println("Setting up update manager failed");
-            re.printStackTrace();
-        }
-        return sum;
-    }*/
 
     private static SimpleLongpollingHanger setupHanger() {
         SimpleLongpollingHanger slh = new SimpleLongpollingHanger();
