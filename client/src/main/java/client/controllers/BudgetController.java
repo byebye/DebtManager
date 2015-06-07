@@ -12,6 +12,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -160,6 +163,25 @@ public class BudgetController implements Initializable {
       colDate.setCellValueFactory(new PropertyValueFactory<Settlement,String>("date"));
       colAmount.setCellValueFactory(new PropertyValueFactory<Settlement,Double>("amount"));
       colStatus.setCellValueFactory(new PropertyValueFactory<Settlement,String>("status"));
+      colStatus.setCellFactory(new Callback<TableColumn, TableCell>() {
+         public TableCell call(TableColumn param) {
+            return new TableCell<Settlement, String>() {
+
+               @Override
+               public void updateItem(String item, boolean empty) {
+                  super.updateItem(item, empty);
+                  if (!isEmpty()) {
+                     this.setStyle("-fx-background-color:red");
+
+                     if (item.equals("OK"))
+                        this.setStyle("-fx-background-color:green");
+
+                     setText(item);
+                  }
+               }
+            };
+         }
+      });
       colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
          public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
             User participant = p.getValue();
