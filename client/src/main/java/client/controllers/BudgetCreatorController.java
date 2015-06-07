@@ -69,6 +69,11 @@ public class BudgetCreatorController implements Initializable {
                errorLabel.setText("User already added");
                ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
             }
+
+            else if(budgetName.getText().length() > 16){
+               errorLabel.setText("Budget name is too long. Maximal size is 16.");
+               ErrorHighlighter.highlightInvalidFields(budgetName);
+            }
             else
                participantsList.add(user);
          }
