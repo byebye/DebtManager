@@ -94,7 +94,7 @@ public class Server {
                     try {
                         slh.unhangAll();
                         //sum.callAll();
-                        TimeUnit.SECONDS.sleep(5);
+                        TimeUnit.SECONDS.sleep(10);
                     }
                     catch (InterruptedException ie) {
                         break;
