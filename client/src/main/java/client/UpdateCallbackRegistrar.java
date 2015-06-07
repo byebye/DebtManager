@@ -16,8 +16,7 @@ public abstract class UpdateCallbackRegistrar {
    private static String host;
 
    //list containing references to callbacks to prevent them from being garbage collected
-   private static ArrayList<RemoteCallback> callbackList;
-
+   private static ArrayList<RemoteCallback> callbackList = new ArrayList<>();
 
    public static void setHost(String host) {
       UpdateCallbackRegistrar.host = host;
