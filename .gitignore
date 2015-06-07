@@ -1,3 +1,5 @@
+#In gitignore so passwords won't leak
+startServer.sh
 ##### Maven #####
 target/
 
