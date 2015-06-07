@@ -1,5 +1,6 @@
 package client.controllers;
 
+import client.BudgetExporter;
 import client.windows.*;
 import common.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -34,7 +35,7 @@ public class BudgetController implements Initializable, SelfUpdating {
    @FXML
    private Text txtSum, txtSumPerPerson;
    @FXML
-   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose, btnBudgetDelete;
+   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose, btnBudgetDelete, btnBudgetExport;
    @FXML
    private TableView<Payment> tabUnaccPayments, tabAccPayments;
    @FXML
@@ -81,6 +82,15 @@ public class BudgetController implements Initializable, SelfUpdating {
    @Override
    public void initialize(URL location, ResourceBundle resources) {
       //Buttons
+      btnBudgetExport.setOnAction(event -> {
+         BudgetExporter budgetExporter = new BudgetExporter(budget,
+                                                            participantsList,
+                                                            accountedPayments,
+                                                            unaccountedPayments,
+                                                            settleHistory,
+                                                            currentStage);
+         budgetExporter.export();
+      });
       btnSettle.setOnAction(event -> {
          try {
             ObservableList<Payment> paymentsToSettle = FXCollections.observableArrayList();
@@ -158,7 +168,7 @@ public class BudgetController implements Initializable, SelfUpdating {
       colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
       colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       colConfirm.setCellFactory(param -> new CheckBoxTableCell());
-      colDate.setCellValueFactory(new PropertyValueFactory<Settlement,String>("date"));
+      colDate.setCellValueFactory(new PropertyValueFactory<Settlement, String>("date"));
       colAmount.setCellValueFactory(new PropertyValueFactory<Settlement,Double>("amount"));
       colStatus.setCellValueFactory(new PropertyValueFactory<Settlement,String>("status"));
       colStatus.setCellFactory(new Callback<TableColumn, TableCell>() {

@@ -10,9 +10,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -352,37 +351,47 @@ public class DatabaseController implements DBHandler {
             .fetch();
 
       for(Record1<Integer> id: result){
-         Result<Record4<Integer,Integer,String,BigDecimal>> result2 =
+         final int paymentId = id.value1();
+         Record5<Integer, Integer, String, BigDecimal, Date> payment =
                dbContext.select(Payments.PAYMENTS.BUDGET_ID,
                                 Payments.PAYMENTS.USER_ID,
                                 Payments.PAYMENTS.DESCRIPTION,
-                                Payments.PAYMENTS.AMOUNT)
+                                Payments.PAYMENTS.AMOUNT,
+                                Payments.PAYMENTS.TERM)
                         .from(Payments.PAYMENTS)
-                        .where(Payments.PAYMENTS.ID.equal(id.value1()))
-                        .fetch();
-         payments.add(new Payment(result2.get(0).value1(),result2.get(0).value2(),getUserById(result2.get(0).value2()).getName(),result2.get(0).value3(),result2.get(0).value4().doubleValue(),id.value1()));
+                        .where(Payments.PAYMENTS.ID.equal(paymentId))
+                        .fetchOne();
+         final int budgetId = payment.value1();
+         final int userId = payment.value2();
+         final String userName = getUserById(userId).getName();
+         final String description = payment.value3();
+         final double amount = payment.value4().doubleValue();
+         final Date date = payment.value5();
+         payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount, date));
       }
       return payments;
    }
 
    public synchronized List<Payment> getAllPayments(int budgetId, boolean accounted) {
-      Result<Record4<Integer, Integer, String, BigDecimal>> result =
+      Result<Record5<Integer, Integer, String, BigDecimal, Date>> result =
               dbContext.select(Payments.PAYMENTS.ID,
                                Payments.PAYMENTS.USER_ID,
                                Payments.PAYMENTS.DESCRIPTION,
-                               Payments.PAYMENTS.AMOUNT)
+                               Payments.PAYMENTS.AMOUNT,
+                               Payments.PAYMENTS.TERM)
                        .from(Payments.PAYMENTS)
                        .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
                        .and(Payments.PAYMENTS.ACCOUNTED.equal(accounted)).fetch();
 
       List<Payment> payments = new ArrayList<>(result.size());
-      for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
+      for (Record5<Integer, Integer, String, BigDecimal, Date> payment : result) {
          final int userId = payment.value2();
          final String userName = getUserById(userId).getName();
          final int paymentId = payment.value1();
          final String description = payment.value3();
          final double amount = payment.value4().doubleValue();
-         payments.add(new Payment(budgetId, userId, userName, description, amount, paymentId));
+         final Date date = payment.value5();
+         payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount, date));
       }
       return payments;
    }
