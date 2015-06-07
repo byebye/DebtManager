@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -92,7 +93,17 @@ public class BankTransfersController implements Initializable {
       toSendTransfers.clear();
       try {
          List<BankTransfer> transfers = dbController.getToSendBankTransfers(currentUser.getId());
-         toSendTransfers.addAll(dbController.getToSendBankTransfers(currentUser.getId()));
+         int it = 0;
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 0)
+               Collections.swap(transfers,it++,i);
+
+
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 1)
+               Collections.swap(transfers,it++,i);
+
+         toSendTransfers.addAll(transfers);
       }
       catch (Exception e) {
          e.printStackTrace();
@@ -102,7 +113,18 @@ public class BankTransfersController implements Initializable {
    public void loadToReceiveTransfers() {
       toReceiveTransfers.clear();
       try {
-         toReceiveTransfers.addAll(dbController.getToReceiveBankTransfers(currentUser.getId()));
+         List<BankTransfer> transfers = dbController.getToReceiveBankTransfers(currentUser.getId());
+         int it = 0;
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 0)
+               Collections.swap(transfers,it++,i);
+
+
+         for(int i=0;i<transfers.size();i++)
+            if(transfers.get(i).getStatus().getValue() == 1)
+               Collections.swap(transfers,it++,i);
+
+         toReceiveTransfers.addAll(transfers);
       }
       catch (Exception e) {
          e.printStackTrace();
