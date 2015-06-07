@@ -48,7 +48,7 @@ public class BudgetsListController implements Initializable {
       currentStage = stage;
    }
 
-   public void fillBudgetsTable() {
+   public void update() {
       budgets.clear();
       try {
          budgets.addAll(dbController.getAllBudgets(currentUser.getId()));
@@ -73,7 +73,7 @@ public class BudgetsListController implements Initializable {
 
       btnLogout.setOnAction(event -> currentStage.close());
 
-      btnRefreshList.setOnAction(event -> fillBudgetsTable());
+      btnRefreshList.setOnAction(event -> update());
 
       btnManageBankTransfers.setOnAction(event -> {
          try {
@@ -91,7 +91,7 @@ public class BudgetsListController implements Initializable {
             BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow();
             budgetCreatorWindow.initOwner(currentStage);
             budgetCreatorWindow.showAndWait();
-            fillBudgetsTable();
+            update();
          }
          catch (IOException e) {
             e.printStackTrace();
@@ -115,7 +115,7 @@ public class BudgetsListController implements Initializable {
                Budget budget = row.getItem();
                try {
                   BudgetWindow budgetWindow = new BudgetWindow(budget);
-                  budgetWindow.setOnHidden(e -> fillBudgetsTable());
+                  budgetWindow.setOnHidden(e -> update());
                   budgetWindow.initOwner(currentStage);
                   budgetWindow.show();
                }
