@@ -1,6 +1,7 @@
 package common;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 public class Payment implements Serializable {
    private String who, what;
@@ -9,14 +10,16 @@ public class Payment implements Serializable {
    private int budgetId;
    private boolean accept = true;
    private double amount;
+   private Date date;
 
-   public Payment(int budgetId, int userId, String who, String what, double amount, int id) {
+   public Payment(int id, int budgetId, int userId, String who, String what, double amount, Date date) {
+      this.id = id;
       this.budgetId = budgetId;
       this.userId = userId;
       this.who = who;
       this.what = what;
       this.amount = amount;
-      this.id = id;
+      this.date = date;
    }
 
    public int getBudgetId() {
@@ -49,5 +52,9 @@ public class Payment implements Serializable {
 
    public void setAccept(boolean c){
       accept = c;
+   }
+
+   public Date getDate() {
+      return date;
    }
 }
