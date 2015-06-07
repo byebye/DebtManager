@@ -11,7 +11,7 @@ public class SimpleLongpollingHanger implements LongpollingHanger{
    public void hang() {
       synchronized (hanger) {
          while(true) {
-            try{wait();}
+            try{hanger.wait();}
             catch (InterruptedException ie) {break;}
          }
       }

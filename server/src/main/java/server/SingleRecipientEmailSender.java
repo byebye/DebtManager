@@ -37,7 +37,7 @@ public class SingleRecipientEmailSender {
       try {
          SendGrid.Response response = sg.send(email);
          System.out.println(response.getMessage());
-         if(response.getMessage() != "success")
+         if(!response.getMessage().equals("success"))
             throw new EmailNotSentException();
       }
       catch (SendGridException e) {
