@@ -29,7 +29,7 @@ public abstract class UpdateCallbackRegistrar {
 
    public static void registerCallbackOnServer(RemoteCallback rc) {
       if(host == null)
-         throw new NullPointerException("no host specified");
+         throw new IllegalArgumentException("no host specified");
 
       callbackList.add(rc);
 
