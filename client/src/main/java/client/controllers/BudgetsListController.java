@@ -19,13 +19,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-public class BudgetsListController implements Initializable {
+public class BudgetsListController implements Initializable, SelfUpdating {
 
    @FXML
    private Text txtUserName;
@@ -48,17 +49,6 @@ public class BudgetsListController implements Initializable {
 
    public void setStage(Stage stage) throws RemoteException {
       currentStage = stage;
-
-      RemoteCallback rc = new RemoteCallback() {
-         @Override
-         public void call() throws RemoteException {
-            BudgetsListController.this.update();
-         }
-      };
-
-      rc.call();
-      UpdateLongpollingCallbackRegistrar.registerCallbackOnServer(rc);
-
    }
 
    public void update() {

@@ -43,7 +43,12 @@ public abstract class UpdateLongpollingCallbackRegistrar {
    }
 
    public synchronized static void deregisterMostRecentCallback() {
-         callbackStack.pop();
+      callbackStack.pop();
+      if(!callbackStack.empty()) {
+         try {
+            callbackStack.peek().call();
+         } catch (Exception e) {}
+      }
    }
 
    private static class Hanger implements Runnable {
@@ -79,6 +84,8 @@ public abstract class UpdateLongpollingCallbackRegistrar {
          if(!callbackStack.empty())
             callbackStack.peek().call();
       }
-      catch (RemoteException re) {} //it will never occur
+      catch (Exception e) {
+         deregisterMostRecentCallback();
+      }
    }
 }

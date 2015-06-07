@@ -26,6 +26,7 @@ public class BudgetWindow extends Stage {
       controller.setStage(this);
       controller.setBudget(budget);
       controller.update();
+      controller.subscribeForUpdates();
 
       setTitle("DeptManager - " + budget.getName());
       setScene(new Scene(root));

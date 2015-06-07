@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class BudgetController implements Initializable {
+public class BudgetController implements Initializable, SelfUpdating {
 
    @FXML
    private Text txtBudgetName;

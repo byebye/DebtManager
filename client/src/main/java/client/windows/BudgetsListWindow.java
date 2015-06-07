@@ -17,8 +17,9 @@ public class BudgetsListWindow extends Stage {
         BudgetsListController controller = fxmlLoader.<BudgetsListController>getController();
 
         controller.setStage(this);
-        //happens in setStage
-        //controller.update();
+        controller.update();
+        controller.subscribeForUpdates();
+
 
         setTitle("DeptManager - My Budgets");
         setScene(new Scene(root));
