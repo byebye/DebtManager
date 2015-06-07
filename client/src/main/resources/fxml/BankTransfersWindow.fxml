@@ -1,41 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.BankTransfersController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.BankTransfersController">
    <children>
       <Text layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bank Transfers Management" x="20.0" y="20.0">
          <font>
-            <Font size="20.0" />
+            <Font size="18.0" />
          </font>
       </Text>
-      <MenuButton fx:id="menuChooseTransferType" alignment="BASELINE_LEFT" layoutX="20.0" layoutY="60.0" mnemonicParsing="false" text="Choose option">
-        <items>
-          <MenuItem fx:id="itemMyTransfers" mnemonicParsing="false" text="My transfers" />
-          <MenuItem fx:id="itemOthersTransfers" mnemonicParsing="false" text="Others transfers" />
-        </items>
-         <padding>
-            <Insets left="20.0" />
-         </padding>
-      </MenuButton>
-      <Text fx:id="txtTitle" layoutX="282.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0">
-         <font>
-            <Font size="15.0" />
-         </font>
-      </Text>
-      <TableView fx:id="tabBankTransfers" layoutX="50.0" layoutY="133.0" prefHeight="200.0" prefWidth="500.0" visible="false">
-        <columns>
-          <TableColumn fx:id="colBudgetName" prefWidth="124.0" text="Budget" />
-          <TableColumn fx:id="colWho" prefWidth="249.0" text="Who" />
-            <TableColumn fx:id="colAmount" prefWidth="66.0" text="Amount" />
-            <TableColumn fx:id="colStatus" prefWidth="30.0" />
-            <TableColumn fx:id="colAction" prefWidth="30.0" />
-        </columns>
-      </TableView>
-      <Button fx:id="btnClose" layoutX="502.0" layoutY="361.0" mnemonicParsing="false" text="Close" />
+      <Button fx:id="btnClose" layoutX="20.0" layoutY="372.0" mnemonicParsing="false" text="Close" />
+      <Line endX="460.0" layoutX="121.0" layoutY="54.0" startX="-100.0" />
+      <TabPane layoutX="20.0" layoutY="58.0" prefHeight="310.0" prefWidth="561.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Transfers to send">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tabToSend" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
+                          <columns>
+                            <TableColumn fx:id="colSendTo" prefWidth="113.0" text="Send to" />
+                            <TableColumn fx:id="colSendAccount" prefWidth="195.0" text="Account" />
+                              <TableColumn fx:id="colSendAmount" prefWidth="72.0" text="Amount" />
+                              <TableColumn fx:id="colSendBudget" prefWidth="116.0" text="Budget" />
+                              <TableColumn fx:id="colSendStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                              <TableColumn fx:id="colSendUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Transfers to receive">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="154.0" prefWidth="354.0">
+                     <children>
+                        <TableView fx:id="tabToReceive" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
+                           <columns>
+                              <TableColumn fx:id="colReceiveFrom" prefWidth="113.0" text="From who" />
+                              <TableColumn fx:id="colReceiveAccount" prefWidth="195.0" text="Account" />
+                              <TableColumn fx:id="colReceiveAmount" prefWidth="72.0" text="Amount" />
+                              <TableColumn fx:id="colReceiveBudget" prefWidth="116.0" text="Budget" />
+                              <TableColumn fx:id="colReceiveStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                              <TableColumn fx:id="colReceiveUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Button fx:id="btnRefresh" layoutX="513.0" layoutY="372.0" mnemonicParsing="false" text="Refresh" />
    </children>
 </Pane>
