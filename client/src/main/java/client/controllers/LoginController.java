@@ -36,7 +36,7 @@ public class LoginController implements Initializable {
    public static AccessProvider ac;
    public static User currentUser;
    private static String host;
-   private RemoteCallback rc, exp;
+   public RemoteCallback rc;
 
    private Stage currentStage;
 
@@ -71,8 +71,7 @@ public class LoginController implements Initializable {
 
       try {
          rc = new SimpleCallback();
-         exp = (RemoteCallback) UnicastRemoteObject.exportObject(rc, 1100);
-         ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(exp);
+         ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register((RemoteCallback) UnicastRemoteObject.exportObject(rc, 1100));
          System.out.println("Callback registered");
       }
       catch (RemoteException|NotBoundException re) {
