@@ -18,6 +18,8 @@ public class SimpleLongpollingHanger implements LongpollingHanger{
    }
 
    public void unhangAll() {
-      hanger.notifyAll();
+      synchronized (hanger) {
+         hanger.notifyAll();
+      }
    }
 }
