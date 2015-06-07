@@ -119,14 +119,15 @@ public class SettlementDetailsController implements Initializable {
             if (transfer == null)
                return;
             int statusId = transfer.getStatus().getValue();
-            String path = "/graphics/";
+            String path = "graphics/";
             switch(statusId) {
                case 0: path += "notpaid.png"; break;
                case 1: path += "waiting.png"; break;
                case 2: path += "paid.png"; break;
             }
 
-            Image image = new Image(StatusImageCell.class.getResourceAsStream(path));
+            ClassLoader cl = this.getClass().getClassLoader();
+            Image image = new Image(cl.getResourceAsStream(path));
             imageView.setImage(image);
             setGraphic(imageView);
          }
