@@ -62,6 +62,7 @@ public class BudgetController implements Initializable, SelfUpdating {
    private Budget budget;
    double spentMoneySum = 0;
 
+   public Stage getStage() {return currentStage;}
    public void setStage(Stage stage) {
       currentStage = stage;
    }
