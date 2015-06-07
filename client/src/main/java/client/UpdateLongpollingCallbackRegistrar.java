@@ -61,9 +61,7 @@ public abstract class UpdateLongpollingCallbackRegistrar {
          System.out.println("Hanger thread running");
          while(true) {
             try {
-               System.out.println("hang");
                cmg.hang();
-               System.out.println("unhang");
                UpdateLongpollingCallbackRegistrar.call();
             }
             catch (Exception e) {
@@ -78,11 +76,8 @@ public abstract class UpdateLongpollingCallbackRegistrar {
    private static synchronized void call() {
 
       try {
-         System.out.println("Maybe will call something");
-         if(!callbackStack.empty()) {
-            System.out.println("Yes it called something");
+         if(!callbackStack.empty())
             callbackStack.peek().call();
-         }
       }
       catch (RemoteException re) {} //it will never occur
    }

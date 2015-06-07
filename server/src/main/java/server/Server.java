@@ -92,10 +92,9 @@ public class Server {
             public void run() {
                 while(true) {
                     try {
-                        System.out.println("I will try calling all listeners");
                         slh.unhangAll();
                         //sum.callAll();
-                        TimeUnit.SECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(5);
                     }
                     catch (InterruptedException ie) {
                         break;
