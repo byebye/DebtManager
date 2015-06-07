@@ -12,10 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -29,21 +26,21 @@ import java.util.ResourceBundle;
 public class BudgetsListController implements Initializable {
 
    @FXML
-   public Text txtUserName;
+   private Text txtUserName;
    @FXML
-   private Button btnLogout, btnCreateNewBudget, btnManageBankTransfers;
+   private Button btnLogout, btnCreateNewBudget, btnRefreshList, btnManageBankTransfers;
    @FXML
    private TableColumn colName, colDescription;
    @FXML
    private TableColumn colPeople;
    @FXML
-   public TableColumn colOwner;
+   private TableColumn colOwner;
    @FXML
    private TableView<Budget> tabMyBudgets;
 
    private static DBHandler dbController = LoginController.dbController;
    private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
-   private int userId = LoginController.currentUser.getId();
+   private final User currentUser = LoginController.currentUser;
 
    private Stage currentStage;
 
@@ -54,32 +51,44 @@ public class BudgetsListController implements Initializable {
    public void fillBudgetsTable() {
       budgets.clear();
       try {
-         budgets.addAll(dbController.getAllBudgets(userId));
+         budgets.addAll(dbController.getAllBudgets(currentUser.getId()));
       }
       catch (RemoteException e) {
+         displayUnableToConnectWithServerAlert();
          e.printStackTrace();
       }
    }
 
+   private void displayUnableToConnectWithServerAlert() {
+      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
+      unableToConnectAlert.setTitle("Unable to connect with server");
+      unableToConnectAlert.setHeaderText("Unable to connect with server!");
+      unableToConnectAlert.setContentText("Check your connection and try again.");
+      unableToConnectAlert.showAndWait();
+   }
+
    @Override
    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-      txtUserName.setText(LoginController.currentUser.getName());
+      txtUserName.setText(currentUser.getName());
 
       btnLogout.setOnAction(event -> currentStage.close());
 
-      btnManageBankTransfers.setOnAction(event->{
-         try{
-            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow(userId);
+      btnRefreshList.setOnAction(event -> fillBudgetsTable());
+
+      btnManageBankTransfers.setOnAction(event -> {
+         try {
+            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow();
             bankTransfersWindow.initOwner(currentStage);
             bankTransfersWindow.showAndWait();
-         }catch(Exception e){
+         }
+         catch (Exception e) {
             e.printStackTrace();
          }
       });
 
       btnCreateNewBudget.setOnAction(event -> {
          try {
-            BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow(userId);
+            BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow();
             budgetCreatorWindow.initOwner(currentStage);
             budgetCreatorWindow.showAndWait();
             fillBudgetsTable();
@@ -105,11 +114,12 @@ public class BudgetsListController implements Initializable {
             if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
                Budget budget = row.getItem();
                try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget, userId);
+                  BudgetWindow budgetWindow = new BudgetWindow(budget);
                   budgetWindow.setOnHidden(e -> fillBudgetsTable());
                   budgetWindow.initOwner(currentStage);
                   budgetWindow.show();
-               } catch (IOException e) {
+               }
+               catch (IOException e) {
                   e.printStackTrace();
                }
             }

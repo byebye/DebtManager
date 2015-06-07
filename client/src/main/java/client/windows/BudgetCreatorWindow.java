@@ -11,11 +11,12 @@ import java.io.IOException;
 
 public class BudgetCreatorWindow extends Stage {
 
-    public BudgetCreatorWindow(int userId) throws IOException {
+    public BudgetCreatorWindow() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BudgetCreatorWindow.fxml"));
         Parent root = fxmlLoader.load();
         BudgetCreatorController controller = fxmlLoader.<BudgetCreatorController>getController();
-        controller.setUserId(userId);
+
+        controller.setStage(this);
 
         setTitle("DeptManager - Budget Creator");
         setScene(new Scene(root));

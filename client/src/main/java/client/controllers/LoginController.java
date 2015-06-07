@@ -1,14 +1,12 @@
 package client.controllers;
 
+import client.view.ErrorHighlighter;
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
 import common.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
@@ -19,7 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable{
+public class LoginController implements Initializable {
 
    @FXML
    Button btnSignUp, btnLogIn;
@@ -27,6 +25,8 @@ public class LoginController implements Initializable{
    TextField txtFieldEmail;
    @FXML
    PasswordField txtFieldPassword;
+   @FXML
+   Label errorLabel;
 
    public static DBHandler dbController;
    public static AccessProvider ac;
@@ -34,36 +34,35 @@ public class LoginController implements Initializable{
    private static String host;
 
    private Stage currentStage;
-   private Scene scene;
 
    public void setStage(Stage stage) {
       currentStage = stage;
    }
 
-   public void setScene(Scene scene) {
-      this.scene = scene;
-      scene.setOnKeyPressed(event->{
-         if(event.getCode().compareTo(KeyCode.ENTER) == 0){
-            btnLogIn.fire();
-         }
-      });
-   }
-
-   public void setDbController(DBHandler dbhandler){
+   public void setDbController(DBHandler dbhandler) {
       dbController = dbhandler;
    }
 
    public void connectWithRMIHost(String host) {
       this.host = (host == null ? "localhost" : host);
-      if(System.getSecurityManager() == null)
+      if (System.getSecurityManager() == null)
          System.setSecurityManager(new SecurityManager());
       try {
          ac = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
       }
       catch (Exception e) {
          e.printStackTrace();
+         displayUnableToConnectWithServerAlert();
          System.exit(1);
       }
+   }
+
+   private void displayUnableToConnectWithServerAlert() {
+      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
+      unableToConnectAlert.setTitle("Unable to connect with server");
+      unableToConnectAlert.setHeaderText("Unable to connect with server!");
+      unableToConnectAlert.setContentText("Check your connection and try again.");
+      unableToConnectAlert.showAndWait();
    }
 
    public void fillDataFields(String email, String password) {
@@ -89,12 +88,24 @@ public class LoginController implements Initializable{
             System.setSecurityManager(new SecurityManager());
 
          try {
+            errorLabel.setText("");
+            ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldPassword);
             tryToLogIn();
             displayBudgetsListWindow();
          }
-         catch (Exception e) {
+         catch (AuthenticationException | IllegalArgumentException e) {
+            errorLabel.setText("Incorrect email or password");
+            ErrorHighlighter.highlightInvalidFields(txtFieldEmail, txtFieldPassword);
+         }
+         catch (IOException e) {
+            errorLabel.setText("Connection with server error");
             e.printStackTrace();
          }
+      });
+
+      btnLogIn.setOnKeyPressed(event -> {
+         if (event.getCode().compareTo(KeyCode.ENTER) == 0)
+            btnLogIn.fire();
       });
    }
 

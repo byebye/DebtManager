@@ -20,6 +20,7 @@ public class Server {
             parseArguments(args);
             System.out.println("Connecting to " + url + " as " + dbUser);
             DatabaseController.createInstance(dbUser, dbPassword, url);
+            DatabaseController.createExportedInstance();
             dbController = DatabaseController.getInstance();
         }
         catch (Exception e) {

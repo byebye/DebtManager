@@ -1,6 +1,6 @@
 HOST=localhost
 URL=http://$HOST
-JDK=/usr/lib/jvm/java-8-oracle/bin #~/jdk1.8.0_45/bin
+JDK=/usr/lib/jvm/java-8-jdk/bin #~/jdk1.8.0_45/bin
 JAVA=$JDK/java
 RMIREGISTRY=$JDK/rmiregistry
 VERSION=0.0.1

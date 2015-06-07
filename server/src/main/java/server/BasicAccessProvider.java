@@ -23,7 +23,7 @@ public class BasicAccessProvider implements AccessProvider {
    public Object getDBHandler(Email mail, String passwordHash) throws RemoteException, AuthenticationException {
 
       if (dbController.validateUserPassword(mail, passwordHash)) {
-         return (DBHandler) UnicastRemoteObject.exportObject(DatabaseController.getInstance(), 1100);
+         return DatabaseController.getExportedInstance();
       }
       throw new AuthenticationException();
    }

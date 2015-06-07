@@ -20,13 +20,15 @@ public class AddPaymentWindow extends Stage {
       return controller;
    }
 
-   public AddPaymentWindow(Budget budget, int userId, ObservableList<User> participants) throws IOException {
+   public AddPaymentWindow(Budget budget, ObservableList<User> participants) throws IOException {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/AddPaymentWindow.fxml"));
       Parent root = fxmlLoader.load();
       controller = fxmlLoader.<AddPaymentController>getController();
+
+      controller.setStage(this);
       controller.setBudget(budget);
-      controller.setUser(userId);
       controller.setParticipantsList(participants);
+
       setTitle("DeptManager - add new payment");
       setScene(new Scene(root));
       initModality(Modality.WINDOW_MODAL);

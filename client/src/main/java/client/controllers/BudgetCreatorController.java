@@ -1,6 +1,7 @@
 
 package client.controllers;
 
+import client.view.ErrorHighlighter;
 import common.Budget;
 import common.DBHandler;
 import common.User;
@@ -32,14 +33,18 @@ public class BudgetCreatorController implements Initializable {
    @FXML
    private TableView<User> tabParticipants;
    @FXML
-   public TableColumn colParticipantName, colParticipantEmail, colAction;
+   private TableColumn colParticipantName, colParticipantEmail, colAction;
+   @FXML
+   private Label errorLabel;
 
    private static DBHandler dbController = LoginController.dbController;
-   private int userId;
+   private final User owner = LoginController.currentUser;
    private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 
-   public void setUserId(int userId) {
-      this.userId = userId;
+   private Stage currentStage;
+
+   public void setStage(Stage stage) {
+      currentStage = stage;
    }
 
    @Override
@@ -48,78 +53,83 @@ public class BudgetCreatorController implements Initializable {
       colParticipantEmail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
       colAction.setCellFactory(param -> new RemoveParticipantCell());
       tabParticipants.setItems(participantsList);
+      participantsList.add(owner);
 
       btnAddUser.setOnAction(event -> {
+         errorLabel.setText("");
+         ErrorHighlighter.unhighlitghtFields(txtFieldEnterEmail);
          User user = null;
          try {
             user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
+            if (user == null) {
+               errorLabel.setText("User not found!");
+               ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
+            }
+            else if (participantsList.contains(user)) {
+               errorLabel.setText("User already added");
+               ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
+            }
+            else
+               participantsList.add(user);
          }
          catch (RemoteException e) {
+            errorLabel.setText("Server connection error");
             e.printStackTrace();
-         }
-         if (user == null) {
-            txtFieldEnterEmail.setText("User not found!");
-         }
-         else if (user.getId() == userId) {
-            txtFieldEnterEmail.setText("You will be added automatically");
-         }
-         else if (participantsList.contains(user)) {
-            txtFieldEnterEmail.setText("User already added");
-         }
-         else {
-            participantsList.add(user);
-            txtFieldEnterEmail.clear();
          }
       });
 
       btnCreateBudget.setOnAction(event -> {
+         errorLabel.setText("");
+         ErrorHighlighter.unhighlitghtFields(txtFieldEnterEmail);
          try {
-            final User owner = dbController.getUserById(userId);
-            participantsList.add(owner);
             List<User> participantsSerializable = new ArrayList<User>(participantsList);
             Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsSerializable);
             if (dbController.createBudget(budget))
-               close();
-            else {
-               // Error
-            }
+               currentStage.close();
+            else
+               errorLabel.setText("Budget couldn't be created! Try again");
          }
          catch (RemoteException e) {
             e.printStackTrace();
          }
       });
 
-      btnCancel.setOnAction(event -> close());
-   }
-
-   private void close() {
-      Stage stage = (Stage) btnCancel.getScene().getWindow();
-      stage.close();
+      btnCancel.setOnAction(event -> currentStage.close());
    }
 
    private class RemoveParticipantCell extends TableCell<User, Boolean> {
       final Button btnRemove = new Button();
+      {
+         btnRemove.setPrefSize(25, 25);
+         btnRemove.setPadding(new Insets(5, 5, 5, 5));
+      }
 
       public RemoveParticipantCell() {
          setPadding(new Insets(0, 0, 0, 0));
-         btnRemove.setPrefSize(25, 25);
-         Image removeImage = new Image(getClass().getResourceAsStream("/graphics/remove_button.png"));
-         ImageView removeImageView = new ImageView(removeImage);
-         removeImageView.setPreserveRatio(true);
-         removeImageView.setFitHeight(12);
-         btnRemove.setPadding(new Insets(5, 5, 5, 5));
-         btnRemove.setGraphic(removeImageView);
+         btnRemove.setGraphic(loadRemoveImage());
          btnRemove.setOnAction(event -> {
             User participant = (User) RemoveParticipantCell.this.getTableRow().getItem();
             participantsList.remove(participant);
          });
+
+      }
+
+      public ImageView loadRemoveImage() {
+         Image removeImage = new Image(getClass().getResourceAsStream("/graphics/remove_button.png"));
+         ImageView removeImageView = new ImageView(removeImage);
+         removeImageView.setPreserveRatio(true);
+         removeImageView.setFitHeight(12);
+         return removeImageView;
       }
 
       @Override
       protected void updateItem(Boolean item, boolean empty) {
          super.updateItem(item, empty);
-         if (!empty)
+         if (!empty) {
             setGraphic(btnRemove);
+            if (RemoveParticipantCell.this.getTableRow().getIndex() == 0)
+               btnRemove.setDisable(true);
+         }
          else
             setGraphic(null);
       }
