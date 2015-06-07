@@ -20,8 +20,7 @@
           <TableColumn fx:id="colWho" prefWidth="105.0" text="Who" />
           <TableColumn fx:id="colWhom" prefWidth="89.0" text="Whom" />
             <TableColumn fx:id="colAmount" prefWidth="71.0" text="Amount" />
-            <TableColumn fx:id="colAccNumber" prefWidth="193.0" text="Account number" />
-            <TableColumn fx:id="colConfirm" prefWidth="40.0" />
+            <TableColumn fx:id="colAccNumber" prefWidth="133.0" text="Account number" />
         </columns>
       </TableView>
       <CheckBox fx:id="checkBoxSendViaMail" layoutX="20.0" layoutY="340.0" mnemonicParsing="false" text="Send via mail" />

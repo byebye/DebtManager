@@ -21,7 +21,7 @@
       <TableView fx:id="tabParticipants" layoutX="14.0" layoutY="105.0" prefHeight="132.0" prefWidth="273.0">
         <columns>
           <TableColumn fx:id="colParticipantName" prefWidth="135.0" text="Name" />
-          <TableColumn fx:id="colParticipantEmail" minWidth="4.0" prefWidth="132.0" text="Email" />
+          <TableColumn fx:id="colParticipantEmail" minWidth="4.0" prefWidth="134.0" text="Email" />
         </columns>
       </TableView>
    </children>
