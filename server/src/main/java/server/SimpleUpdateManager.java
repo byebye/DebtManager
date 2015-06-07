@@ -42,6 +42,7 @@ public class SimpleUpdateManager implements CallbackManager {
             rc.call();
             System.out.println("  Called one listener");
          } catch (RemoteException re) {
+            re.printStackTrace();
             toDelete.add(rc);
          }
       }
