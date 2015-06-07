@@ -126,7 +126,8 @@ public class SettlementDetailsController implements Initializable {
                case 2: path += "paid.png"; break;
             }
 
-            Image image = new Image(getClass().getClass().getResourceAsStream(path));
+            ClassLoader cl = this.getClass().getClassLoader();
+            Image image = new Image(cl.getResourceAsStream(path));
             imageView.setImage(image);
             setGraphic(imageView);
          }
