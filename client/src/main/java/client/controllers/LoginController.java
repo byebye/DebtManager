@@ -73,7 +73,7 @@ public class LoginController implements Initializable {
       try {
          LocateRegistry.createRegistry(1099);
          rc = new SimpleCallback();
-         UnicastRemoteObject.exportObject(rc, 1099);
+         UnicastRemoteObject.exportObject(rc, 1100);
          ((CallbackManager) LocateRegistry.getRegistry(host).lookup("UpdateManager")).register(rc);
          System.out.println("Callback registered");
       }
