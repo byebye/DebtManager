@@ -25,7 +25,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
             <TextField fx:id="budgetName" GridPane.columnIndex="1" />
-            <TextArea fx:id="budgetDescription" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextArea fx:id="budgetDescription" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TableView fx:id="tabParticipants" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="134.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
               <columns>
                 <TableColumn fx:id="colParticipantName" minWidth="150.0" prefWidth="223.0" text="Name" />
