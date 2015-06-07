@@ -15,8 +15,9 @@ public class SingleRecipientEmailSender {
    static {
       sendGridUserName = System.getenv("SENDGRID_USERNAME");
       sendGridPassword = System.getenv("SENDGRID_PASSWORD");
+      System.out.println(sendGridPassword + " "  + sendGridUserName);
    }
-   
+
    private SendGrid sg;
 
    public static class EmailNotSentException extends Exception {}
