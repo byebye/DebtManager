@@ -63,15 +63,15 @@ public class BankTransferEmailSender implements Runnable{
 
    private String createSenderText(BankTransfer transfer, User fromUser, User toUser) {
 
-      return "Hi " + fromUser.getName() + ",\n" +
+      return "Hi " + toUser.getName() + ",\n" +
             "\n" +
             "budget " + budgetName + " was settled and it turned out that you shall pay\n" +
             "\n" +
-            transfer.getAmount() + " to user " + toUser.getName() + " (" + toUser.getEmail() + ").\n" +
+            transfer.getAmount() + " to user " + fromUser.getName() + " (" + fromUser.getEmail() + ").\n" +
             "" +
             "\n" +
             "His/Her bank account number is\n" +
-            toUser.getBankAccount() +
+            fromUser.getBankAccount() +
             "\n" +
             "He/She was sent an email about it, so he/she will be awaiting your payment.\n" +
             "After making the payment remember to confirm it in the app.\n" +
