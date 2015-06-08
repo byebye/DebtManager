@@ -37,7 +37,7 @@ public class BankTransferEmailSender implements Runnable{
             sender.send(debtmanagerEmail,
                   new Email(toUser.getEmail()),
                   createSenderSubject(),
-                  createSenderText(transfer, fromUser, toUser));
+                  createSenderText(transfer, toUser, fromUser));
             System.out.println("Email from "+fromUser.getEmail() + " to " + toUser.getEmail() + " sent");
          }
          catch (SingleRecipientEmailSender.EmailNotSentException e) {
