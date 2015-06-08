@@ -35,7 +35,7 @@ public class BankTransferEmailSender implements Runnable{
 
          try {
             sender.send(debtmanagerEmail,
-                  new Email(toUser.getEmail()),
+                  new Email(fromUser.getEmail()),
                   createSenderSubject(),
                   createSenderText(transfer, toUser, fromUser));
             System.out.println("Email from "+fromUser.getEmail() + " to " + toUser.getEmail() + " sent");
@@ -46,7 +46,7 @@ public class BankTransferEmailSender implements Runnable{
 
          try {
             sender.send(debtmanagerEmail,
-                  new Email(fromUser.getEmail()),
+                  new Email(toUser.getEmail()),
                   createRecipientSubject(),
                   createRecipientText(transfer, fromUser, toUser));
             System.out.println("Email from "+toUser.getEmail() + " to " + fromUser.getEmail() + " sent");
