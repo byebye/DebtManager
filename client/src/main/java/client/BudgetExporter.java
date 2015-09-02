@@ -2,7 +2,12 @@ package client;
 
 import client.controllers.LoginController;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import common.*;
+import common.connection.DbHandler;
+import common.data.BankTransfer;
+import common.data.Budget;
+import common.data.Payment;
+import common.data.Settlement;
+import common.data.User;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.json.JSONArray;
@@ -13,7 +18,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public class BudgetExporter {
-   private static DBHandler dbController = LoginController.dbController;
+   private static DbHandler dbController = LoginController.dbHandler;
 
    private Budget budget;
    private List<User> participants;

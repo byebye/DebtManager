@@ -1,31 +1,18 @@
 package client.windows;
 
 import client.controllers.SettlementDetailsController;
-import common.Budget;
-import common.Settlement;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import common.data.Budget;
+import common.data.Settlement;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.IOException;
+public class SettlementDetailsWindow extends DebtManagerWindow {
 
-/**
- * Created by vsmasster on 26.05.15.
- */
-public class SettlementDetailsWindow extends Stage {
-   public SettlementDetailsWindow(Settlement settlement, Budget budget) throws IOException {
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SettlementDetailsWindow.fxml"));
-      Parent root = fxmlLoader.load();
-      SettlementDetailsController controller = fxmlLoader.<SettlementDetailsController>getController();
+  public SettlementDetailsWindow(Settlement settlement, Budget budget) {
+    super("/fxml/SettlementDetailsWindow.fxml", "DeptManager - show settlement details", Modality.WINDOW_MODAL);
 
-      controller.setStage(this);
-      controller.setData(settlement, budget);
-      controller.fillContentList();
-
-      setTitle("DeptManager - show settlement details");
-      setScene(new Scene(root));
-      initModality(Modality.WINDOW_MODAL);
-   }
+    SettlementDetailsController controller = fxmlLoader.getController();
+    controller.setCurrentStage(this);
+    controller.setData(settlement, budget);
+    controller.fillContentList();
+  }
 }

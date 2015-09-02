@@ -25,30 +25,30 @@
             <Insets left="20.0" top="20.0" />
          </GridPane.margin>
       </Text>
-      <Text fx:id="txtDetails" layoutX="-250.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" x="-250.0" GridPane.halignment="RIGHT" GridPane.valignment="BASELINE">
+      <Text fx:id="textDetails" layoutX="-250.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" x="-250.0" GridPane.halignment="RIGHT" GridPane.valignment="BASELINE">
          <GridPane.margin>
             <Insets top="26.0" />
          </GridPane.margin>
       </Text>
-      <TableView fx:id="tabBankTransfers" maxWidth="-Infinity" prefHeight="267.0" prefWidth="500.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <TableView fx:id="tableBankTransfers" maxWidth="-Infinity" prefHeight="267.0" prefWidth="500.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
         <columns>
-          <TableColumn fx:id="colWho" prefWidth="75.0" text="Who" />
-          <TableColumn fx:id="colWhom" prefWidth="75.0" text="Whom" />
-            <TableColumn fx:id="colBankAccount" prefWidth="181.0" text="Bank account" />
-            <TableColumn fx:id="colAmount" prefWidth="65.0" text="Amount" />
-            <TableColumn fx:id="colStatus" minWidth="0.0" prefWidth="69.0" text="Status" />
-            <TableColumn fx:id="colConfirm" minWidth="0.0" prefWidth="38.0" />
+          <TableColumn fx:id="columnWho" prefWidth="75.0" text="Who" />
+          <TableColumn fx:id="columnWhom" prefWidth="75.0" text="Whom" />
+            <TableColumn fx:id="columnBankAccount" prefWidth="181.0" text="Bank account" />
+            <TableColumn fx:id="columnAmount" prefWidth="65.0" text="Amount" />
+            <TableColumn fx:id="columnStatus" minWidth="0.0" prefWidth="69.0" text="Status" />
+            <TableColumn fx:id="columnConfirm" minWidth="0.0" prefWidth="38.0" />
         </columns>
          <opaqueInsets>
             <Insets left="50.0" />
          </opaqueInsets>
       </TableView>
-      <Button fx:id="btnSetAsPaid" mnemonicParsing="false" text="Set as paid" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+      <Button fx:id="buttonSetAsPaid" mnemonicParsing="false" text="Set as paid" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets bottom="40.0" />
          </GridPane.margin>
       </Button>
-      <Button fx:id="btnClose" layoutX="468.0" layoutY="337.0" mnemonicParsing="false" text="Close" GridPane.rowIndex="2">
+      <Button fx:id="buttonClose" layoutX="468.0" layoutY="337.0" mnemonicParsing="false" text="Close" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets bottom="40.0" left="50.0" />
          </GridPane.margin>

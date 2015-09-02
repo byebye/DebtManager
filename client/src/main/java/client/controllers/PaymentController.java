@@ -1,129 +1,109 @@
 package client.controllers;
 
+import client.utils.DataFormatListeners;
+import client.view.Alerts;
 import client.view.ErrorHighlighter;
-import common.Budget;
-import common.DBHandler;
-import common.Payment;
-import common.User;
+import common.data.Budget;
+import common.data.User;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class PaymentController implements Initializable {
+public abstract class PaymentController extends BasicController implements Initializable {
 
-   @FXML
-   private Text txtPaymentName;
-   @FXML
-   private TextField txtFieldAmount;
-   @FXML
-   private ComboBox boxChooseWho;
-   @FXML
-   private TextArea txtAreaWhat;
-   @FXML
-   private Button btnUpdate, btnRemove;
-   @FXML
-   private Label errorLabel;
+  @FXML
+  public Label labelWindowTitle;
+  @FXML
+  protected Button buttonLeft, buttonSave;
+  @FXML
+  protected ComboBox<User> boxChooseWho;
+  @FXML
+  protected TextField fieldAmount;
+  @FXML
+  protected TextArea fieldWhat;
+  @FXML
+  protected Label labelError;
 
-   private static DBHandler dbController = LoginController.dbController;
-   private final User currentUser = LoginController.currentUser;
-   private Payment payment;
-   private Budget budget;
-   private Stage currentStage;
+  private static final String AMOUNT_REGEX = "\\d*(\\.\\d{0,2})?";
+  protected Budget budget;
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  public void setBudget(Budget budget) {
+    this.budget = budget;
+  }
 
-   public void setPayment(Payment payment) {
-      this.payment = payment;
-   }
+  public void initParticipantsList(ObservableList<User> participants) {
+    boxChooseWho.setEditable(false);
+    boxChooseWho.setItems(participants);
+    boxChooseWho.setValue(getPaymentOwner(participants));
+    if (!isCurrentUserBudgetOwner())
+      boxChooseWho.setDisable(true);
+  }
 
-   public void setBudget(Budget budget) {
-      this.budget = budget;
-   }
+  protected abstract User getPaymentOwner(List<User> participants);
 
-   public void setParticipantsList(ObservableList<User> participants) {
-      boxChooseWho.setEditable(false);
-      boxChooseWho.setItems(participants);
-      User current = participants.filtered(user -> user.getId() == payment.getUserId()).get(0);
-      boxChooseWho.setValue(current);
-      if (!currentUser.equals(budget.getOwner()))
-         boxChooseWho.setDisable(true);
-   }
+  private boolean isCurrentUserBudgetOwner() {
+    return Objects.equals(currentUser, budget.getOwner());
+  }
 
-   public void setObjectsText() {
-      txtPaymentName.setText(payment.getWhat());
-      txtAreaWhat.setText(payment.getWhat());
-      txtFieldAmount.setText(Double.toString(payment.getAmount()));
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initButtons();
+    initBoxChoose();
+    fieldAmount.textProperty()
+        .addListener(DataFormatListeners.restrictTextFormat(fieldAmount::setText, AMOUNT_REGEX));
+  }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      TextFormatter<String> onlyNumberFormatter = new TextFormatter<>(change -> {
-         change.setText(change.getText().replaceAll("[^0-9.]", ""));
-         return change;
-      });
-      txtFieldAmount.setTextFormatter(onlyNumberFormatter);
+  protected void initButtons() {
+    buttonSave.setOnAction(event -> savePayment());
+  }
 
-      Callback<ListView<User>, ListCell<User>> cellFactory = param -> new ListCell<User>() {
-         @Override
-         protected void updateItem(User user, boolean empty) {
-            super.updateItem(user, empty);
-            if (user != null)
-               setText(user.getName());
-         }
-      };
-      boxChooseWho.setButtonCell(cellFactory.call(null));
-      boxChooseWho.setCellFactory(cellFactory);
-
-      btnUpdate.setOnAction(event -> {
-         errorLabel.setText("");
-         ErrorHighlighter.unhighlitghtFields(txtFieldAmount);
-
-         BigDecimal amount = getAmount();
-         if (amount == null)
-            return;
-         User chosenUser = (User) boxChooseWho.getSelectionModel().getSelectedItem();
-         final int who = chosenUser.getId();
-         try {
-            dbController.updatePayment(payment.getId(), who, amount, txtAreaWhat.getText());
-            currentStage.close();
-         }
-         catch (RemoteException e) {
-            errorLabel.setText("Server connection error");
-            e.printStackTrace();
-         }
-      });
-
-      btnRemove.setOnAction(event -> {
-         try {
-            dbController.deletePayment(payment.getId());
-            currentStage.close();
-         }
-         catch (RemoteException e) {
-            errorLabel.setText("Server connection error");
-            e.printStackTrace();
-         }
-      });
-   }
-
-   private BigDecimal getAmount() {
-      try {
-         return BigDecimal.valueOf(Double.parseDouble(txtFieldAmount.getText()));
+  private void initBoxChoose() {
+    Callback<ListView<User>, ListCell<User>> cellFactory = param -> new ListCell<User>() {
+      @Override
+      protected void updateItem(User user, boolean empty) {
+        super.updateItem(user, empty);
+        if (user != null)
+          setText(user.getName());
       }
-      catch (NumberFormatException e) {
-         errorLabel.setText("Invalid amount value");
-         ErrorHighlighter.highlightInvalidFields(txtFieldAmount);
-         return null;
-      }
-   }
+    };
+    boxChooseWho.setButtonCell(cellFactory.call(null));
+    boxChooseWho.setCellFactory(cellFactory);
+  }
+
+  protected void savePayment() {
+    clearErrorHighlights();
+    final User chosenUser = boxChooseWho.getSelectionModel().getSelectedItem();
+    final BigDecimal amount = new BigDecimal(fieldAmount.getText());
+    try {
+      savePaymentInDatabase(chosenUser, amount);
+      currentStage.close();
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
+
+  protected abstract void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException;
+
+  @Override
+  protected void clearErrorHighlights() {
+    labelError.setText("");
+    ErrorHighlighter.unhighlightFields(fieldAmount, fieldWhat);
+  }
 }

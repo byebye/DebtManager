@@ -1,9 +1,6 @@
 package client;
 
-import common.RemoteCallback;
-
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import common.connection.RemoteCallback;
 
 /**
  * Created by glapul on 07.06.15.

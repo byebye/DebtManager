@@ -10,38 +10,39 @@ import javafx.stage.Stage;
 
 public class LoginWindow extends Application {
 
-   private LoginController controller;
+  private LoginController controller;
 
-   public LoginController getController() {
-      return controller;
-   }
+  public LoginController getController() {
+    return controller;
+  }
 
+  @Override
+  public void start(Stage primaryStage) throws Exception {
 
-   @Override
-   public void start(Stage primaryStage) throws Exception {
+    final String host = getParameters().getNamed().get("host");
 
-      final String host = getParameters().getNamed().get("host");
+    UpdateLongpollingCallbackRegistrar.setHost(host);
+    UpdateLongpollingCallbackRegistrar.start();
 
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
+    Parent root = fxmlLoader.load();
+    Scene scene = new Scene(root);
+    controller = fxmlLoader.getController();
 
-      UpdateLongpollingCallbackRegistrar.setHost(host);
-      UpdateLongpollingCallbackRegistrar.start();
+    controller.connectWithRMIHost(host);
+    controller.setCurrentStage(primaryStage);
 
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/LoginWindow.fxml"));
-      Parent root = fxmlLoader.load();
-      Scene scene = new Scene(root);
-      controller = fxmlLoader.<LoginController>getController();
+    primaryStage.setTitle("DebtManager - Log in");
+    primaryStage.setScene(scene);
+    primaryStage.show();
+  }
 
-      controller.connectWithRMIHost(host);
-      controller.setStage(primaryStage);
-
-
-
-      primaryStage.setTitle("DebtManager - Log in");
-      primaryStage.setScene(scene);
-      primaryStage.show();
-   }
-
-   public static void main(String[] args) {
-      try{launch(args);} catch (Exception e) {e.printStackTrace();}
-   }
+  public static void main(String[] args) {
+    try {
+      launch(args);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

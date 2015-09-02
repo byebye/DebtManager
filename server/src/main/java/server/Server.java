@@ -1,7 +1,7 @@
 package server;
 
-import common.AccessProvider;
-import common.LongpollingHanger;
+import common.connection.AccessProvider;
+import common.connection.LongpollingHanger;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

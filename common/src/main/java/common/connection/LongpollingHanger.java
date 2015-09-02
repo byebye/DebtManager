@@ -1,4 +1,4 @@
-package common;
+package common.connection;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

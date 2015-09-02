@@ -2,7 +2,7 @@ package server;
 
 import com.sendgrid.SendGrid;
 import com.sendgrid.SendGridException;
-import common.Email;
+import common.data.Email;
 
 /**
  * Created by glapul on 30.05.15.

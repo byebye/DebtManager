@@ -1,4 +1,4 @@
-package common;
+package common.data;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -46,7 +46,7 @@ public class Payment implements Serializable {
       return id;
    }
 
-   public boolean getAccept(){
+   public boolean isAccepted(){
       return accept;
    }
 

@@ -1,8 +1,8 @@
 package server;
 
-import common.BankTransfer;
-import common.Email;
-import common.User;
+import common.data.BankTransfer;
+import common.data.Email;
+import common.data.User;
 
 import java.util.List;
 

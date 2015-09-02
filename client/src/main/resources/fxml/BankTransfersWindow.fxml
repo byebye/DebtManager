@@ -14,7 +14,7 @@
             <Font size="18.0" />
          </font>
       </Text>
-      <Button fx:id="btnClose" layoutX="20.0" layoutY="372.0" mnemonicParsing="false" text="Close" />
+      <Button fx:id="buttonClose" layoutX="20.0" layoutY="372.0" mnemonicParsing="false" text="Close" />
       <Line endX="460.0" layoutX="121.0" layoutY="54.0" startX="-100.0" />
       <TabPane layoutX="20.0" layoutY="58.0" prefHeight="310.0" prefWidth="561.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -22,14 +22,14 @@
             <content>
               <AnchorPane fx:id="paneToSend" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="tabToSend" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
+                        <TableView fx:id="tableTransfersToSend" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
                           <columns>
-                            <TableColumn fx:id="colSendTo" prefWidth="113.0" text="Send to" />
-                            <TableColumn fx:id="colSendAccount" prefWidth="195.0" text="Account" />
-                              <TableColumn fx:id="colSendAmount" prefWidth="72.0" text="Amount" />
-                              <TableColumn fx:id="colSendBudget" prefWidth="116.0" text="Budget" />
-                              <TableColumn fx:id="colSendStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
-                              <TableColumn fx:id="colSendUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                            <TableColumn fx:id="columnSendTo" prefWidth="113.0" text="Send to" />
+                            <TableColumn fx:id="columnSendAccount" prefWidth="195.0" text="Account" />
+                              <TableColumn fx:id="columnSendAmount" prefWidth="72.0" text="Amount" />
+                              <TableColumn fx:id="columnSendBudget" prefWidth="116.0" text="Budget" />
+                              <TableColumn fx:id="columnSendStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                              <TableColumn fx:id="columnSendUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
                           </columns>
                         </TableView>
                      </children>
@@ -40,14 +40,14 @@
             <content>
               <AnchorPane fx:id="paneToReceive" minHeight="0.0" minWidth="0.0" prefHeight="154.0" prefWidth="354.0">
                      <children>
-                        <TableView fx:id="tabToReceive" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
+                        <TableView fx:id="tableTransfersToReceive" maxWidth="1.7976931348623157E308" prefHeight="269.0" prefWidth="558.0">
                            <columns>
-                              <TableColumn fx:id="colReceiveFrom" prefWidth="113.0" text="From who" />
-                              <TableColumn fx:id="colReceiveAccount" prefWidth="195.0" text="Account" />
-                              <TableColumn fx:id="colReceiveAmount" prefWidth="72.0" text="Amount" />
-                              <TableColumn fx:id="colReceiveBudget" prefWidth="116.0" text="Budget" />
-                              <TableColumn fx:id="colReceiveStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
-                              <TableColumn fx:id="colReceiveUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                              <TableColumn fx:id="columnReceiveFrom" prefWidth="113.0" text="From who" />
+                              <TableColumn fx:id="columnReceiveAccount" prefWidth="195.0" text="Account" />
+                              <TableColumn fx:id="columnReceiveAmount" prefWidth="72.0" text="Amount" />
+                              <TableColumn fx:id="columnReceiveBudget" prefWidth="116.0" text="Budget" />
+                              <TableColumn fx:id="columnReceiveStatus" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
+                              <TableColumn fx:id="columnReceiveUpdate" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" />
                            </columns>
                         </TableView>
                      </children>
@@ -56,6 +56,6 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Button fx:id="btnRefresh" layoutX="513.0" layoutY="372.0" mnemonicParsing="false" text="Refresh" />
+      <Button fx:id="buttonRefresh" layoutX="513.0" layoutY="372.0" mnemonicParsing="false" text="Refresh" />
    </children>
 </Pane>

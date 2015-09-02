@@ -1,169 +1,155 @@
 package client.controllers;
 
-import common.*;
+import client.view.Alerts;
+import client.view.StatusImageCell;
+import common.data.BankTransfer;
+import common.data.Budget;
+import common.data.DataUtils;
+import common.data.Payment;
+import common.data.Settlement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.*;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-/**
- * Created by vsmasster on 26.05.15.
- */
-public class SettlementDetailsController implements Initializable {
-   //TODO: discuss if normal user can see all bank transfers
-   @FXML
-   Text txtDetails;
-   @FXML
-   Button btnSetAsPaid, btnClose;
-   @FXML
-   TableView tabBankTransfers;
-   @FXML
-   TableColumn colWho, colWhom, colAmount, colBankAccount, colConfirm, colStatus;
-   private static DBHandler dbController = LoginController.dbController;
-   private final ObservableList<BankTransfer> contentList = FXCollections.observableArrayList();
+public class SettlementDetailsController extends BasicController implements Initializable {
 
-   private final User currentUser = LoginController.currentUser;
-   private Settlement settlement;
-   private Budget budget;
+  //TODO: discuss if normal user can see all bank transfers
+  @FXML
+  private Text textDetails;
+  @FXML
+  private Button buttonSetAsPaid, buttonClose;
+  @FXML
+  private TableView<BankTransfer> tableBankTransfers;
+  @FXML
+  private TableColumn<BankTransfer, String> columnWho, columnWhom, columnBankAccount;
+  @FXML
+  private TableColumn<BankTransfer, BigDecimal> columnAmount;
+  @FXML
+  private TableColumn<BankTransfer, ImageView> columnStatus;
+  @FXML
+  private TableColumn<Payment, Boolean> columnConfirm;
 
-   private Stage currentStage;
+  private final ObservableList<BankTransfer> contentList = FXCollections.observableArrayList();
+  private Settlement settlement;
+  private Budget budget;
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  public void setData(Settlement settlement, Budget budget) {
+    this.settlement = settlement;
+    this.budget = budget;
+  }
 
-   public void setData(Settlement settlement, Budget budget) {
-      this.settlement = settlement;
-      this.budget = budget;
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initButtons();
+    initBankTransfersTable();
+  }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      //Buttons
-      btnClose.setOnAction(event -> currentStage.close());
-      btnSetAsPaid.setOnAction(event -> setAsPaid());//TODO: add confirmation window
+  private void initButtons() {
+    buttonClose.setOnAction(event -> currentStage.close());
+    buttonSetAsPaid.setOnAction(event -> setAsPaid());
+  }
 
-      //Columns
-      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
-      colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
-      colBankAccount.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
-      colStatus.setCellFactory(param -> new StatusImageCell());
-      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
-      //Table
-      tabBankTransfers.setItems(contentList);
-   }
+  private void initBankTransfersTable() {
+    columnWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnWhom.setCellValueFactory(new PropertyValueFactory<>("whom"));
+    columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnBankAccount.setCellValueFactory(new PropertyValueFactory<>("bankAccount"));
+    columnStatus.setCellFactory(param -> new StatusImageCell());
+    columnConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
-   public void fillContentList() {
-      contentList.clear();
-      try {
-         List<BankTransfer> transfers = dbController.getBankTransfersBySettlementId(settlement.getSettlementId());
-         int it = 0;
-         for(int i=0;i<transfers.size();i++)
-            if(transfers.get(i).getStatus().getValue() == 0)
-               Collections.swap(transfers,it++,i);
+    tableBankTransfers.setItems(contentList);
+  }
 
+  public void fillContentList() {
+    contentList.clear();
+    try {
+      List<BankTransfer> transfers = dbHandler.getBankTransfersBySettlementId(settlement.getSettlementId());
+      DataUtils.sortTransfersByStatus(transfers);
+      contentList.addAll(transfers);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
 
-         for(int i=0;i<transfers.size();i++)
-            if(transfers.get(i).getStatus().getValue() == 1)
-               Collections.swap(transfers,it++,i);
-
-         contentList.addAll(transfers);
+  public void setAsPaid() {
+    //TODO: add confirmation window
+    Map<Integer, Integer> bankTransfersToSet = new HashMap<>();
+    for (BankTransfer transfer : contentList) {
+      if (transfer.isToUpdate()) {
+        transfer.updateStatus(currentUser.getId());
+        bankTransfersToSet.put(transfer.getId(), transfer.getStatus().getValue());
       }
-      catch (Exception e) {
-         e.printStackTrace();
+    }
+    try {
+      dbHandler.setBankTransfersStatus(bankTransfersToSet);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+    fillContentList();
+  }
+
+  @Override
+  protected void clearErrorHighlights() {
+  }
+
+  public class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+
+    private final CheckBox checkBox = new CheckBox();
+
+    public CheckBoxTableCell() {
+      setAlignment(Pos.CENTER);
+      checkBox.setOnAction(event -> {
+        BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
+        transfer.setToUpdate(!transfer.isToUpdate());
+      });
+    }
+
+    @Override
+    public void updateItem(Boolean item, boolean empty) {
+      super.updateItem(item, empty);
+      if (!empty) {
+        checkBox.setSelected(false);
+        setGraphic(checkBox);
+
+        BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
+        boolean disable = !isCurrentUserBudgetOwner() || !isCurrentUserTransferParticipant(transfer);
+        checkBox.setDisable(disable);
       }
-   }
-
-   public void setAsPaid() {
-      Map<Integer, Integer> bankTransfersToSet = new HashMap<>();
-      for (BankTransfer transfer : contentList)
-         if (transfer.isToUpdate()) {
-            transfer.updateStatus(currentUser.getId());
-            bankTransfersToSet.put(transfer.getId(), transfer.getStatus().getValue());
-         }
-
-      try {
-         dbController.setBankTransfersStatus(bankTransfersToSet);
+      else {
+        setGraphic(null);
       }
-      catch (Exception e) {
-         e.printStackTrace();
-      }
-      fillContentList();
-   }
+    }
 
-   private class StatusImageCell extends TableCell<BankTransfer, ImageView> {
-      ImageView imageView = new ImageView();
+    private boolean isCurrentUserBudgetOwner() {
+      return Objects.equals(currentUser, budget.getOwner());
+    }
 
-      public StatusImageCell() {
-         imageView.setPreserveRatio(true);
-         imageView.setFitHeight(20);
-      }
-
-      @Override
-      protected void updateItem(ImageView item, boolean empty) {
-         super.updateItem(item, empty);
-         if (!empty) {
-            BankTransfer transfer = (BankTransfer) StatusImageCell.this.getTableRow().getItem();
-            if (transfer == null)
-               return;
-            int statusId = transfer.getStatus().getValue();
-            String path = "graphics/";
-            switch(statusId) {
-               case 0: path += "notpaid.png"; break;
-               case 1: path += "waiting.png"; break;
-               case 2: path += "paid.png"; break;
-            }
-
-            ClassLoader cl = this.getClass().getClassLoader();
-            Image image = new Image(cl.getResourceAsStream(path));
-            imageView.setImage(image);
-            setGraphic(imageView);
-         }
-         else
-            setGraphic(null);
-      }
-   }
-
-   public class CheckBoxTableCell extends TableCell<Payment, Boolean> {
-
-      private final CheckBox checkBox = new CheckBox();
-
-      public CheckBoxTableCell() {
-         setAlignment(Pos.CENTER);
-         checkBox.setOnAction(event -> {
-            BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
-            transfer.setToUpdate(!transfer.isToUpdate());
-         });
-      }
-
-      @Override
-      public void updateItem(Boolean item, boolean empty) {
-         super.updateItem(item, empty);
-         if (!empty) {
-            checkBox.setSelected(false);
-            setGraphic(checkBox);
-
-            BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
-            if (currentUser.equals(budget.getOwner())
-                || transfer.getWhoId() == currentUser.getId() || transfer.getWhomId() == currentUser.getId())
-               checkBox.setDisable(false);
-            else
-               checkBox.setDisable(true);
-         }
-         else
-            setGraphic(null);
-      }
-   }
+    private boolean isCurrentUserTransferParticipant(BankTransfer transfer) {
+      return transfer.getWhoId() == currentUser.getId()
+             || transfer.getWhomId() == currentUser.getId();
+    }
+  }
 }

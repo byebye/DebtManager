@@ -1,4 +1,4 @@
-package common;
+package common.data;
 
 import java.io.Serializable;
 import java.util.Date;

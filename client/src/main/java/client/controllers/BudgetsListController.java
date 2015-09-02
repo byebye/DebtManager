@@ -1,138 +1,118 @@
 package client.controllers;
 
-import client.UpdateLongpollingCallbackRegistrar;
+import client.view.Alerts;
 import client.windows.BankTransfersWindow;
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
-import common.Budget;
-import common.DBHandler;
-import common.RemoteCallback;
-import common.User;
+import common.connection.DbHandler;
+import common.data.Budget;
+import common.data.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 
-import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class BudgetsListController implements Initializable, SelfUpdating {
+public class BudgetsListController extends BasicController implements Initializable, SelfUpdating {
 
-   @FXML
-   private Text txtUserName;
-   @FXML
-   private Button btnLogout, btnCreateNewBudget, btnRefreshList, btnManageBankTransfers;
-   @FXML
-   private TableColumn colName, colDescription;
-   @FXML
-   private TableColumn colPeople;
-   @FXML
-   private TableColumn colOwner;
-   @FXML
-   private TableView<Budget> tabMyBudgets;
+  @FXML
+  private Label labelUserName;
+  @FXML
+  private Button buttonLogout, buttonCreateNewBudget, buttonRefreshList, buttonManageBankTransfers;
+  @FXML
+  private TableColumn<Budget, String> columnName, columnDescription, columnOwner;
+  @FXML
+  private TableColumn<Budget, Integer> columnParticipantsCount;
+  @FXML
+  private TableView<Budget> tableBudgets;
 
-   private static DBHandler dbController = LoginController.dbController;
-   private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
-   private final User currentUser = LoginController.currentUser;
+  private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
 
-   private Stage currentStage;
+  public void update() {
+    try {
+      final List<Budget> currentBudgets = dbHandler.getAllBudgets(currentUser.getId());
+      budgets.setAll(currentBudgets);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
 
-   public void setStage(Stage stage) throws RemoteException {
-      currentStage = stage;
-   }
+  @Override
+  public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+    labelUserName.setText(currentUser.getName());
+    initButtons();
+    initColumns();
+    initTable();
+  }
 
-   public void update() {
-      budgets.clear();
-      try {
-         budgets.addAll(dbController.getAllBudgets(currentUser.getId()));
-      }
-      catch (RemoteException e) {
-         displayUnableToConnectWithServerAlert();
-         e.printStackTrace();
-      }
-   }
+  private void initButtons() {
+    buttonLogout.setOnAction(event -> currentStage.close());
+    buttonRefreshList.setOnAction(event -> update());
+    buttonManageBankTransfers.setOnAction(event -> displayBankTransfersWindow());
+    buttonCreateNewBudget.setOnAction(event -> {
+      displayBudgetCreatorWindow();
+      update();
+    });
+  }
 
-   @Override
-   public Stage getStage() {
-      return currentStage;
-   }
+  private void initColumns() {
+    columnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+    columnDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+    columnParticipantsCount.setCellValueFactory(new PropertyValueFactory<>("partNum"));
+    columnOwner.setCellValueFactory(budget ->
+        new ReadOnlyObjectWrapper<>(budget.getValue().getOwner().getEmail()));
+  }
 
-   private void displayUnableToConnectWithServerAlert() {
-      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
-      unableToConnectAlert.setTitle("Unable to connect with server");
-      unableToConnectAlert.setHeaderText("Unable to connect with server!");
-      unableToConnectAlert.setContentText("Check your connection and try again.");
-      unableToConnectAlert.showAndWait();
-   }
-
-   @Override
-   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-      txtUserName.setText(currentUser.getName());
-
-      btnLogout.setOnAction(event -> currentStage.close());
-
-      btnRefreshList.setOnAction(event -> update());
-
-      btnManageBankTransfers.setOnAction(event -> {
-         try {
-            BankTransfersWindow bankTransfersWindow = new BankTransfersWindow();
-            bankTransfersWindow.initOwner(currentStage);
-            bankTransfersWindow.showAndWait();
-         }
-         catch (Exception e) {
-            e.printStackTrace();
-         }
+  private void initTable() {
+    tableBudgets.setItems(budgets);
+    tableBudgets.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    tableBudgets.setRowFactory(param -> {
+      TableRow<Budget> row = new TableRow<>();
+      row.setOnMouseClicked(mouseEvent -> {
+        if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+          Budget budget = row.getItem();
+          displayBudgetWindow(budget);
+        }
       });
+      return row;
+    });
+  }
 
-      btnCreateNewBudget.setOnAction(event -> {
-         try {
-            BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow();
-            budgetCreatorWindow.initOwner(currentStage);
-            budgetCreatorWindow.showAndWait();
-            update();
-         }
-         catch (IOException e) {
-            e.printStackTrace();
-         }
-      });
+  private void displayBudgetWindow(Budget budget) {
+    BudgetWindow budgetWindow = new BudgetWindow(budget);
+    budgetWindow.setOnHidden(event -> update());
+    budgetWindow.initOwner(currentStage);
+    budgetWindow.show();
+  }
 
-      colName.setCellValueFactory(new PropertyValueFactory<Budget, String>("name"));
-      colDescription.setCellValueFactory(new PropertyValueFactory<Budget, String>("description"));
-      colPeople.setCellValueFactory(new PropertyValueFactory<Budget, Integer>("partNum"));
-      colOwner.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Budget, String>, ObservableValue<String>>() {
-         public ObservableValue<String> call(TableColumn.CellDataFeatures<Budget, String> budget) {
-            return new ReadOnlyObjectWrapper(budget.getValue().getOwner().getEmail());
-         }
-      });
-      tabMyBudgets.setItems(budgets);
-      tabMyBudgets.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-      tabMyBudgets.setRowFactory(param -> {
-         TableRow<Budget> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Budget budget = row.getItem();
-               try {
-                  BudgetWindow budgetWindow = new BudgetWindow(budget);
-                  budgetWindow.setOnHidden(e -> update());
-                  budgetWindow.initOwner(currentStage);
-                  budgetWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
-   }
+  private void displayBankTransfersWindow() {
+    BankTransfersWindow bankTransfersWindow = new BankTransfersWindow();
+    bankTransfersWindow.initOwner(currentStage);
+    bankTransfersWindow.showAndWait();
+  }
+
+  private void displayBudgetCreatorWindow() {
+    BudgetCreatorWindow budgetCreatorWindow = new BudgetCreatorWindow();
+    budgetCreatorWindow.initOwner(currentStage);
+    budgetCreatorWindow.showAndWait();
+  }
+
+  @Override
+  protected void clearErrorHighlights() {
+
+  }
 }

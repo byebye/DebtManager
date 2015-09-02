@@ -1,11 +1,10 @@
 package client.controllers;
 
-import common.BankTransfer;
-import common.Budget;
-import common.DBHandler;
-import common.Payment;
+import client.view.Alerts;
+import common.data.BankTransfer;
+import common.data.Budget;
+import common.data.Payment;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,84 +12,87 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class SettleController implements Initializable {
+public class SettleController extends BasicController implements Initializable {
 
-   @FXML
-   TableView<BankTransfer> tabSettleView;
-   @FXML
-   TableColumn colWho, colWhom, colAmount, colAccNumber;
-   @FXML
-   Button btnConfirm, btnDecline;
-   @FXML
-   CheckBox checkBoxSendViaMail;
+  @FXML
+  private Button buttonConfirm, buttonDecline;
+  @FXML
+  private TableView<BankTransfer> tableSettleView;
+  @FXML
+  private TableColumn<BankTransfer, String> columnWho, columnWhom, columnAccountNumber;
+  @FXML
+  private TableColumn<BankTransfer, BigDecimal> columnAmount;
+  @FXML
+  private CheckBox checkBoxSendViaMail;
 
-   private static DBHandler dbController = LoginController.dbController;
-   private static ObservableList<BankTransfer> bankTransfers = FXCollections.observableArrayList();
-   private Budget budget;
-   private BudgetController parentController;
-   private ObservableList<Payment> paymentsToSettle;
+  private List<BankTransfer> bankTransfers;
+  private BudgetController budgetController;
+  private Budget budget;
+  private List<Payment> paymentsToSettle;
 
-   private Stage currentStage;
+  public void setBudgetController(BudgetController budgetController) {
+    this.budgetController = budgetController;
+  }
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  public void setBudget(Budget budget) {
+    this.budget = budget;
+  }
 
-   public void setBudget(Budget budget, ObservableList<Payment> paymentsToSettle, BudgetController parentController) {
-      this.budget = budget;
-      this.paymentsToSettle = paymentsToSettle;
-      this.parentController = parentController;
-   }
+  public void setPaymentsToSettle(List<Payment> paymentsToSettle) {
+    this.paymentsToSettle = paymentsToSettle;
+  }
 
-   public void fillAllTables() {
-      try {
-         List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
-         bankTransfers.addAll(dbController.calculateBankTransfers(budget.getId(), paymentsSerializable));
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
-      tabSettleView.setItems(bankTransfers);
-   }
+  public void fillBankTransfersTable() {
+    try {
+      bankTransfers = dbHandler.calculateBankTransfers(budget.getId(), paymentsToSettle);
+      tableSettleView.setItems(FXCollections.observableArrayList(bankTransfers));
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+      currentStage.close();
+    }
+  }
 
-   public void clearTable() {
-      bankTransfers.clear();
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initButtons();
+    initColumns();
+  }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      colWho.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("who"));
-      colWhom.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("whom"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<BankTransfer, BigDecimal>("amount"));
-      colAccNumber.setCellValueFactory(new PropertyValueFactory<BankTransfer, String>("bankAccount"));
+  private void initButtons() {
+    buttonConfirm.setOnAction(event -> acceptSettlement());
+    buttonDecline.setOnAction(event -> currentStage.close());
+  }
 
-      btnConfirm.setOnAction(event -> {
-         try {
-            List<Payment> paymentsSerializable = new ArrayList<>(paymentsToSettle);
-            List<BankTransfer> bankTransfersSerializable = new ArrayList<>(bankTransfers);
-            dbController.settleUnaccountedPayments(budget.getId(), paymentsSerializable, bankTransfersSerializable,
-                                                   checkBoxSendViaMail.isSelected());
-            parentController.update();
-            bankTransfers.clear();
-            currentStage.close();
-         }
-         catch (RemoteException e) {
-            e.printStackTrace();
-         }
-      });
+  private void acceptSettlement() {
+    try {
+      dbHandler.settleUnaccountedPayments(budget.getId(), paymentsToSettle, bankTransfers,
+          checkBoxSendViaMail.isSelected());
+      budgetController.update();
+      currentStage.close();
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
 
-      btnDecline.setOnAction(event -> {
-         bankTransfers.clear();
-         currentStage.close();
-      });
-   }
+  private void initColumns() {
+    columnWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnWhom.setCellValueFactory(new PropertyValueFactory<>("whom"));
+    columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnAccountNumber.setCellValueFactory(new PropertyValueFactory<>("bankAccount"));
+  }
+
+  @Override
+  protected void clearErrorHighlights() {
+  }
 }

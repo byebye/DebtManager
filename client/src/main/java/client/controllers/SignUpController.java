@@ -1,106 +1,122 @@
 package client.controllers;
 
+import client.utils.DataFormatListeners;
+import client.view.Alerts;
 import client.view.ErrorHighlighter;
-import common.Email;
-import common.SHA1Hasher;
+import common.data.BankAccount;
+import common.data.Email;
+import common.utils.SHA1Hasher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
-import javax.naming.AuthenticationException;
-import java.math.BigInteger;
 import java.net.URL;
-import java.rmi.RemoteException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class SignUpController implements Initializable {
+public class SignUpController extends BasicController implements Initializable {
 
-   @FXML
-   TextField txtFieldEmail, txtFieldUsername, txtFieldBankAccount;
-   @FXML
-   PasswordField txtFieldPassword, txtFieldRepPassword;
-   @FXML
-   Button btnSignUp, btnCancel;
-   @FXML
-   Label errorLabel;
+  @FXML
+  private TextField fieldEmail, fieldUsername, fieldBankAccount;
+  @FXML
+  private PasswordField fieldPassword, fieldRepeatedPassword;
+  @FXML
+  private Button buttonSignUp, buttonCancel;
+  @FXML
+  private Label labelError;
 
-   private Stage currentStage;
-   private LoginController loginController;
+  private final static int MAX_EMAIL_LENGTH = 64;
+  private final static int MAX_USER_NAME_LENGTH = 32;
+  private LoginController loginController;
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  public void setLoginController(LoginController controller) {
+    loginController = controller;
+  }
 
-   public void setLoginController(LoginController controller) {
-      loginController = controller;
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initButtons();
+    initFields();
+  }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      TextFormatter<String> onlyDigitsFormatter = new TextFormatter<>(change -> {
-         change.setText(change.getText().replaceAll("[^0-9 ]", ""));
-         return change;
-      });
-      txtFieldBankAccount.setTextFormatter(onlyDigitsFormatter);
+  private void initFields() {
+    fieldEmail.textProperty()
+        .addListener(DataFormatListeners.restrictTextLength(fieldEmail::setText, MAX_EMAIL_LENGTH));
+    fieldUsername.textProperty()
+        .addListener(DataFormatListeners.restrictTextLength(fieldUsername::setText, MAX_USER_NAME_LENGTH));
+    fieldBankAccount.textProperty()
+        .addListener(DataFormatListeners.restrictBankAccountInput(fieldBankAccount::setText));
+  }
 
-      //Buttons
-      btnCancel.setOnAction(event -> currentStage.close());
+  private void initButtons() {
+    buttonCancel.setOnAction(event -> currentStage.close());
+    buttonSignUp.setOnAction(event -> signUp());
+  }
 
-      btnSignUp.setOnAction(event -> {
-         errorLabel.setText("");
-         ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldUsername, txtFieldBankAccount, txtFieldPassword,
-                                             txtFieldRepPassword);
-         if (!Email.isValid(txtFieldEmail.getText())) {
-            errorLabel.setText("Invalid email address");
-            ErrorHighlighter.highlightInvalidFields(txtFieldEmail);
-         }
-         else if (txtFieldUsername.getText().isEmpty()) {
-            errorLabel.setText("User name should not be empty");
-            ErrorHighlighter.highlightInvalidFields(txtFieldUsername);
-         }
-         else if (!txtFieldBankAccount.getText().replaceAll("\\s", "").matches("\\d{22}")) {
-            errorLabel.setText("Invalid bank account number");
-            ErrorHighlighter.highlightInvalidFields(txtFieldBankAccount);
-            event.consume();
-         }
-         else if (!txtFieldPassword.getText().equals(txtFieldRepPassword.getText())) {
-            errorLabel.setText("Passwords don't match");
-            ErrorHighlighter.highlightInvalidFields(txtFieldPassword, txtFieldRepPassword);
-            event.consume();
-         }
-         else if (txtFieldPassword.getText().isEmpty()) {
-            errorLabel.setText("Password should not be empty");
-            ErrorHighlighter.highlightInvalidFields(txtFieldPassword);
-         }
-         else {
-            try {
-               tryToSignUp();
-               displayUserCreatedAlert();
-               loginController.fillDataFields(txtFieldEmail.getText(), txtFieldPassword.getText());
-            }
-            catch (Exception e) {
-               e.printStackTrace();
-               errorLabel.setText("User couldn't be created! Try again");
-            }
-         }
-      });
-   }
-
-   private void tryToSignUp() throws RemoteException, AuthenticationException {
-      Email email = new Email(txtFieldEmail.getText());
-      String userName = txtFieldUsername.getText();
-      BigInteger bankAccount = new BigInteger(txtFieldBankAccount.getText().replaceAll("\\s", ""));
-      String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
-      LoginController.ac.signUp(email, userName, bankAccount, passwordHash);
-   }
-
-   private void displayUserCreatedAlert() {
-      Alert userCreatedAlert = new Alert(Alert.AlertType.INFORMATION);
-      userCreatedAlert.setTitle("New account created");
-      userCreatedAlert.setHeaderText("Account created successfully!");
-      userCreatedAlert.setContentText("Now you can log in to view your budgets.");
-      userCreatedAlert.showAndWait();
+  private void signUp() {
+    if (validateNewUserData() && createNewUser()) {
+      Alerts.userCreated();
+      loginController.fillDataFields(fieldEmail.getText(), fieldPassword.getText());
       currentStage.close();
-   }
+    }
+  }
+
+  private boolean validateNewUserData() {
+    clearErrorHighlights();
+    if (!Email.isValid(fieldEmail.getText())) {
+      labelError.setText("Invalid email address");
+      ErrorHighlighter.highlightInvalidFields(fieldEmail);
+    }
+    else if (fieldUsername.getText().isEmpty()) {
+      labelError.setText("User name cannot be empty");
+      ErrorHighlighter.highlightInvalidFields(fieldUsername);
+    }
+    else if (!BankAccount.isValid(fieldBankAccount.getText())) {
+      labelError.setText("Invalid bank account number");
+      ErrorHighlighter.highlightInvalidFields(fieldBankAccount);
+    }
+    else if (!Objects.equals(fieldPassword.getText(), fieldRepeatedPassword.getText())) {
+      labelError.setText("Passwords don't match");
+      ErrorHighlighter.highlightInvalidFields(fieldRepeatedPassword, fieldPassword);
+    }
+    else if (fieldPassword.getText().isEmpty()) {
+      labelError.setText("Password cannot be empty");
+      ErrorHighlighter.highlightInvalidFields(fieldPassword);
+    }
+    else {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean createNewUser() {
+    final Email email = new Email(fieldEmail.getText());
+    final String userName = fieldUsername.getText();
+    final BankAccount bankAccount = new BankAccount(fieldBankAccount.getText());
+    final String passwordHash = SHA1Hasher.hash(fieldPassword.getText());
+    try {
+      accessProvider.signUp(email, userName, passwordHash, bankAccount);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      // TODO display more informative message, e.g. "User already exists"
+      labelError.setText("User couldn't be created! Try again");
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  protected void clearErrorHighlights() {
+    labelError.setText("");
+    ErrorHighlighter.unhighlightFields(
+        fieldEmail,
+        fieldUsername,
+        fieldBankAccount,
+        fieldPassword,
+        fieldRepeatedPassword);
+  }
 }

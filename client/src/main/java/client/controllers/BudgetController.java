@@ -1,386 +1,439 @@
 package client.controllers;
 
 import client.BudgetExporter;
-import client.windows.*;
-import common.*;
+import client.view.Alerts;
+import client.windows.AddParticipantsWindow;
+import client.windows.AddPaymentWindow;
+import client.windows.ParticipantDetailsWindow;
+import client.windows.SettleWindow;
+import client.windows.SettlementDetailsWindow;
+import client.windows.UpdatePaymentWindow;
+import common.connection.DbHandler;
+import common.data.Budget;
+import common.data.Payment;
+import common.data.Settlement;
+import common.data.User;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-public class BudgetController implements Initializable, SelfUpdating {
+public class BudgetController extends BasicController implements Initializable, SelfUpdating {
 
-   @FXML
-   private Text txtBudgetName;
-   @FXML
-   private Text txtBudgetDescription;
-   @FXML
-   private Text txtSum, txtSumPerPerson;
-   @FXML
-   private Button btnAddPayment, btnSettle, btnAddParticipant, btnBudgetClose, btnBudgetDelete, btnBudgetExport;
-   @FXML
-   private TableView<Payment> tabUnaccPayments, tabAccPayments;
-   @FXML
-   private TableView<User> tabParticipants;
-   @FXML
-   private TableView<Settlement> tabSettleHistory;
-   @FXML
-   private TableColumn colDate,colAmount,colStatus;
-   @FXML
-   private TableColumn colUnaccWhat, colUnaccWho, colUnaccAmount, colConfirm;
-   @FXML
-   private TableColumn colAccWhat, colAccWho, colAccAmount;
-   @FXML
-   private TableColumn colUserName, colUserMail, colUserBalance;
+  @FXML
+  public Label labelBudgetName, labelBudgetDescription;
+  @FXML
+  private Button buttonBudgetClose, buttonBudgetDelete, buttonBudgetExport;
+  @FXML
+  private Button buttonAddPayment, buttonAddParticipant, buttonSettle;
+  @FXML
+  private Label labelSum, labelSumPerPerson;
+  @FXML
+  private TableView<Payment> tableUnaccPayments, tableAccPayments;
+  @FXML
+  private TableView<User> tableParticipants;
+  @FXML
+  private TableView<Settlement> tableSettleHistory;
+  @FXML
+  private TableColumn<Settlement, String> columnDate, columnStatus;
+  @FXML
+  private TableColumn<User, BigDecimal> columnUserBalance;
+  @FXML
+  private TableColumn<Settlement, Double> columnAmount;
+  @FXML
+  private TableColumn<Payment, String> columnAccWho, columnUnaccWho, columnUnaccWhat, columnAccWhat;
+  @FXML
+  private TableColumn<Payment, Integer> columnAccAmount, columnUnaccAmount;
+  @FXML
+  private TableColumn<User, String> columnUserName, columnUserMail;
+  @FXML
+  private TableColumn<Payment, Boolean> columnConfirm;
 
-   private static DBHandler dbController = LoginController.dbController;
+  private final ObservableList<User> participantsList = FXCollections.observableArrayList();
+  private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
+  private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
+  private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
+  private Budget budget;
+  double spentMoneySum = 0;
 
-   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
-   private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
-   private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
-   private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
+  public void setBudget(Budget budget) {
+    this.budget = budget;
+    labelBudgetName.setText(budget.getName());
+    labelBudgetDescription.setText(budget.getDescription());
+    if (!isCurrentUserBudgetOwner())
+      disableOnlyBudgetOwnerButtons();
+  }
 
-   private final User currentUser = LoginController.currentUser;
-   private Stage currentStage;
-   private Budget budget;
-   double spentMoneySum = 0;
+  private void disableOnlyBudgetOwnerButtons() {
+    buttonAddParticipant.setDisable(true);
+    buttonSettle.setDisable(true);
+    buttonBudgetDelete.setDisable(true);
+  }
 
-   public Stage getStage() {return currentStage;}
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initButtons();
+    initTables();
+  }
 
-   public void setBudget(Budget budget) {
-      this.budget = budget;
-      txtBudgetName.setText(budget.getName());
-      txtBudgetDescription.setText(budget.getDescription());
-      if (!currentUser.equals(budget.getOwner())) {
-         btnAddParticipant.setDisable(true);
-         btnSettle.setDisable(true);
-         btnBudgetDelete.setDisable(true);
-      }
-   }
+  private void initButtons() {
+    buttonBudgetClose.setOnAction(event -> currentStage.close());
+    buttonBudgetExport.setOnAction(event -> exportBudget());
+    buttonBudgetDelete.setOnAction(event -> deleteBudget());
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      //Buttons
-      btnBudgetExport.setOnAction(event -> {
-         BudgetExporter budgetExporter = new BudgetExporter(budget,
-                                                            participantsList,
-                                                            accountedPayments,
-                                                            unaccountedPayments,
-                                                            settleHistory,
-                                                            currentStage);
-         budgetExporter.export();
-      });
-      btnSettle.setOnAction(event -> {
-         try {
-            ObservableList<Payment> paymentsToSettle = FXCollections.observableArrayList();
-            for (Payment p : unaccountedPayments)
-               if (p.getAccept())
-                  paymentsToSettle.add(p);
+    buttonAddParticipant.setOnAction(event -> displayAddParticipantsWindow());
+    buttonAddPayment.setOnAction(event -> displayAddPaymentWindow());
+    buttonSettle.setOnAction(event -> settlePayments());
+  }
 
-            SettleWindow settleWindow = new SettleWindow(budget, paymentsToSettle, this);
-            settleWindow.initOwner(currentStage);
-            settleWindow.showAndWait();
-            paymentsToSettle.clear();
-            settleHistory.clear();
-            fillTabSettleHistory();
-         }
-         catch(Exception e){
-            e.printStackTrace();
-         }
-      });
+  private void exportBudget() {
+    BudgetExporter budgetExporter = new BudgetExporter(budget,
+        participantsList,
+        accountedPayments,
+        unaccountedPayments,
+        settleHistory,
+        currentStage);
+    budgetExporter.export();
+  }
 
-      btnAddPayment.setOnAction(event -> {
-         try {
-            AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, participantsList);
-            addPaymentWindow.initOwner(currentStage);
-            addPaymentWindow.setOnHidden(e -> fillTabUnaccPayments());
-            addPaymentWindow.show();
-         }
-         catch (IOException e) {
-            e.printStackTrace();
-         }
-      });
+  private void deleteBudget() {
+    Optional<ButtonType> result = Alerts.deleteBudgetConfirmation();
+    if (!result.isPresent() || result.get() != ButtonType.OK)
+      return;
+    try {
+      dbHandler.deleteBudget(budget);
+      currentStage.close();
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      // TODO budget couldn't be deleted
+    }
+  }
 
-      btnAddParticipant.setOnAction(event -> {
-         try {
-            AddUserToBudgetWindow addUserToBudgetWindow = new AddUserToBudgetWindow((BudgetWindow) currentStage);
-            addUserToBudgetWindow.initOwner(currentStage);
-            addUserToBudgetWindow.setOnHidden(e -> fillTabUnaccPayments());
-            addUserToBudgetWindow.show();
-         }
-         catch (IOException e) {
-            e.printStackTrace();
-         }
-      });
+  private void displayAddParticipantsWindow() {
+    AddParticipantsWindow addParticipantsWindow = new AddParticipantsWindow(this);
+    addParticipantsWindow.initOwner(currentStage);
+    addParticipantsWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    addParticipantsWindow.show();
+  }
 
-      btnBudgetClose.setOnAction(event -> currentStage.close());
+  private void displayAddPaymentWindow() {
+    AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, participantsList);
+    addPaymentWindow.initOwner(currentStage);
+    addPaymentWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    addPaymentWindow.show();
+  }
 
-      btnBudgetDelete.setOnAction(event -> {
-         Alert deleteBudgetAlert = new Alert(Alert.AlertType.CONFIRMATION);
-         deleteBudgetAlert.setTitle("Confirm deletion");
-         deleteBudgetAlert.setHeaderText("Are you sure you want to delete this budget?");
-         deleteBudgetAlert.setContentText("This operation cannot be undone.");
-         Optional<ButtonType> result = deleteBudgetAlert.showAndWait();
-         if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-               try {
-                  dbController.deleteBudget(budget);
-               }
-               catch (RemoteException e) {
-                  e.printStackTrace();
-               }
-               currentStage.close();
-            }
-            catch (Exception e) {
-               e.printStackTrace();
-            }
-         }
-      });
+  private void settlePayments() {
+    try {
+      displaySettleWindow();
+      fillTableSettleHistory();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      // TODO display proper message
+    }
+  }
 
-      //Table
-      colUnaccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colAccWhat.setCellValueFactory(new PropertyValueFactory<Payment, String>("what"));
-      colUnaccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
-      colAccWho.setCellValueFactory(new PropertyValueFactory<Payment, String>("who"));
-      colUnaccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
-      colAccAmount.setCellValueFactory(new PropertyValueFactory<Payment, Integer>("amount"));
-      colUserName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
-      colUserMail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
-      colConfirm.setCellFactory(param -> new CheckBoxTableCell());
-      colDate.setCellValueFactory(new PropertyValueFactory<Settlement, String>("date"));
-      colAmount.setCellValueFactory(new PropertyValueFactory<Settlement,Double>("amount"));
-      colStatus.setCellValueFactory(new PropertyValueFactory<Settlement,String>("status"));
-      colStatus.setCellFactory(new Callback<TableColumn, TableCell>() {
-         public TableCell call(TableColumn param) {
-            return new TableCell<Settlement, String>() {
+  private void displaySettleWindow() {
+    SettleWindow settleWindow = new SettleWindow(this, budget, getPaymentsToSettle());
+    settleWindow.initOwner(currentStage);
+    settleWindow.showAndWait();
+  }
 
-               @Override
-               public void updateItem(String item, boolean empty) {
-                  super.updateItem(item, empty);
-                  if (!isEmpty()) {
-                     this.setStyle("-fx-background-color:red");
+  private List<Payment> getPaymentsToSettle() {
+    return unaccountedPayments.stream()
+        .filter(Payment::isAccepted)
+        .collect(Collectors.toList());
+  }
 
-                     if (item.equals("OK"))
-                        this.setStyle("-fx-background-color:green");
+  private void initTables() {
+    initUnaccountedPaymentsTable();
+    initAccountedPaymentsTable();
+    initParticipantsTable();
+    initSettlementsHistoryTable();
+  }
 
-                     setText(item);
-                  }
-               }
-            };
-         }
-      });
-      colUserBalance.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<User, BigDecimal>, ObservableValue<BigDecimal>>() {
-         public ObservableValue<BigDecimal> call(TableColumn.CellDataFeatures<User, BigDecimal> p) {
-            User participant = p.getValue();
-            double balance = 0;
-            if (participant != null)
-                balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
-            return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
-         }
-      });
-      tabSettleHistory.setItems(settleHistory);
-      tabParticipants.setItems(participantsList);
-      tabParticipants.setRowFactory(param -> {
-         TableRow<User> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               User participant = row.getItem();
-               try {
-                  boolean hasUnaccountedPayments = unaccountedPayments.filtered(
-                                                        payment -> payment.getUserId() == participant.getId()
-                                                   ).size() > 0;
-                  ParticipantDetailsWindow participantWindow = new ParticipantDetailsWindow(budget, participant, hasUnaccountedPayments);
-                  participantWindow.initOwner(currentStage);
-                  participantWindow.setOnHidden(event -> {
-                     fillTabParticipants();
-                     fillTabUnaccPayments();
-                  });
-                  participantWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
-      tabSettleHistory.setRowFactory(param -> {
-         TableRow<Settlement> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-               Settlement settlement = row.getItem();
-               try {
-                  SettlementDetailsWindow settlementDetailsWindow = new SettlementDetailsWindow(settlement,budget);
-                  settlementDetailsWindow.initOwner(currentStage);
-                  settlementDetailsWindow.setOnHidden(event->fillTabSettleHistory());
-                  settlementDetailsWindow.show();
-               }
-               catch (IOException e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-         return row;
-      });
-      tabUnaccPayments.setItems(unaccountedPayments);
-      tabAccPayments.setItems(accountedPayments);
-      tabUnaccPayments.setRowFactory(param -> {
-         TableRow<Payment> row = new TableRow<>();
-         row.setOnMouseClicked(mouseEvent -> {
-            if (row.isEmpty())
-               return;
-            Payment payment = row.getItem();
-            if (currentUser.equals(budget.getOwner()) || payment.getUserId() == currentUser.getId()) {
-               if (mouseEvent.getClickCount() == 2) {
-                  try {
-                     PaymentWindow paymentWindow = new PaymentWindow(budget, payment, participantsList);
-                     paymentWindow.initOwner(currentStage);
-                     paymentWindow.setOnHidden(event -> fillTabUnaccPayments());
-                     paymentWindow.show();
-                  }
-                  catch (IOException e) {
-                     e.printStackTrace();
-                  }
-               }
-            }
-            // TODO else: you have no rights to edit this payment (special color or information)
-         });
-         return row;
-      });
-   }
+  private void initUnaccountedPaymentsTable() {
+    columnUnaccWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnUnaccWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
+    columnUnaccAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
-   void addParticipants(List<User> users) {
-      users.removeAll(participantsList);
-      participantsList.addAll(users);
-      try {
-         List<User> usersSerializable = new ArrayList<>(users);
-         dbController.addBudgetParticipants(budget.getId(), usersSerializable);
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
-   }
+    tableUnaccPayments.setItems(unaccountedPayments);
+    tableUnaccPayments.setRowFactory(param -> {
+      TableRow<Payment> row = new TableRow<>();
+      row.setOnMouseClicked(mouseEvent -> handlePaymentRowClicked(row, mouseEvent));
+      return row;
+    });
+  }
 
-   public void update() {
-      fillTabParticipants();
-      fillTabUnaccPayments();
-      fillTabAccPayments();
-      fillTabSettleHistory();
-   }
+  private void handlePaymentRowClicked(TableRow<Payment> row, MouseEvent mouseEvent) {
+    if (row.isEmpty() || mouseEvent.getClickCount() != 2)
+      return;
+    Payment payment = row.getItem();
+    if (isCurrentUserBudgetOwner() || isCurrentUserPaymentOwner(payment))
+      displayPaymentWindow(payment);
+    // TODO else: you have no rights to edit this payment (special color or information)
+  }
 
-   void fillTabSettleHistory(){
-      settleHistory.clear();
-      try {
-         List<Settlement> settlements = dbController.getAllSettlements(budget.getId());
-         int it = 0;
-         for(int i=0;i<settlements.size();i++)
-            if(!settlements.get(i).getStatus().equals("OK"))
-               Collections.swap(settlements,it++,i);
+  private boolean isCurrentUserBudgetOwner() {
+    return Objects.equals(currentUser, budget.getOwner());
+  }
 
-         settleHistory.addAll(settlements);
-      }
-      catch(Exception e) {
-         System.out.println("Access denied");
-         e.printStackTrace();
-      }
-   }
+  private boolean isCurrentUserPaymentOwner(Payment payment) {
+    return payment.getUserId() == currentUser.getId();
+  }
 
-   void fillTabParticipants() {
-      participantsList.clear();
-      try {
-         participantsList.addAll(dbController.getBudgetParticipants(budget.getId()));
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
-   }
+  private void displayPaymentWindow(Payment payment) {
+    UpdatePaymentWindow paymentWindow = new UpdatePaymentWindow(budget, payment, participantsList);
+    paymentWindow.initOwner(currentStage);
+    paymentWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    paymentWindow.show();
+  }
 
-   void fillTabAccPayments() {
-      accountedPayments.clear();
-      try {
-         accountedPayments.addAll(dbController.getAllPayments(budget.getId(), true));
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
-   }
+  private void initAccountedPaymentsTable() {
+    columnAccWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnAccWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
+    columnAccAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-   void fillTabUnaccPayments() {
-      unaccountedPayments.clear();
-      try {
-         unaccountedPayments.addAll(dbController.getAllPayments(budget.getId(), false));
-      }
-      catch (RemoteException e) {
-         e.printStackTrace();
-      }
-      spentMoneySum = 0;
-      for (User participant : participantsList)
-         participant.setSpentMoney(0);
-      for (Payment p : unaccountedPayments) {
-         spentMoneySum += p.getAmount();
-         FilteredList<User> filtered = participantsList.filtered(user -> user.getId() == p.getUserId());
-         if (!filtered.isEmpty()) {
-            User participant = filtered.get(0);
-            participant.addSpentMoney(p.getAmount());
-         }
-      }
-      refreshBalanceCells();
-      txtSum.setText("SUM: " + spentMoneySum + "$");
-      String perPerson = String.format("%.2f", spentMoneySum / participantsList.size());
-      txtSumPerPerson.setText("Sum / Person: " + perPerson + "$");
-   }
+    tableAccPayments.setItems(accountedPayments);
+  }
 
-   private void refreshBalanceCells() {
-      tabParticipants.getColumns().get(2).setVisible(false);
-      tabParticipants.getColumns().get(2).setVisible(true);
-   }
+  private void initParticipantsTable() {
+    columnUserName.setCellValueFactory(new PropertyValueFactory<>("name"));
+    columnUserMail.setCellValueFactory(new PropertyValueFactory<>("email"));
+    columnUserBalance.setCellValueFactory(this::userBalanceCellFactory);
 
-   public class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+    tableParticipants.setItems(participantsList);
+    tableParticipants.setRowFactory(param -> {
+      TableRow<User> row = new TableRow<>();
+      row.setOnMouseClicked(mouseEvent -> handleParticipantCellClicked(row, mouseEvent));
+      return row;
+    });
+  }
 
-      private final CheckBox checkBox = new CheckBox();
+  private void handleParticipantCellClicked(TableRow<User> row, MouseEvent mouseEvent) {
+    if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+      final User participant = row.getItem();
+      boolean hasUnaccountedPayments = unaccountedPayments.stream()
+          .anyMatch(payment -> payment.getUserId() == participant.getId());
+      displayParticipantDetailsWindow(participant, hasUnaccountedPayments);
+    }
+  }
 
-      public CheckBoxTableCell() {
-         setAlignment(Pos.CENTER);
-         checkBox.setOnAction(event -> {
-            Payment payment = (Payment)CheckBoxTableCell.this.getTableRow().getItem();
-            payment.setAccept(!payment.getAccept());
-         });
-      }
+  private void displayParticipantDetailsWindow(User participant, boolean hasUnaccountedPayments) {
+    ParticipantDetailsWindow participantWindow =
+        new ParticipantDetailsWindow(budget, participant, hasUnaccountedPayments);
+    participantWindow.initOwner(currentStage);
+    participantWindow.setOnHidden(event -> {
+      fillTableParticipants();
+      fillTableUnaccountedPayments();
+    });
+    participantWindow.show();
+  }
 
+  private ObservableValue<BigDecimal> userBalanceCellFactory(CellDataFeatures<User, BigDecimal> cell) {
+    final User participant = cell.getValue();
+    final double balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
+    return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
+  }
+
+  private void initSettlementsHistoryTable() {
+    columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+    columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+    columnStatus.setCellFactory(param -> getStatusCellFactory());
+
+    tableSettleHistory.setItems(settleHistory);
+    tableSettleHistory.setRowFactory(param -> {
+          TableRow<Settlement> row = new TableRow<>();
+          row.setOnMouseClicked(mouseEvent -> handleSettlementCellClicked(row, mouseEvent));
+          return row;
+        }
+    );
+  }
+
+  private TableCell<Settlement, String> getStatusCellFactory() {
+    return new TableCell<Settlement, String>() {
       @Override
-      public void updateItem(Boolean item, boolean empty) {
-         super.updateItem(item, empty);
-         if(!empty) {
-            checkBox.setSelected(true);
-            setGraphic(checkBox);
-            if (currentUser.equals(budget.getOwner()))
-               checkBox.setDisable(false);
-            else
-               checkBox.setDisable(true);
-         }
-         else
-            setGraphic(null);
+      public void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
+        if (!empty) {
+          setStyle(item.equals("OK") ? "-fx-background-color:green" : "-fx-background-color:red");
+          setText(item);
+        }
       }
-   }
+    };
+  }
+
+  private void handleSettlementCellClicked(TableRow<Settlement> row, MouseEvent mouseEvent) {
+    if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
+      Settlement settlement = row.getItem();
+      displaySettlementWindow(settlement);
+    }
+  }
+
+  private void displaySettlementWindow(Settlement settlement) {
+    SettlementDetailsWindow settlementDetailsWindow = new SettlementDetailsWindow(settlement, budget);
+    settlementDetailsWindow.initOwner(currentStage);
+    settlementDetailsWindow.setOnHidden(event -> fillTableSettleHistory());
+    settlementDetailsWindow.show();
+  }
+
+  void addParticipants(List<User> users) {
+    users.removeAll(participantsList);
+    participantsList.addAll(users);
+    try {
+      List<User> usersSerializable = new ArrayList<>(users);
+      dbHandler.addBudgetParticipants(budget.getId(), usersSerializable);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
+
+  public void update() {
+    fillTableParticipants();
+    fillTableUnaccountedPayments();
+    fillTableAccountedPayments();
+    fillTableSettleHistory();
+  }
+
+  private void fillTableAccountedPayments() {
+    fillTablePayments(accountedPayments, true);
+  }
+
+  private void fillTableUnaccountedPayments() {
+    fillTablePayments(unaccountedPayments, false);
+    updateSpentMoneySums();
+  }
+
+  void fillTableSettleHistory() {
+    settleHistory.clear();
+    try {
+      List<Settlement> settlements = dbHandler.getAllSettlements(budget.getId());
+      sortSettlementsByStatus(settlements);
+      settleHistory.addAll(settlements);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
+
+  private void sortSettlementsByStatus(List<Settlement> settlements) {
+    int it = 0;
+    for (int i = 0; i < settlements.size(); i++) {
+      if (!Objects.equals(settlements.get(i).getStatus(), "OK"))
+        Collections.swap(settlements, it++, i);
+    }
+  }
+
+  void fillTableParticipants() {
+    participantsList.clear();
+    try {
+      participantsList.addAll(dbHandler.getBudgetParticipants(budget.getId()));
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
+
+  void fillTablePayments(ObservableList<Payment> payments, boolean accounted) {
+    payments.clear();
+    try {
+      payments.addAll(dbHandler.getAllPayments(budget.getId(), accounted));
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
+
+  private void updateSpentMoneySums() {
+    spentMoneySum = 0;
+    participantsList.forEach(p -> p.setSpentMoney(0));
+    for (Payment payment : unaccountedPayments) {
+      spentMoneySum += payment.getAmount();
+      Optional<User> userOptional = participantsList.stream()
+          .filter(user -> user.getId() == payment.getUserId())
+          .findFirst();
+      if (userOptional.isPresent()) {
+        User participant = userOptional.get();
+        participant.addSpentMoney(payment.getAmount());
+      }
+      // TODO else: error - payment with owner not participating in budget
+    }
+    refreshBalanceCells();
+    labelSum.setText(String.format("Sum: %.2f$", spentMoneySum));
+    labelSumPerPerson.setText(String.format("Sum / Person: %.2f$", spentMoneySum / participantsList.size()));
+  }
+
+  private void refreshBalanceCells() {
+    tableParticipants.getColumns().get(2).setVisible(false);
+    tableParticipants.getColumns().get(2).setVisible(true);
+  }
+
+  @Override
+  protected void clearErrorHighlights() {
+
+  }
+
+  public class CheckBoxTableCell extends TableCell<Payment, Boolean> {
+
+    private final CheckBox checkBox = new CheckBox();
+
+    public CheckBoxTableCell() {
+      setAlignment(Pos.CENTER);
+      checkBox.setOnAction(event -> {
+        Payment payment = (Payment) CheckBoxTableCell.this.getTableRow().getItem();
+        payment.setAccept(!payment.isAccepted());
+      });
+    }
+
+    @Override
+    public void updateItem(Boolean item, boolean empty) {
+      super.updateItem(item, empty);
+      if (!empty) {
+        checkBox.setSelected(true);
+        setGraphic(checkBox);
+        checkBox.setDisable(!isCurrentUserBudgetOwner());
+      }
+      else
+        setGraphic(null);
+    }
+  }
 }

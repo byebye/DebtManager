@@ -11,23 +11,17 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.BudgetController">
    <children>
-      <Text fx:id="txtBudgetName" layoutX="20.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget Name">
-         <font>
-            <Font size="28.0" />
-         </font>
-      </Text>
-      <Text fx:id="txtBudgetDescription" layoutX="269.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Budget description" textAlignment="CENTER" wrappingWidth="180.0" />
-      <Button fx:id="btnBudgetDelete" layoutX="455.0" layoutY="14.0" mnemonicParsing="false" text="Delete">
+      <Button fx:id="buttonBudgetDelete" layoutX="551.0" layoutY="14.0" mnemonicParsing="false" text="Delete" textAlignment="CENTER">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="btnBudgetExport" layoutX="562.0" layoutY="14.0" mnemonicParsing="false" text="Export">
+      <Button fx:id="buttonBudgetExport" alignment="CENTER" layoutX="634.0" layoutY="14.0" mnemonicParsing="false" text="Export">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="btnBudgetClose" layoutX="670.0" layoutY="14.0" mnemonicParsing="false" text="Close">
+      <Button fx:id="buttonBudgetClose" cancelButton="true" layoutX="715.0" layoutY="14.0" mnemonicParsing="false" text="Close">
          <font>
             <Font size="16.0" />
          </font>
@@ -44,12 +38,12 @@
           <RowConstraints fillHeight="false" maxHeight="198.0" minHeight="0.0" prefHeight="185.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TableView fx:id="tabUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
+            <TableView fx:id="tableUnaccPayments" layoutX="10.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="471.0" GridPane.valignment="CENTER">
               <columns>
-                <TableColumn fx:id="colUnaccWhat" prefWidth="241.0" text="What" />
-                  <TableColumn fx:id="colUnaccWho" prefWidth="118.0" text="Who" />
-                <TableColumn fx:id="colUnaccAmount" prefWidth="101.0" text="Amount" />
-                  <TableColumn fx:id="colConfirm" prefWidth="53.0" />
+                <TableColumn fx:id="columnUnaccWhat" prefWidth="241.0" text="What" />
+                  <TableColumn fx:id="columnUnaccWho" prefWidth="118.0" text="Who" />
+                <TableColumn fx:id="columnUnaccAmount" prefWidth="101.0" text="Amount" />
+                  <TableColumn fx:id="columnConfirm" prefWidth="53.0" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Unaccounted payments" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -57,18 +51,13 @@
                   <Insets left="10.0" top="5.0" />
                </GridPane.margin>
             </Text>
-            <Text fx:id="txtSum" strokeType="OUTSIDE" strokeWidth="0.0" text="SUM: 0$" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Text>
             <Line endX="500.0" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-            <Button fx:id="btnAddPayment" mnemonicParsing="false" text="Add" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+            <Button fx:id="buttonAddPayment" mnemonicParsing="false" text="Add" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
-            <Button fx:id="btnSettle" mnemonicParsing="false" text="Settle" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+            <Button fx:id="buttonSettle" mnemonicParsing="false" text="Settle" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="20.0" />
                </GridPane.margin></Button>
@@ -77,11 +66,11 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </Text>
-            <TableView fx:id="tabAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+            <TableView fx:id="tableAccPayments" prefHeight="161.0" prefWidth="470.0" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn fx:id="colAccWhat" prefWidth="299.0" text="What" />
-                  <TableColumn fx:id="colAccWho" prefWidth="131.0" text="Who" />
-                <TableColumn fx:id="colAccAmount" prefWidth="69.0" text="Amount" />
+                <TableColumn fx:id="columnAccWhat" prefWidth="299.0" text="What" />
+                  <TableColumn fx:id="columnAccWho" prefWidth="131.0" text="Who" />
+                <TableColumn fx:id="columnAccAmount" prefWidth="69.0" text="Amount" />
               </columns>
             </TableView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Participants" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -89,31 +78,42 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </Text>
-            <TableView fx:id="tabParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
+            <TableView fx:id="tableParticipants" prefHeight="295.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn fx:id="colUserName" prefWidth="110.0" text="Name" />
-                <TableColumn fx:id="colUserMail" prefWidth="92.0" text="Mail" />
-                  <TableColumn fx:id="colUserBalance" editable="false" prefWidth="66.0" text="Balance" />
+                <TableColumn fx:id="columnUserName" prefWidth="110.0" text="Name" />
+                <TableColumn fx:id="columnUserMail" prefWidth="92.0" text="Mail" />
+                  <TableColumn fx:id="columnUserBalance" editable="false" prefWidth="66.0" text="Balance" />
               </columns>
             </TableView>
-            <Button fx:id="btnAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-            <Text fx:id="txtSumPerPerson" strokeType="OUTSIDE" strokeWidth="0.0" text="Sum / Person:" textAlignment="CENTER" wrappingWidth="225.7294921875" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="buttonAddParticipant" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="History of settlements" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets top="5.0" />
                </GridPane.margin>
             </Text>
-            <TableView fx:id="tabSettleHistory" minWidth="-Infinity" prefHeight="161.0" prefWidth="270.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+            <TableView fx:id="tableSettleHistory" minWidth="-Infinity" prefHeight="161.0" prefWidth="270.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
               <columns>
-                <TableColumn fx:id="colDate" prefWidth="123.0" text="Date" />
-                <TableColumn fx:id="colAmount" prefWidth="81.0" text="Amount" />
-                  <TableColumn fx:id="colStatus" prefWidth="65.0" text="Status" />
+                <TableColumn fx:id="columnDate" prefWidth="123.0" text="Date" />
+                <TableColumn fx:id="columnAmount" prefWidth="81.0" text="Amount" />
+                  <TableColumn fx:id="columnStatus" prefWidth="65.0" text="Status" />
               </columns>
             </TableView>
+            <Label fx:id="labelSum" contentDisplay="BOTTOM" text="Sum: 0$" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="labelSumPerPerson" prefHeight="15.0" prefWidth="133.0" text="Sum / Person:" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
          </children>
          <opaqueInsets>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </opaqueInsets>
       </GridPane>
+      <Label fx:id="labelBudgetName" layoutX="20.0" layoutY="15.0" text="Budget Name">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelBudgetDescription" layoutX="205.0" layoutY="15.0" prefHeight="30.0" prefWidth="340.0" text="Budget description" wrapText="true" />
    </children>
 </Pane>

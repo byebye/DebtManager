@@ -1,20 +1,26 @@
 
 package client.controllers;
 
+import client.utils.DataUtils;
+import client.utils.DataFormatListeners;
+import client.view.Alerts;
 import client.view.ErrorHighlighter;
-import common.Budget;
-import common.DBHandler;
-import common.User;
+import client.utils.ImageUtils;
+import common.data.Budget;
+import common.data.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -22,123 +28,116 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class BudgetCreatorController implements Initializable {
+public class BudgetCreatorController extends BasicController implements Initializable {
 
-   @FXML
-   private TextField budgetName, txtFieldEnterEmail;
-   @FXML
-   private TextArea budgetDescription;
-   @FXML
-   private Button btnCreateBudget, btnAddUser, btnCancel;
-   @FXML
-   private TableView<User> tabParticipants;
-   @FXML
-   private TableColumn colParticipantName, colParticipantEmail, colAction;
-   @FXML
-   private Label errorLabel;
+  @FXML
+  private TextField fieldBudgetName, fieldBudgetDescription, fieldEmail;
+  @FXML
+  private Button buttonCreateBudget, buttonAddParticipant, buttonCancel;
+  @FXML
+  private TableView<User> tableParticipants;
+  @FXML
+  private TableColumn<User, String> columnParticipantName, columnParticipantEmail;
+  @FXML
+  private TableColumn<User, Boolean> columnAction;
+  @FXML
+  private Label labelError;
 
-   private static DBHandler dbController = LoginController.dbController;
-   private final User owner = LoginController.currentUser;
-   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
+  private static final int MAX_BUDGET_NAME_LENGTH = 16;
+  private static final int MAX_BUDGET_DESCRIPTION_LENGTH = 32;
 
-   private Stage currentStage;
+  private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    initFields();
+    initButtons();
+    initParticipantsList();
+  }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      colParticipantName.setCellValueFactory(new PropertyValueFactory<User, String>("name"));
-      colParticipantEmail.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
-      colAction.setCellFactory(param -> new RemoveParticipantCell());
-      tabParticipants.setItems(participantsList);
-      participantsList.add(owner);
+  private void initFields() {
+    fieldBudgetName.textProperty()
+        .addListener(DataFormatListeners.restrictTextLength(fieldBudgetName::setText, MAX_BUDGET_NAME_LENGTH));
+    fieldBudgetDescription.textProperty()
+        .addListener(
+            DataFormatListeners.restrictTextLength(fieldBudgetDescription::setText, MAX_BUDGET_DESCRIPTION_LENGTH));
+  }
 
-      btnAddUser.setOnAction(event -> {
-         errorLabel.setText("");
-         ErrorHighlighter.unhighlitghtFields(txtFieldEnterEmail);
-         User user = null;
-         try {
-            user = dbController.getUserByEmail(txtFieldEnterEmail.getText());
-            if (user == null) {
-               errorLabel.setText("User not found!");
-               ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
-            }
-            else if (participantsList.contains(user)) {
-               errorLabel.setText("User already added");
-               ErrorHighlighter.highlightInvalidFields(txtFieldEnterEmail);
-            }
+  private void initButtons() {
+    buttonAddParticipant.setOnAction(event ->
+        DataUtils.addUserToParticipantsList(participantsList, fieldEmail, labelError));
+    buttonCreateBudget.setOnAction(event -> createBudget());
+    buttonCancel.setOnAction(event -> currentStage.close());
+  }
 
-            else
-               participantsList.add(user);
-         }
-         catch (RemoteException e) {
-            errorLabel.setText("Server connection error");
-            e.printStackTrace();
-         }
-      });
+  private void createBudget() {
+    clearErrorHighlights();
+    try {
+      final List<User> participantsListSerializable = new ArrayList<>(participantsList);
+      final Budget budget = new Budget(currentUser, fieldBudgetName.getText(), fieldBudgetDescription.getText(),
+          participantsListSerializable);
+      if (dbHandler.createBudget(budget))
+        currentStage.close();
+      else
+        // TODO more specific message
+        labelError.setText("Budget couldn't be created! Try again.");
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+  }
 
-      btnCreateBudget.setOnAction(event -> {
-         errorLabel.setText("");
-         ErrorHighlighter.unhighlitghtFields(txtFieldEnterEmail);
-         try {
-            if(budgetName.getText().length() > 16){
-               errorLabel.setText("Budget name is too long. Maximal size is 16.");
-               ErrorHighlighter.highlightInvalidFields(budgetName);
-            }else {
-               List<User> participantsSerializable = new ArrayList<User>(participantsList);
-               Budget budget = new Budget(owner, budgetName.getText(), budgetDescription.getText(), participantsSerializable);
-               if (dbController.createBudget(budget))
-                  currentStage.close();
-               else
-                  errorLabel.setText("Budget couldn't be created! Try again");
-            }
-         }
-         catch (RemoteException e) {
-            e.printStackTrace();
-         }
-      });
+  private void initParticipantsList() {
+    // TODO make table focus traversable
+    columnParticipantName.setCellValueFactory(new PropertyValueFactory<>("name"));
+    columnParticipantEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+    columnAction.setCellFactory(param -> new RemoveParticipantCell());
 
-      btnCancel.setOnAction(event -> currentStage.close());
-   }
+    tableParticipants.setFocusTraversable(true);
+    tableParticipants.setItems(participantsList);
+    participantsList.add(currentUser);
+  }
 
-   private class RemoveParticipantCell extends TableCell<User, Boolean> {
-      final Button btnRemove = new Button();
-      {
-         btnRemove.setPrefSize(25, 25);
-         btnRemove.setPadding(new Insets(5, 5, 5, 5));
+  protected void clearErrorHighlights() {
+    labelError.setText("");
+    ErrorHighlighter.unhighlightFields(fieldBudgetName, fieldBudgetDescription, fieldEmail);
+  }
+
+  private class RemoveParticipantCell extends TableCell<User, Boolean> {
+
+    final Button btnRemove = ImageUtils.loadImageButton("RemoveButton.png");
+
+    public RemoveParticipantCell() {
+      setPadding(new Insets(0, 0, 0, 0));
+      btnRemove.setOnAction(event -> removeParticipant());
+    }
+
+    private void removeParticipant() {
+      User participant = (User) getCurrentRow().getItem();
+      participantsList.remove(participant);
+    }
+
+    private TableRow getCurrentRow() {
+      return RemoveParticipantCell.this.getTableRow();
+    }
+
+    @Override
+    protected void updateItem(Boolean item, boolean empty) {
+      super.updateItem(item, empty);
+      if (!empty) {
+        setGraphic(btnRemove);
+        if (currentUserRow())
+          btnRemove.setDisable(true);
       }
-
-      public RemoveParticipantCell() {
-         setPadding(new Insets(0, 0, 0, 0));
-         btnRemove.setGraphic(loadRemoveImage());
-         btnRemove.setOnAction(event -> {
-            User participant = (User) RemoveParticipantCell.this.getTableRow().getItem();
-            participantsList.remove(participant);
-         });
-
+      else {
+        setGraphic(null);
       }
+    }
 
-      public ImageView loadRemoveImage() {
-         Image removeImage = new Image(getClass().getResourceAsStream("/graphics/remove_button.png"));
-         ImageView removeImageView = new ImageView(removeImage);
-         removeImageView.setPreserveRatio(true);
-         removeImageView.setFitHeight(12);
-         return removeImageView;
-      }
-
-      @Override
-      protected void updateItem(Boolean item, boolean empty) {
-         super.updateItem(item, empty);
-         if (!empty) {
-            setGraphic(btnRemove);
-            if (RemoveParticipantCell.this.getTableRow().getIndex() == 0)
-               btnRemove.setDisable(true);
-         }
-         else
-            setGraphic(null);
-      }
-   }
+    private boolean currentUserRow() {
+      return getCurrentRow().getIndex() == 0;
+    }
+  }
 }
 

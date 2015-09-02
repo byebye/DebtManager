@@ -1,8 +1,6 @@
 package server;
 
-import common.LongpollingHanger;
-
-import java.util.concurrent.TimeUnit;
+import common.connection.LongpollingHanger;
 
 /**
  * Created by glapul on 07.06.15.

@@ -1,137 +1,113 @@
 package client.controllers;
 
+import client.view.Alerts;
 import client.view.ErrorHighlighter;
 import client.windows.BudgetsListWindow;
 import client.windows.SignUpWindow;
-import common.*;
+import common.connection.AccessProvider;
+import common.connection.DbHandler;
+import common.data.Email;
+import common.utils.SHA1Hasher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 
 import javax.naming.AuthenticationException;
-import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController extends BasicController implements Initializable {
 
-   @FXML
-   Button btnSignUp, btnLogIn;
-   @FXML
-   TextField txtFieldEmail;
-   @FXML
-   PasswordField txtFieldPassword;
-   @FXML
-   Label errorLabel;
+  @FXML
+  private Button buttonSignUp, buttonLogIn;
+  @FXML
+  private TextField fieldEmail;
+  @FXML
+  private PasswordField fieldPassword;
+  @FXML
+  private Label labelError;
 
-   public static DBHandler dbController;
-   public static AccessProvider ac;
-   public static User currentUser;
-   private static String host;
-   private Stage currentStage;
+  private static String host;
 
+  public void connectWithRMIHost(String host) {
+    this.host = (host == null ? "localhost" : host);
+    if (System.getSecurityManager() == null)
+      System.setSecurityManager(new SecurityManager());
+    try {
+      accessProvider = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+      System.exit(1);
+    }
+  }
 
-   public Stage getStage() {
-      return currentStage;
-   }
+  public void fillDataFields(String email, String password) {
+    fieldEmail.setText(email);
+    fieldPassword.setText(password);
+  }
 
-   public void setStage(Stage stage) {
-      currentStage = stage;
-   }
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    buttonSignUp.setOnAction(event -> displaySignUpWindow());
+    buttonLogIn.setOnAction(event -> logIn());
+    buttonLogIn.setOnKeyPressed(event -> {
+      if (event.getCode().equals(KeyCode.ENTER))
+        buttonLogIn.fire();
+    });
+  }
 
+  private void displaySignUpWindow() {
+    clearErrorHighlights();
+    SignUpWindow signUpWindow = new SignUpWindow(this);
+    signUpWindow.initOwner(currentStage);
+    signUpWindow.showAndWait();
+  }
 
+  private void logIn() {
+    if (System.getSecurityManager() == null)
+      System.setSecurityManager(new SecurityManager());
+    if (authenticateUser())
+      displayBudgetsListWindow();
+  }
 
-   public void setDbController(DBHandler dbhandler) {
-      dbController = dbhandler;
-   }
+  private boolean authenticateUser() {
+    clearErrorHighlights();
+    final Email email = new Email(fieldEmail.getText());
+    final String passwordHash = SHA1Hasher.hash(fieldPassword.getText());
+    try {
+      dbHandler = (DbHandler) accessProvider.getDbHandler(email, passwordHash);
+      currentUser = dbHandler.getUserByEmail(fieldEmail.getText());
+      return true;
+    }
+    catch (AuthenticationException | IllegalArgumentException e) {
+      labelError.setText("Incorrect email or password");
+      ErrorHighlighter.highlightInvalidFields(fieldPassword, fieldEmail);
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
+    return false;
+  }
 
+  private void displayBudgetsListWindow() {
+    BudgetsListWindow budgetsListWindow = new BudgetsListWindow();
+    budgetsListWindow.setOnHidden(event -> currentStage.show());
+    currentStage.hide();
+    fieldPassword.clear();
+    budgetsListWindow.show();
+  }
 
-
-   public void connectWithRMIHost(String host) {
-      this.host = (host == null ? "localhost" : host);
-      if (System.getSecurityManager() == null)
-         System.setSecurityManager(new SecurityManager());
-      try {
-         ac = (AccessProvider) LocateRegistry.getRegistry(host).lookup("AccessProvider");
-      }
-      catch (Exception e) {
-         e.printStackTrace();
-         displayUnableToConnectWithServerAlert();
-         System.exit(1);
-      }
-   }
-
-   private void displayUnableToConnectWithServerAlert() {
-      Alert unableToConnectAlert = new Alert(Alert.AlertType.ERROR);
-      unableToConnectAlert.setTitle("Unable to connect with server");
-      unableToConnectAlert.setHeaderText("Unable to connect with server!");
-      unableToConnectAlert.setContentText("Check your connection and try again.");
-      unableToConnectAlert.showAndWait();
-   }
-
-   public void fillDataFields(String email, String password) {
-      txtFieldEmail.setText(email);
-      txtFieldPassword.setText(password);
-   }
-
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-      btnSignUp.setOnAction(event -> {
-         try {
-            errorLabel.setText("");
-            ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldPassword);
-            SignUpWindow signUpWindow = new SignUpWindow(this);
-            signUpWindow.initOwner(currentStage);
-            signUpWindow.showAndWait();
-         }
-         catch (Exception e) {
-            e.printStackTrace();
-         }
-      });
-
-      btnLogIn.setOnAction(event -> {
-         if (System.getSecurityManager() == null)
-            System.setSecurityManager(new SecurityManager());
-
-         try {
-            errorLabel.setText("");
-            ErrorHighlighter.unhighlitghtFields(txtFieldEmail, txtFieldPassword);
-            tryToLogIn();
-            displayBudgetsListWindow();
-         }
-         catch (AuthenticationException | IllegalArgumentException e) {
-            errorLabel.setText("Incorrect email or password");
-            ErrorHighlighter.highlightInvalidFields(txtFieldEmail, txtFieldPassword);
-         }
-         catch (IOException e) {
-            errorLabel.setText("Connection with server error");
-            e.printStackTrace();
-         }
-      });
-
-      btnLogIn.setOnKeyPressed(event -> {
-         if (event.getCode().compareTo(KeyCode.ENTER) == 0)
-            btnLogIn.fire();
-      });
-
-   }
-
-   private void tryToLogIn() throws RemoteException, AuthenticationException {
-      final Email email = new Email(txtFieldEmail.getText());
-      final String passwordHash = SHA1Hasher.hash(txtFieldPassword.getText());
-      dbController = (DBHandler) ac.getDBHandler(email, passwordHash);
-      currentUser = dbController.getUserByEmail(txtFieldEmail.getText());
-   }
-
-   private void displayBudgetsListWindow() throws IOException {
-      BudgetsListWindow budgetsListWindow = new BudgetsListWindow();
-      budgetsListWindow.setOnHidden(e -> currentStage.show());
-      currentStage.hide();
-      txtFieldPassword.clear();
-      budgetsListWindow.show();
-   }
+  protected void clearErrorHighlights() {
+    labelError.setText("");
+    ErrorHighlighter.unhighlightFields(fieldEmail, fieldPassword);
+  }
 }

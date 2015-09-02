@@ -1,4 +1,10 @@
-package common;
+package common.connection;
+
+import common.data.BankTransfer;
+import common.data.Budget;
+import common.data.Payment;
+import common.data.Settlement;
+import common.data.User;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -7,11 +13,11 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-public interface DBHandler extends Remote {
+public interface DbHandler extends Remote {
    User getUserByEmail(String email) throws RemoteException;
    User getUserById(int userId) throws RemoteException;
    boolean createUser(User user, String passwordHash) throws RemoteException;
-   boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) throws RemoteException;
+   boolean createUser(String email, String name, String passwordHash, String bankAccount) throws RemoteException;
    boolean createBudget(Budget budget) throws RemoteException;
    boolean deleteBudget(Budget budget) throws RemoteException;
    List<Budget> getAllBudgets(int userId) throws RemoteException;

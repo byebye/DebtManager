@@ -2,31 +2,23 @@ package client.windows;
 
 import client.controllers.BudgetController;
 import client.controllers.SettleController;
-import common.Budget;
-import common.Payment;
+import common.data.Budget;
+import common.data.Payment;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.util.List;
 
-public class SettleWindow extends Stage {
-   public SettleWindow(Budget budget, ObservableList<Payment> paymentsToSettle,
-                       BudgetController parentController) throws IOException {
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SettleWindow.fxml"));
-      Parent root = fxmlLoader.load();
-      SettleController controller = fxmlLoader.<SettleController>getController();
+public class SettleWindow extends DebtManagerWindow {
 
-      controller.setStage(this);
-      controller.setBudget(budget, paymentsToSettle, parentController);
-      controller.fillAllTables();
+  public SettleWindow(BudgetController budgetController, Budget budget, List<Payment> paymentsToSettle) {
+    super("/fxml/SettleWindow.fxml", "DeptManager - settle " + budget.getName(), Modality.WINDOW_MODAL);
 
-      setTitle("DeptManager - settle " + budget.getName());
-      setScene(new Scene(root));
-      setOnCloseRequest(event -> controller.clearTable());
-      initModality(Modality.WINDOW_MODAL);
-   }
+    SettleController controller = fxmlLoader.getController();
+    controller.setCurrentStage(this);
+    controller.setBudgetController(budgetController);
+    controller.setBudget(budget);
+    controller.setPaymentsToSettle(paymentsToSettle);
+    controller.fillBankTransfersTable();
+  }
 }

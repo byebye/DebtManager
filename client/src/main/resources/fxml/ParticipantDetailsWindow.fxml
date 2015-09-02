@@ -39,20 +39,20 @@
                   <Insets/>
                </GridPane.margin>
             </Text>
-            <TextField fx:id="nameField" editable="false" prefHeight="25.0" prefWidth="173.0" GridPane.columnIndex="1"/>
-            <TextField fx:id="emailField" editable="false" prefHeight="26.0" prefWidth="250.0" GridPane.columnIndex="1"
+            <TextField fx:id="fieldName" editable="false" prefHeight="25.0" prefWidth="173.0" GridPane.columnIndex="1"/>
+            <TextField fx:id="fieldEmail" editable="false" prefHeight="26.0" prefWidth="250.0" GridPane.columnIndex="1"
                        GridPane.rowIndex="1"/>
-            <TextField fx:id="bankAccountField" editable="false" prefHeight="19.0" prefWidth="251.0"
+            <TextField fx:id="fieldBankAccount" editable="false" prefHeight="19.0" prefWidth="251.0"
                        GridPane.columnIndex="1" GridPane.rowIndex="2"/>
          </children>
       </GridPane>
-      <Button fx:id="btnRemoveParticipant" layoutX="30.0" layoutY="240.0" mnemonicParsing="false" text="Remove"
+      <Button fx:id="buttonRemoveParticipant" layoutX="30.0" layoutY="240.0" mnemonicParsing="false" text="Remove"
               textAlignment="CENTER">
          <tooltip>
             <Tooltip text="Remove participant from budget"/>
          </tooltip>
       </Button>
-      <Button fx:id="btnCloseWindow" layoutX="320.0" layoutY="240.0" mnemonicParsing="false" prefHeight="25.0"
+      <Button fx:id="buttonClose" layoutX="320.0" layoutY="240.0" mnemonicParsing="false" prefHeight="25.0"
               prefWidth="63.0" text="Close" textAlignment="CENTER"/>
    </children>
 </Pane>

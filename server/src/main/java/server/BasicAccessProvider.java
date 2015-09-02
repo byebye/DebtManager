@@ -1,32 +1,28 @@
 package server;
 
-import common.*;
+import common.connection.AccessProvider;
+import common.data.BankAccount;
+import common.data.Email;
 
 import javax.naming.AuthenticationException;
-import java.math.BigInteger;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-/**
- * Created by glapul on 16.05.15.
- */
 public class BasicAccessProvider implements AccessProvider {
 
-   @Override
-   public Object getDBHandler(Email mail, String passwordHash) throws RemoteException, AuthenticationException {
-
-      if (DatabaseController.getInstance().validateUserPassword(mail, passwordHash)) {
-         return DatabaseController.getExportedInstance();
-      }
+  @Override
+  public Object getDbHandler(Email mail, String passwordHash) throws RemoteException, AuthenticationException {
+    if (!DatabaseController.getInstance().validateUserPassword(mail, passwordHash)) {
       throw new AuthenticationException();
-   }
+    }
+    return DatabaseController.getExportedInstance();
+  }
 
-   @Override
-   public void signUp(Email mail, String name, BigInteger bankAccount, String passwordHash) throws RemoteException, AuthenticationException {
-
-      if (!DatabaseController.getInstance().createUser(mail.getAddress(), name, bankAccount, passwordHash))
-         throw new AuthenticationException();
-
-   }
-
+  @Override
+  public void signUp(Email mail, String name, String passwordHash,
+                     BankAccount bankAccount) throws RemoteException, AuthenticationException {
+    if (!DatabaseController.getInstance()
+        .createUser(mail.getAddress(), name, passwordHash, bankAccount.getAccountNumber())) {
+      throw new AuthenticationException();
+    }
+  }
 }

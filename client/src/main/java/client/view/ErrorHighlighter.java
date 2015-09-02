@@ -1,20 +1,22 @@
 package client.view;
 
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 
 public class ErrorHighlighter {
 
-   private static String defaultColor = "transparent";
-   private static String errorColor = "#d60f0f";
+  private static final String defaultColor = "transparent";
+  private static final String errorColor = "#d60f0f";
 
-   public static void highlightInvalidFields(TextField... fields) {
-      for (TextField field : fields)
-         field.setStyle("-fx-border-color: " + errorColor + ";");
-      fields[0].requestFocus();
-   }
+  public static void highlightInvalidFields(TextInputControl mainField, TextInputControl... fields) {
+    mainField.setStyle("-fx-border-color: " + errorColor + ";");
+    for (TextInputControl field : fields)
+      field.setStyle("-fx-border-color: " + errorColor + ";");
+    mainField.requestFocus();
+  }
 
-   public static void unhighlitghtFields(TextField... fields) {
-      for (TextField field : fields)
-         field.setStyle("-fx-border-color: " + defaultColor + ";");
-   }
+  public static void unhighlightFields(TextInputControl mainField, TextInputControl... fields) {
+    mainField.setStyle("-fx-border-color: " + defaultColor + ";");
+    for (TextInputControl field : fields)
+      field.setStyle("-fx-border-color: " + defaultColor + ";");
+  }
 }

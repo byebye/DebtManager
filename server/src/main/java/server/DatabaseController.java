@@ -1,6 +1,12 @@
 package server;
 
-import common.*;
+import common.connection.DbHandler;
+import common.data.BankTransfer;
+import common.data.Budget;
+import common.data.Email;
+import common.data.Payment;
+import common.data.Settlement;
+import common.data.User;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import server.jooq.tables.*;
@@ -15,10 +21,10 @@ import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class DatabaseController implements DBHandler {
+public class DatabaseController implements DbHandler {
 
    private static DatabaseController onlyInstance;
-   private static DBHandler exportedInstance;
+   private static DbHandler exportedInstance;
    private static String dbUser = "debtmanager"; // "z1111813";
    private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
    private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
@@ -42,10 +48,10 @@ public class DatabaseController implements DBHandler {
 
    public static void createExportedInstance() {
       try {
-         exportedInstance = (DBHandler) UnicastRemoteObject.exportObject(DatabaseController.getInstance(), 1100);
+         exportedInstance = (DbHandler) UnicastRemoteObject.exportObject(DatabaseController.getInstance(), 1100);
       }
       catch (RemoteException re) {
-         System.out.println("Exporting DBHandler failed");
+         System.out.println("Exporting DbHandler failed");
       }
    }
 
@@ -55,7 +61,7 @@ public class DatabaseController implements DBHandler {
       return onlyInstance;
    }
 
-   public static DBHandler getExportedInstance() {
+   public static DbHandler getExportedInstance() {
       if(exportedInstance == null)
          throw new NullPointerException();
       return exportedInstance;
@@ -143,13 +149,17 @@ public class DatabaseController implements DBHandler {
    }
 
 
-   public synchronized boolean createUser(String email, String name, BigInteger bankAccount, String passwordHash) {
+   public synchronized boolean createUser(String email,
+                                          String name,
+                                          String passwordHash,
+                                          String bankAccount) {
+      BigInteger bankAccountNumber = BigInteger.valueOf(Long.valueOf(bankAccount));
       dbContext.insertInto(Users.USERS,
                            Users.USERS.EMAIL,
                            Users.USERS.NAME,
                            Users.USERS.BANK_ACCOUNT,
                            Users.USERS.PASSWORD_HASH)
-               .values(email, name, bankAccount, passwordHash)
+               .values(email, name, bankAccountNumber, passwordHash)
                .execute();
       return true;
    }

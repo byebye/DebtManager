@@ -1,7 +1,7 @@
 package client;
 
-import common.LongpollingHanger;
-import common.RemoteCallback;
+import common.connection.LongpollingHanger;
+import common.connection.RemoteCallback;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
