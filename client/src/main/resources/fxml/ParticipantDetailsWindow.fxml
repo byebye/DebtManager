@@ -2,57 +2,48 @@
 
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="286.0"
-      prefWidth="406.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.controllers.ParticipantDetailsController">
-   <children>
-      <Text layoutX="30.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Participant details">
-         <font>
-            <Font size="18.0"/>
-         </font>
-      </Text>
-      <GridPane layoutX="30.0" layoutY="66.0" prefHeight="146.0" prefWidth="352.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="157.0" minWidth="10.0" prefWidth="104.0"/>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="248.0"/>
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-         </rowConstraints>
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" textAlignment="RIGHT" textOrigin="CENTER"
-                  wrappingWidth="95.0">
-               <GridPane.margin>
-                  <Insets right="10.0"/>
-               </GridPane.margin>
-            </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" textAlignment="RIGHT" wrappingWidth="95.0"
-                  GridPane.rowIndex="1"/>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bank account:" textAlignment="RIGHT" wrappingWidth="95.0"
-                  GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets/>
-               </GridPane.margin>
-            </Text>
-            <TextField fx:id="fieldName" editable="false" prefHeight="25.0" prefWidth="173.0" GridPane.columnIndex="1"/>
-            <TextField fx:id="fieldEmail" editable="false" prefHeight="26.0" prefWidth="250.0" GridPane.columnIndex="1"
-                       GridPane.rowIndex="1"/>
-            <TextField fx:id="fieldBankAccount" editable="false" prefHeight="19.0" prefWidth="251.0"
-                       GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-         </children>
-      </GridPane>
-      <Button fx:id="buttonRemoveParticipant" layoutX="30.0" layoutY="240.0" mnemonicParsing="false" text="Remove"
-              textAlignment="CENTER">
-         <tooltip>
-            <Tooltip text="Remove participant from budget"/>
-         </tooltip>
-      </Button>
-      <Button fx:id="buttonClose" layoutX="320.0" layoutY="240.0" mnemonicParsing="false" prefHeight="25.0"
-              prefWidth="63.0" text="Close" textAlignment="CENTER"/>
-   </children>
-</Pane>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<GridPane hgap="10.0" prefHeight="300.0" prefWidth="400.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ParticipantDetailsController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="260.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="0.0" prefHeight="20.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="50.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="50.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="50.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="0.0" prefHeight="20.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="25.0" minHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+  <children>
+    <Label text="Participant details" GridPane.columnSpan="2">
+      <font>
+        <Font size="16.0" />
+      </font>
+    </Label>
+    <Label text="Name:" labelFor="$fieldName" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+    <Label text="Email:" labelFor="$fieldEmail" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+    <Label text="Bank account:" labelFor="$fieldBankAccount" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+    <TextField fx:id="fieldName" editable="false" prefHeight="25.0" prefWidth="173.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <TextField fx:id="fieldEmail" editable="false" prefHeight="26.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <TextField fx:id="fieldBankAccount" editable="false" prefHeight="19.0" prefWidth="251.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <Button fx:id="buttonRemoveParticipant" mnemonicParsing="false" text="Remove" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM">
+      <tooltip>
+        <Tooltip text="Remove participant from budget" />
+      </tooltip>
+    </Button>
+    <Button fx:id="buttonClose" mnemonicParsing="false" prefHeight="25.0" prefWidth="63.0" text="Close" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+  </children>
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+  </padding>
+</GridPane>

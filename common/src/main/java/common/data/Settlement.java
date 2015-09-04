@@ -1,35 +1,59 @@
 package common.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
-/**
- * Created by vsmasster on 24.05.15.
- */
-public class Settlement implements Serializable{
-   private int budgetId, settlementId, numPaidBankTransfers, numAllBankTransfers;
-   private double amount;
-   private String date,status;
+public class Settlement implements Serializable {
 
-   public Settlement(int settlementId,int budgetId,int numPaidBankTransfers,int numAllBankTransfers,String date,double amount){
-      this.budgetId = budgetId;
-      this.date = date;
-      this.numAllBankTransfers = numAllBankTransfers;
-      this.numPaidBankTransfers = numPaidBankTransfers;
-      this.settlementId = settlementId;
-      this.amount = amount;
-      if(numPaidBankTransfers != numAllBankTransfers)this.status = numPaidBankTransfers + "/" + numAllBankTransfers;
-      else this.status = "OK";
-   }
+  private final int budgetId;
+  private final int settlementId;
+  private final int paidBankTransfersCount;
+  private final int allBankTransfersCount;
+  private final double amount;
+  private final String date;
+  private final String status;
 
-   public int getBudgetId(){return budgetId;}
-   public int getSettlementId(){return settlementId;}
-   public int getNumPaidBankTransfers(){return numPaidBankTransfers;}
-   public int getNumAllBankTransfers(){return numAllBankTransfers;}
-   public int getNumNotPaidBankTransfers(){return numAllBankTransfers-numPaidBankTransfers;}
-   public String getDate(){return date;}
-   public String getStatus(){return status;}
-   public double getAmount(){return amount;}
+  public Settlement(int settlementId, int budgetId, int paidBankTransfersCount, int allBankTransfersCount, String date,
+      double amount
+  ) {
+    this.budgetId = budgetId;
+    this.date = date;
+    this.allBankTransfersCount = allBankTransfersCount;
+    this.paidBankTransfersCount = paidBankTransfersCount;
+    this.settlementId = settlementId;
+    this.amount = amount;
+    if (paidBankTransfersCount != allBankTransfersCount) this.status = paidBankTransfersCount + "/" + allBankTransfersCount;
+    else this.status = "OK";
+  }
 
+  public int getBudgetId() {
+    return budgetId;
+  }
 
+  public int getSettlementId() {
+    return settlementId;
+  }
+
+  public int getPaidBankTransfersCount() {
+    return paidBankTransfersCount;
+  }
+
+  public int getAllBankTransfersCount() {
+    return allBankTransfersCount;
+  }
+
+  public int getNotPaidBankTransfersCount() {
+    return allBankTransfersCount - paidBankTransfersCount;
+  }
+
+  public String getDate() {
+    return date;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public double getAmount() {
+    return amount;
+  }
 }

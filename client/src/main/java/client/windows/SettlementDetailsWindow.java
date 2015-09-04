@@ -1,8 +1,9 @@
 package client.windows;
 
-import client.controllers.SettlementDetailsController;
 import common.data.Budget;
 import common.data.Settlement;
+import client.controllers.SettlementDetailsController;
+
 import javafx.stage.Modality;
 
 public class SettlementDetailsWindow extends DebtManagerWindow {

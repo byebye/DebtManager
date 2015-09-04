@@ -1,5 +1,9 @@
 package client.controllers;
 
+import common.data.Budget;
+import common.data.Payment;
+import common.data.Settlement;
+import common.data.User;
 import client.BudgetExporter;
 import client.view.Alerts;
 import client.windows.AddParticipantsWindow;
@@ -8,11 +12,7 @@ import client.windows.ParticipantDetailsWindow;
 import client.windows.SettleWindow;
 import client.windows.SettlementDetailsWindow;
 import client.windows.UpdatePaymentWindow;
-import common.connection.DbHandler;
-import common.data.Budget;
-import common.data.Payment;
-import common.data.Settlement;
-import common.data.User;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,8 +31,6 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -47,40 +45,50 @@ import java.util.stream.Collectors;
 public class BudgetController extends BasicController implements Initializable, SelfUpdating {
 
   @FXML
-  public Label labelBudgetName, labelBudgetDescription;
+  private Label labelBudgetName, labelBudgetDescription;
+  @FXML
+  private Label labelSum, labelSumPerPerson;
   @FXML
   private Button buttonBudgetClose, buttonBudgetDelete, buttonBudgetExport;
   @FXML
   private Button buttonAddPayment, buttonAddParticipant, buttonSettle;
+
   @FXML
-  private Label labelSum, labelSumPerPerson;
+  private TableView<Payment> tableUnaccountedPayments;
   @FXML
-  private TableView<Payment> tableUnaccPayments, tableAccPayments;
+  private TableColumn<Payment, String> columnUnaccountedWho, columnUnaccountedWhat;
+  @FXML
+  private TableColumn<Payment, Integer> columnUnaccountedAmount;
+  @FXML
+  private TableColumn<Payment, Boolean> columnConfirm;
+
+  @FXML
+  private TableView<Payment> tableAccountedPayments;
+  @FXML
+  private TableColumn<Payment, String> columnAccountedWho, columnAccountedWhat;
+  @FXML
+  private TableColumn<Payment, Integer> columnAccountedAmount;
+
   @FXML
   private TableView<User> tableParticipants;
   @FXML
-  private TableView<Settlement> tableSettleHistory;
-  @FXML
-  private TableColumn<Settlement, String> columnDate, columnStatus;
+  private TableColumn<User, String> columnUserName, columnUserMail;
   @FXML
   private TableColumn<User, BigDecimal> columnUserBalance;
+
+  @FXML
+  private TableView<Settlement> tableSettleHistory;
   @FXML
   private TableColumn<Settlement, Double> columnAmount;
   @FXML
-  private TableColumn<Payment, String> columnAccWho, columnUnaccWho, columnUnaccWhat, columnAccWhat;
-  @FXML
-  private TableColumn<Payment, Integer> columnAccAmount, columnUnaccAmount;
-  @FXML
-  private TableColumn<User, String> columnUserName, columnUserMail;
-  @FXML
-  private TableColumn<Payment, Boolean> columnConfirm;
+  private TableColumn<Settlement, String> columnDate, columnStatus;
 
   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
   private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
   private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
   private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
   private Budget budget;
-  double spentMoneySum = 0;
+  private double spentMoneySum = 0;
 
   public void setBudget(Budget budget) {
     this.budget = budget;
@@ -185,13 +193,13 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void initUnaccountedPaymentsTable() {
-    columnUnaccWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnUnaccWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
-    columnUnaccAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnUnaccountedWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnUnaccountedWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
+    columnUnaccountedAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
-    tableUnaccPayments.setItems(unaccountedPayments);
-    tableUnaccPayments.setRowFactory(param -> {
+    tableUnaccountedPayments.setItems(unaccountedPayments);
+    tableUnaccountedPayments.setRowFactory(param -> {
       TableRow<Payment> row = new TableRow<>();
       row.setOnMouseClicked(mouseEvent -> handlePaymentRowClicked(row, mouseEvent));
       return row;
@@ -223,11 +231,11 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void initAccountedPaymentsTable() {
-    columnAccWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnAccWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
-    columnAccAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnAccountedWho.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnAccountedWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
+    columnAccountedAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-    tableAccPayments.setItems(accountedPayments);
+    tableAccountedPayments.setItems(accountedPayments);
   }
 
   private void initParticipantsTable() {

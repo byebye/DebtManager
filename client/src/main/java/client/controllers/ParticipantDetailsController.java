@@ -1,13 +1,13 @@
 package client.controllers;
 
-import client.view.Alerts;
 import common.data.Budget;
 import common.data.User;
+import client.view.Alerts;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Objects;
@@ -16,9 +16,9 @@ import java.util.ResourceBundle;
 public class ParticipantDetailsController extends BasicController implements Initializable {
 
   @FXML
-  public TextField fieldName, fieldEmail, fieldBankAccount;
+  private TextField fieldName, fieldEmail, fieldBankAccount;
   @FXML
-  public Button buttonRemoveParticipant, buttonClose;
+  private Button buttonRemoveParticipant, buttonClose;
 
   private User participant;
   private boolean hasUnaccountedPayments;

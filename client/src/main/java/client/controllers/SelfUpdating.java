@@ -1,7 +1,8 @@
 package client.controllers;
 
-import client.UpdateLongpollingCallbackRegistrar;
 import common.connection.RemoteCallback;
+import client.UpdateLongpollingCallbackRegistrar;
+
 import javafx.application.Platform;
 import javafx.stage.Stage;
 

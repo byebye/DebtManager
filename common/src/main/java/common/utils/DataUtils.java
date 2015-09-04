@@ -1,5 +1,6 @@
-package common.data;
+package common.utils;
 
+import common.data.BankTransfer;
 import common.data.BankTransfer.Status;
 
 import java.util.Collections;

@@ -1,6 +1,7 @@
 package common.data;
 
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 public class BankAccount implements Serializable {
 
@@ -18,6 +19,6 @@ public class BankAccount implements Serializable {
   }
 
   public static boolean isValid(String accountNumber) {
-    return accountNumber.replaceAll("\\s", "").matches("\\d{22}");
+    return Pattern.matches("\\d{22}", accountNumber.replaceAll("\\s", ""));
   }
 }

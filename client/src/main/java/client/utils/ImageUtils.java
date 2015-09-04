@@ -1,11 +1,11 @@
 package client.utils;
 
 import common.data.BankTransfer.Status;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;

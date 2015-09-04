@@ -1,8 +1,8 @@
 package client.controllers;
 
 import common.data.User;
-import javafx.fxml.Initializable;
 
+import javafx.fxml.Initializable;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;

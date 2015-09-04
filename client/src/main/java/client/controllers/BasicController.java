@@ -3,6 +3,7 @@ package client.controllers;
 import common.connection.AccessProvider;
 import common.connection.DbHandler;
 import common.data.User;
+
 import javafx.stage.Stage;
 
 public abstract class BasicController {

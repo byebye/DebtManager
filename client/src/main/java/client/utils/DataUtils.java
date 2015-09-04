@@ -1,12 +1,12 @@
 package client.utils;
 
+import common.data.User;
 import client.controllers.LoginController;
 import client.view.Alerts;
 import client.view.ErrorHighlighter;
-import common.data.User;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -28,6 +28,7 @@ public class DataUtils {
       else {
         participantsList.add(user);
         fieldEmail.clear();
+        fieldEmail.requestFocus();
       }
     }
     catch (RemoteException e) {

@@ -1,13 +1,14 @@
 
 package client.controllers;
 
-import client.utils.DataUtils;
-import client.utils.DataFormatListeners;
-import client.view.Alerts;
-import client.view.ErrorHighlighter;
-import client.utils.ImageUtils;
 import common.data.Budget;
 import common.data.User;
+import client.utils.DataUtils;
+import client.utils.ImageUtils;
+import client.utils.InputFormatRestrictions;
+import client.view.Alerts;
+import client.view.ErrorHighlighter;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,31 +18,31 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class BudgetCreatorController extends BasicController implements Initializable {
 
   @FXML
+  private Label labelError;
+  @FXML
   private TextField fieldBudgetName, fieldBudgetDescription, fieldEmail;
   @FXML
   private Button buttonCreateBudget, buttonAddParticipant, buttonCancel;
+
   @FXML
   private TableView<User> tableParticipants;
   @FXML
   private TableColumn<User, String> columnParticipantName, columnParticipantEmail;
   @FXML
   private TableColumn<User, Boolean> columnAction;
-  @FXML
-  private Label labelError;
 
   private static final int MAX_BUDGET_NAME_LENGTH = 16;
   private static final int MAX_BUDGET_DESCRIPTION_LENGTH = 32;
@@ -57,10 +58,10 @@ public class BudgetCreatorController extends BasicController implements Initiali
 
   private void initFields() {
     fieldBudgetName.textProperty()
-        .addListener(DataFormatListeners.restrictTextLength(fieldBudgetName::setText, MAX_BUDGET_NAME_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldBudgetName::setText, MAX_BUDGET_NAME_LENGTH));
     fieldBudgetDescription.textProperty()
         .addListener(
-            DataFormatListeners.restrictTextLength(fieldBudgetDescription::setText, MAX_BUDGET_DESCRIPTION_LENGTH));
+            InputFormatRestrictions.restrictTextLength(fieldBudgetDescription::setText, MAX_BUDGET_DESCRIPTION_LENGTH));
   }
 
   private void initButtons() {
@@ -92,6 +93,7 @@ public class BudgetCreatorController extends BasicController implements Initiali
     // TODO make table focus traversable
     columnParticipantName.setCellValueFactory(new PropertyValueFactory<>("name"));
     columnParticipantEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+    columnAction.setEditable(true);
     columnAction.setCellFactory(param -> new RemoveParticipantCell());
 
     tableParticipants.setFocusTraversable(true);
@@ -106,37 +108,33 @@ public class BudgetCreatorController extends BasicController implements Initiali
 
   private class RemoveParticipantCell extends TableCell<User, Boolean> {
 
-    final Button btnRemove = ImageUtils.loadImageButton("RemoveButton.png");
+    final Button buttonRemove;
 
     public RemoveParticipantCell() {
+      buttonRemove = ImageUtils.loadImageButton("RemoveButton.png");
       setPadding(new Insets(0, 0, 0, 0));
-      btnRemove.setOnAction(event -> removeParticipant());
+      buttonRemove.setOnAction(event -> removeParticipant());
     }
 
     private void removeParticipant() {
-      User participant = (User) getCurrentRow().getItem();
+      User participant = (User) getTableRow().getItem();
       participantsList.remove(participant);
-    }
-
-    private TableRow getCurrentRow() {
-      return RemoveParticipantCell.this.getTableRow();
     }
 
     @Override
     protected void updateItem(Boolean item, boolean empty) {
       super.updateItem(item, empty);
       if (!empty) {
-        setGraphic(btnRemove);
-        if (currentUserRow())
-          btnRemove.setDisable(true);
+        setGraphic(buttonRemove);
+        buttonRemove.setDisable(isCurrentUserRow());
       }
       else {
         setGraphic(null);
       }
     }
 
-    private boolean currentUserRow() {
-      return getCurrentRow().getIndex() == 0;
+    private boolean isCurrentUserRow() {
+      return Objects.equals(getTableRow().getItem(), currentUser);
     }
   }
 }

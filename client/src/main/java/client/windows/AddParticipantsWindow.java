@@ -2,6 +2,7 @@ package client.windows;
 
 import client.controllers.AddParticipantsController;
 import client.controllers.BudgetController;
+
 import javafx.stage.Modality;
 
 public class AddParticipantsWindow extends DebtManagerWindow {

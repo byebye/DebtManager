@@ -1,8 +1,9 @@
 package client.windows;
 
-import client.controllers.ParticipantDetailsController;
 import common.data.Budget;
 import common.data.User;
+import client.controllers.ParticipantDetailsController;
+
 import javafx.stage.Modality;
 
 public class ParticipantDetailsWindow extends DebtManagerWindow {

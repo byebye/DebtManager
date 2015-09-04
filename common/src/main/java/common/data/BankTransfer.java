@@ -5,17 +5,16 @@ import java.math.BigDecimal;
 
 public class BankTransfer implements Serializable {
 
-  private User who, whom;
-  private BigDecimal amount;
-  private String budgetName;
+  private final int id;
+  private final User who;
+  private final User whom;
+  private final BigDecimal amount;
+  private final String budgetName;
   private Status status;
-  private int id;
   private boolean toUpdate = false;
 
   public BankTransfer(User who, User whom, BigDecimal amount) {
-    this.who = who;
-    this.whom = whom;
-    this.amount = amount;
+    this(-1, null, who, whom, amount, 0);
   }
 
   public BankTransfer(int id, String budgetName, User who, User whom, BigDecimal amount, int status) {
@@ -27,10 +26,6 @@ public class BankTransfer implements Serializable {
     this.status = Status.fromValue(status);
   }
 
-  public String getBudgetName() {
-    return budgetName;
-  }
-
   public void updateStatus(int updatingUser) {
     if (updatingUser == who.getId()) {
       status = Status.NotConfirmed;
@@ -39,6 +34,14 @@ public class BankTransfer implements Serializable {
       // budget owner or user receiving transfer
       status = Status.Confirmed;
     }
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public String getBudgetName() {
+    return budgetName;
   }
 
   public Status getStatus() {
@@ -75,10 +78,6 @@ public class BankTransfer implements Serializable {
 
   public boolean isToUpdate() {
     return toUpdate;
-  }
-
-  public int getId() {
-    return id;
   }
 
   public enum Status {

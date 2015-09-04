@@ -1,12 +1,11 @@
 package client.controllers;
 
+import common.data.Budget;
 import client.view.Alerts;
 import client.windows.BankTransfersWindow;
 import client.windows.BudgetCreatorWindow;
 import client.windows.BudgetWindow;
-import common.connection.DbHandler;
-import common.data.Budget;
-import common.data.User;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,8 +17,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -32,11 +29,11 @@ public class BudgetsListController extends BasicController implements Initializa
   @FXML
   private Button buttonLogout, buttonCreateNewBudget, buttonRefreshList, buttonManageBankTransfers;
   @FXML
+  private TableView<Budget> tableBudgets;
+  @FXML
   private TableColumn<Budget, String> columnName, columnDescription, columnOwner;
   @FXML
   private TableColumn<Budget, Integer> columnParticipantsCount;
-  @FXML
-  private TableView<Budget> tableBudgets;
 
   private final ObservableList<Budget> budgets = FXCollections.observableArrayList();
 

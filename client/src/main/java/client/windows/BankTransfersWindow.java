@@ -1,6 +1,7 @@
 package client.windows;
 
 import client.controllers.BankTransfersController;
+
 import javafx.stage.Modality;
 
 public class BankTransfersWindow extends DebtManagerWindow {

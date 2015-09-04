@@ -1,6 +1,7 @@
 package client.windows;
 
 import client.controllers.BudgetCreatorController;
+
 import javafx.stage.Modality;
 
 public class BudgetCreatorWindow extends DebtManagerWindow {

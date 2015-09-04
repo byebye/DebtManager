@@ -1,11 +1,12 @@
 package client.controllers;
 
+import common.data.BankTransfer;
+import common.data.BankTransfer.Status;
+import common.utils.DataUtils;
 import client.utils.ImageUtils;
 import client.view.Alerts;
 import client.view.StatusImageCell;
-import common.data.BankTransfer;
-import common.data.BankTransfer.Status;
-import common.data.DataUtils;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,7 +18,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -28,6 +28,7 @@ public class BankTransfersController extends BasicController implements Initiali
 
   @FXML
   private Button buttonClose, buttonRefresh;
+
   @FXML
   private TableView<BankTransfer> tableTransfersToSend;
   @FXML
@@ -38,6 +39,7 @@ public class BankTransfersController extends BasicController implements Initiali
   private TableColumn<BankTransfer, ImageView> columnSendStatus;
   @FXML
   private TableColumn<BankTransfer, Boolean> columnSendUpdate;
+
   @FXML
   private TableView<BankTransfer> tableTransfersToReceive;
   @FXML
@@ -135,7 +137,7 @@ public class BankTransfersController extends BasicController implements Initiali
 
     private void handleUpdateStatus() {
       try {
-        final BankTransfer transfer = (BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem();
+        final BankTransfer transfer = (BankTransfer) getTableRow().getItem();
         transfer.updateStatus(currentUser.getId());
         dbHandler.setBankTransfersStatus(transfer.getId(), transfer.getStatus().getValue());
         if (tableWithTransfersToSend)
@@ -153,7 +155,7 @@ public class BankTransfersController extends BasicController implements Initiali
     protected void updateItem(Boolean item, boolean empty) {
       super.updateItem(item, empty);
       if (!empty) {
-        BankTransfer transfer = (BankTransfer) UpdateStatusButtonCell.this.getTableRow().getItem();
+        final BankTransfer transfer = (BankTransfer) getTableRow().getItem();
         if (transfer != null)
           updateGraphic(transfer);
       }

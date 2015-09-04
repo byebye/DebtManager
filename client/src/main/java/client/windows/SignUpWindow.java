@@ -2,6 +2,7 @@ package client.windows;
 
 import client.controllers.LoginController;
 import client.controllers.SignUpController;
+
 import javafx.stage.Modality;
 
 public class SignUpWindow extends DebtManagerWindow {

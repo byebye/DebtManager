@@ -18,8 +18,8 @@ public class BasicAccessProvider implements AccessProvider {
   }
 
   @Override
-  public void signUp(Email mail, String name, String passwordHash,
-                     BankAccount bankAccount) throws RemoteException, AuthenticationException {
+  public void signUp(Email mail, String name, String passwordHash, BankAccount bankAccount)
+      throws RemoteException, AuthenticationException {
     if (!DatabaseController.getInstance()
         .createUser(mail.getAddress(), name, passwordHash, bankAccount.getAccountNumber())) {
       throw new AuthenticationException();

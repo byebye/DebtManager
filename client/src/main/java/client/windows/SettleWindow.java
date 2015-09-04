@@ -1,12 +1,11 @@
 package client.windows;
 
-import client.controllers.BudgetController;
-import client.controllers.SettleController;
 import common.data.Budget;
 import common.data.Payment;
-import javafx.collections.ObservableList;
-import javafx.stage.Modality;
+import client.controllers.BudgetController;
+import client.controllers.SettleController;
 
+import javafx.stage.Modality;
 import java.util.List;
 
 public class SettleWindow extends DebtManagerWindow {

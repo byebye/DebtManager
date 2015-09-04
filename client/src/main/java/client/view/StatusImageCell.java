@@ -1,7 +1,8 @@
 package client.view;
 
-import client.utils.ImageUtils;
 import common.data.BankTransfer;
+import client.utils.ImageUtils;
+
 import javafx.scene.control.TableCell;
 import javafx.scene.image.ImageView;
 

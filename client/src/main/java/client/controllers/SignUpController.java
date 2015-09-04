@@ -1,18 +1,18 @@
 package client.controllers;
 
-import client.utils.DataFormatListeners;
-import client.view.Alerts;
-import client.view.ErrorHighlighter;
 import common.data.BankAccount;
 import common.data.Email;
 import common.utils.SHA1Hasher;
+import client.utils.InputFormatRestrictions;
+import client.view.Alerts;
+import client.view.ErrorHighlighter;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -20,13 +20,13 @@ import java.util.ResourceBundle;
 public class SignUpController extends BasicController implements Initializable {
 
   @FXML
+  private Label labelError;
+  @FXML
   private TextField fieldEmail, fieldUsername, fieldBankAccount;
   @FXML
   private PasswordField fieldPassword, fieldRepeatedPassword;
   @FXML
   private Button buttonSignUp, buttonCancel;
-  @FXML
-  private Label labelError;
 
   private final static int MAX_EMAIL_LENGTH = 64;
   private final static int MAX_USER_NAME_LENGTH = 32;
@@ -44,11 +44,11 @@ public class SignUpController extends BasicController implements Initializable {
 
   private void initFields() {
     fieldEmail.textProperty()
-        .addListener(DataFormatListeners.restrictTextLength(fieldEmail::setText, MAX_EMAIL_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldEmail::setText, MAX_EMAIL_LENGTH));
     fieldUsername.textProperty()
-        .addListener(DataFormatListeners.restrictTextLength(fieldUsername::setText, MAX_USER_NAME_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldUsername::setText, MAX_USER_NAME_LENGTH));
     fieldBankAccount.textProperty()
-        .addListener(DataFormatListeners.restrictBankAccountInput(fieldBankAccount::setText));
+        .addListener(InputFormatRestrictions.restrictBankAccountInput(fieldBankAccount::setText));
   }
 
   private void initButtons() {

@@ -4,57 +4,59 @@ import java.io.Serializable;
 import java.sql.Date;
 
 public class Payment implements Serializable {
-   private String who, what;
-   private int id;
-   private int userId;
-   private int budgetId;
-   private boolean accept = true;
-   private double amount;
-   private Date date;
 
-   public Payment(int id, int budgetId, int userId, String who, String what, double amount, Date date) {
-      this.id = id;
-      this.budgetId = budgetId;
-      this.userId = userId;
-      this.who = who;
-      this.what = what;
-      this.amount = amount;
-      this.date = date;
-   }
+  private final int id;
+  private final String who;
+  private final String what;
+  private final int userId;
+  private final int budgetId;
+  private final double amount;
+  private final Date date;
+  private boolean accept = true;
 
-   public int getBudgetId() {
-      return budgetId;
-   }
+  public Payment(int id, int budgetId, int userId, String who, String what, double amount, Date date) {
+    this.id = id;
+    this.budgetId = budgetId;
+    this.userId = userId;
+    this.who = who;
+    this.what = what;
+    this.amount = amount;
+    this.date = date;
+  }
 
-   public int getUserId() {
-      return userId;
-   }
+  public int getBudgetId() {
+    return budgetId;
+  }
 
-   public String getWho() {
-      return who;
-   }
+  public int getUserId() {
+    return userId;
+  }
 
-   public String getWhat() {
-      return what;
-   }
+  public String getWho() {
+    return who;
+  }
 
-   public double getAmount() {
-      return amount;
-   }
+  public String getWhat() {
+    return what;
+  }
 
-   public int getId() {
-      return id;
-   }
+  public double getAmount() {
+    return amount;
+  }
 
-   public boolean isAccepted(){
-      return accept;
-   }
+  public int getId() {
+    return id;
+  }
 
-   public void setAccept(boolean c){
-      accept = c;
-   }
+  public boolean isAccepted() {
+    return accept;
+  }
 
-   public Date getDate() {
-      return date;
-   }
+  public void setAccept(boolean c) {
+    accept = c;
+  }
+
+  public Date getDate() {
+    return date;
+  }
 }

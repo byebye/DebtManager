@@ -1,10 +1,11 @@
 package client.controllers;
 
-import client.utils.DataFormatListeners;
-import client.view.Alerts;
-import client.view.ErrorHighlighter;
 import common.data.Budget;
 import common.data.User;
+import client.utils.InputFormatRestrictions;
+import client.view.Alerts;
+import client.view.ErrorHighlighter;
+
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +17,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 public abstract class PaymentController extends BasicController implements Initializable {
 
   @FXML
-  public Label labelWindowTitle;
+  public Label labelWindowTitle, labelError;
   @FXML
   protected Button buttonLeft, buttonSave;
   @FXML
@@ -36,8 +36,6 @@ public abstract class PaymentController extends BasicController implements Initi
   protected TextField fieldAmount;
   @FXML
   protected TextArea fieldWhat;
-  @FXML
-  protected Label labelError;
 
   private static final String AMOUNT_REGEX = "\\d*(\\.\\d{0,2})?";
   protected Budget budget;
@@ -65,7 +63,7 @@ public abstract class PaymentController extends BasicController implements Initi
     initButtons();
     initBoxChoose();
     fieldAmount.textProperty()
-        .addListener(DataFormatListeners.restrictTextFormat(fieldAmount::setText, AMOUNT_REGEX));
+        .addListener(InputFormatRestrictions.restrictTextFormat(fieldAmount::setText, AMOUNT_REGEX));
   }
 
   protected void initButtons() {

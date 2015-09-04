@@ -1,10 +1,9 @@
 package client.utils;
 
 import javafx.beans.value.ChangeListener;
-
 import java.util.function.Consumer;
 
-public class DataFormatListeners {
+public class InputFormatRestrictions {
 
   public static ChangeListener<String> restrictBankAccountInput(Consumer<String> formatConsumer) {
     final int ACCOUNT_NUMBER_LENGTH = 22;

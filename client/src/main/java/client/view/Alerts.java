@@ -3,7 +3,6 @@ package client.view;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-
 import java.util.Optional;
 
 public class Alerts {
@@ -41,6 +40,13 @@ public class Alerts {
         "Participant cannot be removed",
         "Participant cannot be removed!",
         reason);
+  }
+
+  public static void exportToFileFailed() {
+    showAlert(new Alert(AlertType.ERROR),
+        "Export to file failed",
+        "Failed to export your budgets to file!",
+        "Try to choose another file and try again.");
   }
 
   private static Optional<ButtonType> showAlert(Alert alert, String title, String header, String content) {

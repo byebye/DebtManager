@@ -1,13 +1,15 @@
 package client.controllers;
 
-import client.view.Alerts;
-import client.view.ErrorHighlighter;
-import client.windows.BudgetsListWindow;
-import client.windows.SignUpWindow;
 import common.connection.AccessProvider;
 import common.connection.DbHandler;
 import common.data.Email;
 import common.utils.SHA1Hasher;
+import client.view.Alerts;
+import client.view.ErrorHighlighter;
+import client.windows.BudgetsListWindow;
+import client.windows.SignUpWindow;
+
+import javax.naming.AuthenticationException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -15,8 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-
-import javax.naming.AuthenticationException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -25,18 +25,18 @@ import java.util.ResourceBundle;
 public class LoginController extends BasicController implements Initializable {
 
   @FXML
-  private Button buttonSignUp, buttonLogIn;
+  private Label labelError;
   @FXML
   private TextField fieldEmail;
   @FXML
   private PasswordField fieldPassword;
   @FXML
-  private Label labelError;
+  private Button buttonSignUp, buttonLogIn;
 
   private static String host;
 
   public void connectWithRMIHost(String host) {
-    this.host = (host == null ? "localhost" : host);
+    LoginController.host = (host == null ? "localhost" : host);
     if (System.getSecurityManager() == null)
       System.setSecurityManager(new SecurityManager());
     try {

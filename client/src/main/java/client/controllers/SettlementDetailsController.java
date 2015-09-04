@@ -1,12 +1,13 @@
 package client.controllers;
 
-import client.view.Alerts;
-import client.view.StatusImageCell;
 import common.data.BankTransfer;
 import common.data.Budget;
-import common.data.DataUtils;
+import common.utils.DataUtils;
 import common.data.Payment;
 import common.data.Settlement;
+import client.view.Alerts;
+import client.view.StatusImageCell;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,7 +21,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -32,11 +32,11 @@ import java.util.ResourceBundle;
 
 public class SettlementDetailsController extends BasicController implements Initializable {
 
-  //TODO: discuss if normal user can see all bank transfers
   @FXML
   private Text textDetails;
   @FXML
   private Button buttonSetAsPaid, buttonClose;
+
   @FXML
   private TableView<BankTransfer> tableBankTransfers;
   @FXML
@@ -122,7 +122,7 @@ public class SettlementDetailsController extends BasicController implements Init
     public CheckBoxTableCell() {
       setAlignment(Pos.CENTER);
       checkBox.setOnAction(event -> {
-        BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
+        BankTransfer transfer = (BankTransfer) getTableRow().getItem();
         transfer.setToUpdate(!transfer.isToUpdate());
       });
     }
@@ -133,14 +133,18 @@ public class SettlementDetailsController extends BasicController implements Init
       if (!empty) {
         checkBox.setSelected(false);
         setGraphic(checkBox);
-
-        BankTransfer transfer = (BankTransfer) CheckBoxTableCell.this.getTableRow().getItem();
-        boolean disable = !isCurrentUserBudgetOwner() || !isCurrentUserTransferParticipant(transfer);
-        checkBox.setDisable(disable);
+        final BankTransfer transfer = (BankTransfer) getTableRow().getItem();
+        if (transfer != null)
+          updateGraphic(transfer);
       }
       else {
         setGraphic(null);
       }
+    }
+
+    private void updateGraphic(BankTransfer transfer) {
+      final boolean enable = isCurrentUserBudgetOwner() || isCurrentUserTransferParticipant(transfer);
+      checkBox.setDisable(!enable);
     }
 
     private boolean isCurrentUserBudgetOwner() {

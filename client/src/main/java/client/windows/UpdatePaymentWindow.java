@@ -1,9 +1,10 @@
 package client.windows;
 
-import client.controllers.UpdatePaymentController;
 import common.data.Budget;
 import common.data.Payment;
 import common.data.User;
+import client.controllers.UpdatePaymentController;
+
 import javafx.collections.ObservableList;
 import javafx.stage.Modality;
 

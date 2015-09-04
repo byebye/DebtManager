@@ -2,6 +2,7 @@ package client.windows;
 
 import client.UpdateLongpollingCallbackRegistrar;
 import client.controllers.LoginController;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

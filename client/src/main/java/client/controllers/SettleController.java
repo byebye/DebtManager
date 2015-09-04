@@ -1,9 +1,10 @@
 package client.controllers;
 
-import client.view.Alerts;
 import common.data.BankTransfer;
 import common.data.Budget;
 import common.data.Payment;
+import client.view.Alerts;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,7 +13,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -33,9 +33,9 @@ public class SettleController extends BasicController implements Initializable {
   private CheckBox checkBoxSendViaMail;
 
   private List<BankTransfer> bankTransfers;
+  private List<Payment> paymentsToSettle;
   private BudgetController budgetController;
   private Budget budget;
-  private List<Payment> paymentsToSettle;
 
   public void setBudgetController(BudgetController budgetController) {
     this.budgetController = budgetController;

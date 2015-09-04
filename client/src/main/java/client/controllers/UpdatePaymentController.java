@@ -1,10 +1,10 @@
 package client.controllers;
 
-import client.view.Alerts;
 import common.data.Payment;
 import common.data.User;
-import javafx.fxml.Initializable;
+import client.view.Alerts;
 
+import javafx.fxml.Initializable;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.List;
