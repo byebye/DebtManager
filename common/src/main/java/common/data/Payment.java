@@ -1,27 +1,26 @@
 package common.data;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 public class Payment implements Serializable {
 
+  public static final int MAX_DESCRIPTION_LENGTH = 200;
+
   private final int id;
-  private final String who;
-  private final String what;
+  private final String payer;
+  private final String description;
   private final int userId;
   private final int budgetId;
   private final double amount;
-  private final Date date;
   private boolean accept = true;
 
-  public Payment(int id, int budgetId, int userId, String who, String what, double amount, Date date) {
+  public Payment(int id, int budgetId, int userId, String payer, String description, double amount) {
     this.id = id;
     this.budgetId = budgetId;
     this.userId = userId;
-    this.who = who;
-    this.what = what;
+    this.payer = payer;
+    this.description = description;
     this.amount = amount;
-    this.date = date;
   }
 
   public int getBudgetId() {
@@ -32,12 +31,12 @@ public class Payment implements Serializable {
     return userId;
   }
 
-  public String getWho() {
-    return who;
+  public String getPayer() {
+    return payer;
   }
 
-  public String getWhat() {
-    return what;
+  public String getDescription() {
+    return description;
   }
 
   public double getAmount() {
@@ -54,9 +53,5 @@ public class Payment implements Serializable {
 
   public void setAccept(boolean c) {
     accept = c;
-  }
-
-  public Date getDate() {
-    return date;
   }
 }

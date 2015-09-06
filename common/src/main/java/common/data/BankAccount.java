@@ -9,16 +9,17 @@ public class BankAccount implements Serializable {
 
   public BankAccount(String accountNumber) {
     if (!isValid(accountNumber)) {
-      throw new IllegalArgumentException("Invalid account number");
+      throw new IllegalArgumentException("Invalid account number: " + accountNumber);
     }
     this.accountNumber = accountNumber.replaceAll("\\s", "");
   }
 
-  public String getAccountNumber() {
-    return accountNumber;
-  }
-
   public static boolean isValid(String accountNumber) {
     return Pattern.matches("\\d{22}", accountNumber.replaceAll("\\s", ""));
+  }
+
+  @Override
+  public String toString() {
+    return accountNumber;
   }
 }

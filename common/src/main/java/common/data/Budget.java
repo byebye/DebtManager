@@ -6,6 +6,9 @@ import java.util.Objects;
 
 public class Budget implements Serializable {
 
+  public static final int MAX_NAME_LENGTH = 30;
+  public static final int MAX_DESCRIPTION_LENGTH = 60;
+
   private final int id;
   private final User owner;
   private final String name;

@@ -32,17 +32,17 @@ public interface DbHandler extends Remote {
 
   void addBudgetParticipants(int budgetId, List<User> users) throws RemoteException;
 
-  void addPayment(Budget budget, int userId, BigDecimal amount, String what) throws RemoteException;
+  void addPayment(Budget budget, int userId, BigDecimal amount, String description) throws RemoteException;
 
-  void updatePayment(int paymentId, int userId, BigDecimal amount, String what) throws RemoteException;
+  void updatePayment(int paymentId, int userId, BigDecimal amount, String description) throws RemoteException;
 
   void deletePayment(int paymentId) throws RemoteException;
 
-  List<Payment> getAllPayments(int budgetId, boolean accounted) throws RemoteException;
+  List<Payment> getAllPayments(int budgetId, boolean settled) throws RemoteException;
 
   List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
 
-  void settleUnaccountedPayments(int budgetId, List<Payment> paymentsToSettle, List<BankTransfer> bankTransfers,
+  void settlePayments(int budgetId, List<Payment> paymentsToSettle, List<BankTransfer> bankTransfers,
       boolean sendEmails
   ) throws RemoteException;
 

@@ -1,6 +1,7 @@
 package common.data;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 public class Settlement implements Serializable {
 
@@ -9,20 +10,23 @@ public class Settlement implements Serializable {
   private final int paidBankTransfersCount;
   private final int allBankTransfersCount;
   private final double amount;
-  private final String date;
+  private final Date settleDate;
   private final String status;
 
-  public Settlement(int settlementId, int budgetId, int paidBankTransfersCount, int allBankTransfersCount, String date,
+  public Settlement(int settlementId, int budgetId, int paidBankTransfersCount, int allBankTransfersCount,
+      Date settleDate,
       double amount
   ) {
     this.budgetId = budgetId;
-    this.date = date;
+    this.settleDate = settleDate;
     this.allBankTransfersCount = allBankTransfersCount;
     this.paidBankTransfersCount = paidBankTransfersCount;
     this.settlementId = settlementId;
     this.amount = amount;
-    if (paidBankTransfersCount != allBankTransfersCount) this.status = paidBankTransfersCount + "/" + allBankTransfersCount;
-    else this.status = "OK";
+    if (paidBankTransfersCount != allBankTransfersCount)
+      this.status = paidBankTransfersCount + "/" + allBankTransfersCount;
+    else
+      this.status = "OK";
   }
 
   public int getBudgetId() {
@@ -45,8 +49,8 @@ public class Settlement implements Serializable {
     return allBankTransfersCount - paidBankTransfersCount;
   }
 
-  public String getDate() {
-    return date;
+  public Date getSettleDate() {
+    return settleDate;
   }
 
   public String getStatus() {

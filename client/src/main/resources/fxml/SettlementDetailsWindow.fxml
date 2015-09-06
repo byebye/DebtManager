@@ -35,8 +35,8 @@
     </Text>
     <TableView fx:id="tableBankTransfers" GridPane.rowIndex="1">
       <columns>
-        <TableColumn fx:id="columnWho" minWidth="-1.0" prefWidth="-1.0" text="Who" />
-        <TableColumn fx:id="columnWhom" minWidth="-1.0" prefWidth="-1.0" text="Whom" />
+        <TableColumn fx:id="columnSender" minWidth="-1.0" prefWidth="-1.0" text="Sender" />
+        <TableColumn fx:id="columnRecipient" minWidth="-1.0" prefWidth="-1.0" text="Recipient" />
         <TableColumn fx:id="columnBankAccount" minWidth="-1.0" prefWidth="140.0" text="Bank account" />
         <TableColumn fx:id="columnAmount" minWidth="-1.0" prefWidth="-1.0" text="Amount" />
         <TableColumn fx:id="columnStatus" minWidth="-1.0" prefWidth="-1.0" text="Status" />

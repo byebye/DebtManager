@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Payments extends org.jooq.impl.TableImpl<server.jooq.tables.records.PaymentsRecord> {
 
-	private static final long serialVersionUID = -2048819821;
+	private static final long serialVersionUID = -1828644375;
 
 	/**
 	 * The reference instance of <code>debtmanager.payments</code>
@@ -37,19 +37,14 @@ public class Payments extends org.jooq.impl.TableImpl<server.jooq.tables.records
 	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
 
 	/**
-	 * The column <code>debtmanager.payments.term</code>.
-	 */
-	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.sql.Date> TERM = createField("term", org.jooq.impl.SQLDataType.DATE.nullable(false).defaulted(true), this, "");
-
-	/**
 	 * The column <code>debtmanager.payments.budget_id</code>.
 	 */
 	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> BUDGET_ID = createField("budget_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
-	 * The column <code>debtmanager.payments.user_id</code>.
+	 * The column <code>debtmanager.payments.payer_id</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> PAYER_ID = createField("payer_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
 	/**
 	 * The column <code>debtmanager.payments.description</code>.
@@ -59,7 +54,7 @@ public class Payments extends org.jooq.impl.TableImpl<server.jooq.tables.records
 	/**
 	 * The column <code>debtmanager.payments.amount</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.math.BigDecimal> AMOUNT = createField("amount", org.jooq.impl.SQLDataType.NUMERIC.precision(6, 2).nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.math.BigDecimal> AMOUNT = createField("amount", org.jooq.impl.SQLDataType.NUMERIC.precision(12, 2).nullable(false), this, "");
 
 	/**
 	 * The column <code>debtmanager.payments.settlement_id</code>.
@@ -67,9 +62,9 @@ public class Payments extends org.jooq.impl.TableImpl<server.jooq.tables.records
 	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Integer> SETTLEMENT_ID = createField("settlement_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
 	/**
-	 * The column <code>debtmanager.payments.accounted</code>.
+	 * The column <code>debtmanager.payments.settled</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Boolean> ACCOUNTED = createField("accounted", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.PaymentsRecord, java.lang.Boolean> SETTLED = createField("settled", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>debtmanager.payments</code> table reference
@@ -122,7 +117,7 @@ public class Payments extends org.jooq.impl.TableImpl<server.jooq.tables.records
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, ?>>asList(server.jooq.Keys.PAYMENTS__PAYMENTS_BUDGET_ID_FKEY, server.jooq.Keys.PAYMENTS__PAYMENTS_USER_ID_FKEY, server.jooq.Keys.PAYMENTS__PAYMENTS_SETTLEMENT_ID_FKEY);
+		return java.util.Arrays.<org.jooq.ForeignKey<server.jooq.tables.records.PaymentsRecord, ?>>asList(server.jooq.Keys.PAYMENTS__PAYMENTS_BUDGET_ID_FKEY, server.jooq.Keys.PAYMENTS__PAYMENTS_PAYER_ID_FKEY, server.jooq.Keys.PAYMENTS__PAYMENTS_SETTLEMENT_ID_FKEY);
 	}
 
 	/**

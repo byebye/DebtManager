@@ -80,9 +80,9 @@ public class LoginController extends BasicController implements Initializable {
 
   private boolean authenticateUser() {
     clearErrorHighlights();
-    final Email email = new Email(fieldEmail.getText());
-    final String passwordHash = SHA1Hasher.hash(fieldPassword.getText());
     try {
+      final Email email = new Email(fieldEmail.getText());
+      final String passwordHash = SHA1Hasher.hash(fieldPassword.getText());
       dbHandler = (DbHandler) accessProvider.getDbHandler(email, passwordHash);
       currentUser = dbHandler.getUserByEmail(fieldEmail.getText());
       return true;

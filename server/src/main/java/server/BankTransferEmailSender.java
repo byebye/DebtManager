@@ -26,12 +26,12 @@ public class BankTransferEmailSender implements Runnable {
   public void run() {
     SingleRecipientEmailSender sender = new SingleRecipientEmailSender();
     for (BankTransfer transfer : transfers) {
-      User fromUser = Server.dbController.getUserById(transfer.getWhoId()),
-          toUser = Server.dbController.getUserById(transfer.getWhomId());
+      User fromUser = Server.dbController.getUserById(transfer.getSenderId()),
+          toUser = Server.dbController.getUserById(transfer.getRecipientId());
 
       try {
         sender.send(debtmanagerEmail,
-            new Email(fromUser.getEmail()),
+            fromUser.getEmail(),
             createSenderSubject(),
             createSenderText(transfer, toUser, fromUser));
         System.out.println("Email from " + fromUser.getEmail() + " to " + toUser.getEmail() + " sent");
@@ -42,7 +42,7 @@ public class BankTransferEmailSender implements Runnable {
 
       try {
         sender.send(debtmanagerEmail,
-            new Email(toUser.getEmail()),
+            toUser.getEmail(),
             createRecipientSubject(),
             createRecipientText(transfer, fromUser, toUser));
         System.out.println("Email from " + toUser.getEmail() + " to " + fromUser.getEmail() + " sent");

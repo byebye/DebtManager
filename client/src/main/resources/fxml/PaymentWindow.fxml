@@ -29,11 +29,11 @@
         <Font size="16.0" />
       </font>
     </Label>
-    <Label labelFor="$boxChooseWho" text="Who:" textAlignment="RIGHT" GridPane.rowIndex="1" />
-    <Label labelFor="$fieldWhat" text="What:" textAlignment="RIGHT" GridPane.rowIndex="2" />
+    <Label labelFor="$boxChoosePayer" text="Payer:" textAlignment="RIGHT" GridPane.rowIndex="1" />
+    <Label labelFor="$fieldDescription" text="Description:" textAlignment="RIGHT" GridPane.rowIndex="2" />
     <Label labelFor="$fieldAmount" text="Amount:" textAlignment="RIGHT" GridPane.rowIndex="3" />
-    <ComboBox fx:id="boxChooseWho" maxWidth="1.7976931348623157E308" prefHeight="25.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-    <TextArea fx:id="fieldWhat" prefHeight="40.0" prefWidth="230.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <ComboBox fx:id="boxChoosePayer" maxWidth="1.7976931348623157E308" prefHeight="25.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <TextArea fx:id="fieldDescription" prefHeight="40.0" prefWidth="230.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <TextField fx:id="fieldAmount" maxWidth="150.0" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
     <Button fx:id="buttonSave" alignment="CENTER" mnemonicParsing="false" prefWidth="75.0" text="Add" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
     <Button fx:id="buttonLeft" mnemonicParsing="false" prefWidth="75.0" text="Cancel" GridPane.halignment="LEFT" GridPane.rowIndex="5" />

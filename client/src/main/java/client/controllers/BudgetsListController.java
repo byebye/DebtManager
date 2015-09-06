@@ -71,7 +71,7 @@ public class BudgetsListController extends BasicController implements Initializa
     columnDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
     columnParticipantsCount.setCellValueFactory(new PropertyValueFactory<>("partNum"));
     columnOwner.setCellValueFactory(budget ->
-        new ReadOnlyObjectWrapper<>(budget.getValue().getOwner().getEmail()));
+        new ReadOnlyObjectWrapper<>(budget.getValue().getOwner().getEmail().toString()));
   }
 
   private void initTable() {

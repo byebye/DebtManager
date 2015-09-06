@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserBudget extends org.jooq.impl.TableImpl<server.jooq.tables.records.UserBudgetRecord> {
 
-	private static final long serialVersionUID = -1973122557;
+	private static final long serialVersionUID = -806891598;
 
 	/**
 	 * The reference instance of <code>debtmanager.user_budget</code>
@@ -34,12 +34,12 @@ public class UserBudget extends org.jooq.impl.TableImpl<server.jooq.tables.recor
 	/**
 	 * The column <code>debtmanager.user_budget.user_id</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.UserBudgetRecord, java.lang.Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.UserBudgetRecord, java.lang.Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
 	 * The column <code>debtmanager.user_budget.budget_id</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.UserBudgetRecord, java.lang.Integer> BUDGET_ID = createField("budget_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.UserBudgetRecord, java.lang.Integer> BUDGET_ID = createField("budget_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
 	 * Create a <code>debtmanager.user_budget</code> table reference
@@ -61,6 +61,22 @@ public class UserBudget extends org.jooq.impl.TableImpl<server.jooq.tables.recor
 
 	private UserBudget(java.lang.String alias, org.jooq.Table<server.jooq.tables.records.UserBudgetRecord> aliased, org.jooq.Field<?>[] parameters) {
 		super(alias, server.jooq.Debtmanager.DEBTMANAGER, aliased, parameters, "");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public org.jooq.UniqueKey<server.jooq.tables.records.UserBudgetRecord> getPrimaryKey() {
+		return server.jooq.Keys.USER_BUDGET_PKEY;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public java.util.List<org.jooq.UniqueKey<server.jooq.tables.records.UserBudgetRecord>> getKeys() {
+		return java.util.Arrays.<org.jooq.UniqueKey<server.jooq.tables.records.UserBudgetRecord>>asList(server.jooq.Keys.USER_BUDGET_PKEY);
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class SettleController extends BasicController implements Initializable {
   @FXML
   private TableView<BankTransfer> tableSettleView;
   @FXML
-  private TableColumn<BankTransfer, String> columnWho, columnWhom, columnAccountNumber;
+  private TableColumn<BankTransfer, String> columnSender, columnRecipient, columnAccountNumber;
   @FXML
   private TableColumn<BankTransfer, BigDecimal> columnAmount;
   @FXML
@@ -74,7 +74,7 @@ public class SettleController extends BasicController implements Initializable {
 
   private void acceptSettlement() {
     try {
-      dbHandler.settleUnaccountedPayments(budget.getId(), paymentsToSettle, bankTransfers,
+      dbHandler.settlePayments(budget.getId(), paymentsToSettle, bankTransfers,
           checkBoxSendViaMail.isSelected());
       budgetController.update();
       currentStage.close();
@@ -86,8 +86,8 @@ public class SettleController extends BasicController implements Initializable {
   }
 
   private void initColumns() {
-    columnWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnWhom.setCellValueFactory(new PropertyValueFactory<>("whom"));
+    columnSender.setCellValueFactory(new PropertyValueFactory<>("sender"));
+    columnRecipient.setCellValueFactory(new PropertyValueFactory<>("recipient"));
     columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnAccountNumber.setCellValueFactory(new PropertyValueFactory<>("bankAccount"));
   }

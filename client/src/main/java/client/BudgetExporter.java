@@ -29,23 +29,23 @@ public class BudgetExporter {
 
   private Budget budget;
   private List<User> participants;
-  private List<Payment> accountedPayments;
-  private List<Payment> unaccountedPayments;
+  private List<Payment> settledPayments;
+  private List<Payment> unsettledPayments;
   private List<Settlement> settleHistory;
   private Window ownerWindow;
 
   public BudgetExporter(Budget budget,
       List<User> participants,
-      List<Payment> accountedPayments,
-      List<Payment> unaccountedPayments,
-      List<Settlement> settleHistory,
+      List<Payment> settledPayments,
+      List<Payment> unsettledPayments,
+      List<Settlement> settlementsHistory,
       Window ownerWindow
   ) {
     this.budget = budget;
     this.participants = participants;
-    this.accountedPayments = accountedPayments;
-    this.unaccountedPayments = unaccountedPayments;
-    this.settleHistory = settleHistory;
+    this.settledPayments = settledPayments;
+    this.unsettledPayments = unsettledPayments;
+    this.settleHistory = settlementsHistory;
     this.ownerWindow = ownerWindow;
   }
 
@@ -78,8 +78,8 @@ public class BudgetExporter {
     JSONObject budgetJSON = new JSONObject();
     budgetJSON.put("owner", userToJSON(budget.getOwner()));
     budgetJSON.put("participants", budgetParticipantsToJSON());
-    budgetJSON.put("accountedPayments", paymentsToJSON(accountedPayments));
-    budgetJSON.put("unaccountedPayments", paymentsToJSON(unaccountedPayments));
+    budgetJSON.put("settledPayments", paymentsToJSON(settledPayments));
+    budgetJSON.put("unsettledPayments", paymentsToJSON(unsettledPayments));
     budgetJSON.put("settlementsHistory", settlementsHistoryToJSON());
     return budgetJSON.toString();
   }
@@ -110,9 +110,8 @@ public class BudgetExporter {
 
   private JSONObject paymentToJSON(Payment payment) {
     JSONObject paymentJSON = new JSONObject();
-    paymentJSON.put("date", payment.getDate().toString());
-    paymentJSON.put("who", payment.getWho());
-    paymentJSON.put("what", payment.getWhat());
+    paymentJSON.put("payer", payment.getPayer());
+    paymentJSON.put("description", payment.getDescription());
     paymentJSON.put("amount", payment.getAmount());
     return paymentJSON;
   }
@@ -127,7 +126,7 @@ public class BudgetExporter {
 
   private JSONObject settlementToJSON(Settlement settlement) {
     JSONObject settlementJSON = new JSONObject();
-    settlementJSON.put(settlement.getDate(), bankTransfersToJSON(settlement.getSettlementId()));
+    settlementJSON.put(settlement.getSettleDate().toString(), bankTransfersToJSON(settlement.getSettlementId()));
     return settlementJSON;
   }
 
@@ -148,8 +147,8 @@ public class BudgetExporter {
 
   private JSONObject bankTransferToJSON(BankTransfer transfer) {
     JSONObject transferJSON = new JSONObject();
-    transferJSON.put("sender", transfer.getWho());
-    transferJSON.put("recipient", transfer.getWhom());
+    transferJSON.put("sender", transfer.getSender());
+    transferJSON.put("recipient", transfer.getRecipient());
     transferJSON.put("bankAccount", transfer.getBankAccount());
     transferJSON.put("amount", transfer.getAmount());
     transferJSON.put("status", transfer.getStatus().toString());

@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Settlements extends org.jooq.impl.TableImpl<server.jooq.tables.records.SettlementsRecord> {
 
-	private static final long serialVersionUID = -1290246137;
+	private static final long serialVersionUID = -2140651017;
 
 	/**
 	 * The reference instance of <code>debtmanager.settlements</code>
@@ -42,9 +42,9 @@ public class Settlements extends org.jooq.impl.TableImpl<server.jooq.tables.reco
 	public final org.jooq.TableField<server.jooq.tables.records.SettlementsRecord, java.lang.Integer> BUDGET_ID = createField("budget_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
 	/**
-	 * The column <code>debtmanager.settlements.term</code>.
+	 * The column <code>debtmanager.settlements.settle_date</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.SettlementsRecord, java.sql.Date> TERM = createField("term", org.jooq.impl.SQLDataType.DATE.nullable(false).defaulted(true), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.SettlementsRecord, java.sql.Date> SETTLE_DATE = createField("settle_date", org.jooq.impl.SQLDataType.DATE.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * Create a <code>debtmanager.settlements</code> table reference

@@ -24,6 +24,6 @@ public class AddPaymentController extends PaymentController implements Initializ
 
   @Override
   protected void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException {
-    dbHandler.addPayment(budget, user.getId(), amount, fieldWhat.getText());
+    dbHandler.addPayment(budget, user.getId(), amount, fieldDescription.getText());
   }
 }

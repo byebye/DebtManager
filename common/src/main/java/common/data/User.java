@@ -5,17 +5,23 @@ import java.util.Objects;
 
 public class User implements Serializable {
 
+  public final static int MAX_NAME_LENGTH = 60;
+
   private final int id;
   private final String name;
-  private final String email;
-  private final String bankAccount;
+  private final Email email;
+  private final BankAccount bankAccount;
   private double spentMoney = 0;
 
   public User(int id, String name, String email, String bankAccount) {
+    this(id, name, new Email(email), new BankAccount(bankAccount));
+  }
+
+  public User(int id, String name, Email email, BankAccount bankAccount) {
+    this.bankAccount = bankAccount;
     this.id = id;
     this.name = name;
     this.email = email;
-    this.bankAccount = bankAccount;
   }
 
   public int getId() {
@@ -26,11 +32,11 @@ public class User implements Serializable {
     return name;
   }
 
-  public String getEmail() {
+  public Email getEmail() {
     return email;
   }
 
-  public String getBankAccount() {
+  public BankAccount getBankAccount() {
     return bankAccount;
   }
 

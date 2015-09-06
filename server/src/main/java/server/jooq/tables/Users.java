@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Users extends org.jooq.impl.TableImpl<server.jooq.tables.records.UsersRecord> {
 
-	private static final long serialVersionUID = -1683097777;
+	private static final long serialVersionUID = 1368024900;
 
 	/**
 	 * The reference instance of <code>debtmanager.users</code>
@@ -49,7 +49,7 @@ public class Users extends org.jooq.impl.TableImpl<server.jooq.tables.records.Us
 	/**
 	 * The column <code>debtmanager.users.bank_account</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.UsersRecord, java.math.BigInteger> BANK_ACCOUNT = createField("bank_account", org.jooq.impl.SQLDataType.DECIMAL_INTEGER.precision(22).nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.UsersRecord, java.lang.String> BANK_ACCOUNT = createField("bank_account", org.jooq.impl.SQLDataType.CHAR.length(22).nullable(false), this, "");
 
 	/**
 	 * The column <code>debtmanager.users.password_hash</code>.

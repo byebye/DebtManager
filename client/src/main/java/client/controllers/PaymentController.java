@@ -1,6 +1,7 @@
 package client.controllers;
 
 import common.data.Budget;
+import common.data.Payment;
 import common.data.User;
 import client.utils.InputFormatRestrictions;
 import client.view.Alerts;
@@ -31,13 +32,13 @@ public abstract class PaymentController extends BasicController implements Initi
   @FXML
   protected Button buttonLeft, buttonSave;
   @FXML
-  protected ComboBox<User> boxChooseWho;
+  protected ComboBox<User> boxChoosePayer;
   @FXML
   protected TextField fieldAmount;
   @FXML
-  protected TextArea fieldWhat;
+  protected TextArea fieldDescription;
 
-  private static final String AMOUNT_REGEX = "\\d*(\\.\\d{0,2})?";
+  private static final String AMOUNT_REGEX = "\\d{0,12}(\\.\\d{0,2})?";
   protected Budget budget;
 
   public void setBudget(Budget budget) {
@@ -45,11 +46,11 @@ public abstract class PaymentController extends BasicController implements Initi
   }
 
   public void initParticipantsList(ObservableList<User> participants) {
-    boxChooseWho.setEditable(false);
-    boxChooseWho.setItems(participants);
-    boxChooseWho.setValue(getPaymentOwner(participants));
+    boxChoosePayer.setEditable(false);
+    boxChoosePayer.setItems(participants);
+    boxChoosePayer.setValue(getPaymentOwner(participants));
     if (!isCurrentUserBudgetOwner())
-      boxChooseWho.setDisable(true);
+      boxChoosePayer.setDisable(true);
   }
 
   protected abstract User getPaymentOwner(List<User> participants);
@@ -61,7 +62,14 @@ public abstract class PaymentController extends BasicController implements Initi
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initButtons();
-    initBoxChoose();
+    initBoxChoosePayer();
+    initFields();
+  }
+
+  private void initFields() {
+    fieldDescription.textProperty()
+        .addListener(
+            InputFormatRestrictions.restrictTextLength(fieldDescription::setText, Payment.MAX_DESCRIPTION_LENGTH));
     fieldAmount.textProperty()
         .addListener(InputFormatRestrictions.restrictTextFormat(fieldAmount::setText, AMOUNT_REGEX));
   }
@@ -70,7 +78,7 @@ public abstract class PaymentController extends BasicController implements Initi
     buttonSave.setOnAction(event -> savePayment());
   }
 
-  private void initBoxChoose() {
+  private void initBoxChoosePayer() {
     Callback<ListView<User>, ListCell<User>> cellFactory = param -> new ListCell<User>() {
       @Override
       protected void updateItem(User user, boolean empty) {
@@ -79,13 +87,13 @@ public abstract class PaymentController extends BasicController implements Initi
           setText(user.getName());
       }
     };
-    boxChooseWho.setButtonCell(cellFactory.call(null));
-    boxChooseWho.setCellFactory(cellFactory);
+    boxChoosePayer.setButtonCell(cellFactory.call(null));
+    boxChoosePayer.setCellFactory(cellFactory);
   }
 
   protected void savePayment() {
     clearErrorHighlights();
-    final User chosenUser = boxChooseWho.getSelectionModel().getSelectedItem();
+    final User chosenUser = boxChoosePayer.getSelectionModel().getSelectedItem();
     final BigDecimal amount = new BigDecimal(fieldAmount.getText());
     try {
       savePaymentInDatabase(chosenUser, amount);
@@ -102,6 +110,6 @@ public abstract class PaymentController extends BasicController implements Initi
   @Override
   protected void clearErrorHighlights() {
     labelError.setText("");
-    ErrorHighlighter.unhighlightFields(fieldAmount, fieldWhat);
+    ErrorHighlighter.unhighlightFields(fieldAmount, fieldDescription);
   }
 }

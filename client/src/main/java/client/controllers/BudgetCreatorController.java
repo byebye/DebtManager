@@ -44,9 +44,6 @@ public class BudgetCreatorController extends BasicController implements Initiali
   @FXML
   private TableColumn<User, Boolean> columnAction;
 
-  private static final int MAX_BUDGET_NAME_LENGTH = 16;
-  private static final int MAX_BUDGET_DESCRIPTION_LENGTH = 32;
-
   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
 
   @Override
@@ -58,10 +55,10 @@ public class BudgetCreatorController extends BasicController implements Initiali
 
   private void initFields() {
     fieldBudgetName.textProperty()
-        .addListener(InputFormatRestrictions.restrictTextLength(fieldBudgetName::setText, MAX_BUDGET_NAME_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldBudgetName::setText, Budget.MAX_NAME_LENGTH));
     fieldBudgetDescription.textProperty()
         .addListener(
-            InputFormatRestrictions.restrictTextLength(fieldBudgetDescription::setText, MAX_BUDGET_DESCRIPTION_LENGTH));
+            InputFormatRestrictions.restrictTextLength(fieldBudgetDescription::setText, Budget.MAX_DESCRIPTION_LENGTH));
   }
 
   private void initButtons() {

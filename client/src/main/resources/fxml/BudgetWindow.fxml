@@ -26,15 +26,15 @@
   <children>
     <VBox alignment="CENTER" GridPane.rowIndex="2">
       <children>
-        <Label labelFor="$tableUnaccountedPayments" text="Unaccounted payments" />
-        <TableView fx:id="tableUnaccountedPayments">
+        <Label labelFor="$tableUnsettledPayments" text="Unsettled payments" />
+        <TableView fx:id="tableUnsettledPayments">
           <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
           </columnResizePolicy>
           <columns>
-            <TableColumn fx:id="columnUnaccountedWhat" minWidth="-1.0" prefWidth="-1.0" text="What" />
-            <TableColumn fx:id="columnUnaccountedWho" minWidth="-1.0" prefWidth="-1.0" text="Who" />
-            <TableColumn fx:id="columnUnaccountedAmount" minWidth="-1.0" prefWidth="-1.0" text="Amount" />
+            <TableColumn fx:id="columnUnsettledDescription" minWidth="-1.0" prefWidth="-1.0" text="Description" />
+            <TableColumn fx:id="columnUnsettledPayer" minWidth="-1.0" prefWidth="-1.0" text="Payer" />
+            <TableColumn fx:id="columnUnsettledAmount" minWidth="-1.0" prefWidth="-1.0" text="Amount" />
             <TableColumn fx:id="columnConfirm" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
           </columns>
         </TableView>
@@ -91,15 +91,15 @@
     </VBox>
     <VBox alignment="CENTER" GridPane.rowIndex="3">
       <children>
-        <Label labelFor="$tableAccountedPayments" text="Accounted payments" />
-        <TableView fx:id="tableAccountedPayments">
+        <Label labelFor="$tableSettledPayments" text="Settled payments" />
+        <TableView fx:id="tableSettledPayments">
           <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
           </columnResizePolicy>
           <columns>
-            <TableColumn fx:id="columnAccountedWhat" prefWidth="299.0" text="What" />
-            <TableColumn fx:id="columnAccountedWho" prefWidth="131.0" text="Who" />
-            <TableColumn fx:id="columnAccountedAmount" prefWidth="69.0" text="Amount" />
+            <TableColumn fx:id="columnSettledDescription" prefWidth="299.0" text="Description" />
+            <TableColumn fx:id="columnSettledPayer" prefWidth="131.0" text="Payer" />
+            <TableColumn fx:id="columnSettledAmount" prefWidth="69.0" text="Amount" />
           </columns>
         </TableView>
       </children>

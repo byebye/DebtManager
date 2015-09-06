@@ -35,7 +35,7 @@
               <children>
                 <TableView fx:id="tableTransfersToSend" prefHeight="252.0" prefWidth="560.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <columns>
-                    <TableColumn fx:id="columnSendTo" prefWidth="113.0" text="Send to" />
+                    <TableColumn fx:id="columnSendToRecipient" prefWidth="113.0" text="Send to" />
                     <TableColumn fx:id="columnSendAccount" prefWidth="195.0" text="Account" />
                     <TableColumn fx:id="columnSendAmount" prefWidth="72.0" text="Amount" />
                     <TableColumn fx:id="columnSendBudget" prefWidth="151.0" text="Budget" />
@@ -56,7 +56,7 @@
               <children>
                 <TableView fx:id="tableTransfersToReceive" prefHeight="252.0" prefWidth="560.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <columns>
-                    <TableColumn fx:id="columnReceiveFrom" prefWidth="113.0" text="From who" />
+                    <TableColumn fx:id="columnReceiveFromSender" prefWidth="113.0" text="Sender" />
                     <TableColumn fx:id="columnReceiveAccount" prefWidth="195.0" text="Account" />
                     <TableColumn fx:id="columnReceiveAmount" prefWidth="72.0" text="Amount" />
                     <TableColumn fx:id="columnReceiveBudget" prefWidth="151.0" text="Budget" />

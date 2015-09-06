@@ -26,7 +26,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
@@ -103,7 +102,7 @@ public class DatabaseController implements DbHandler {
     Result<Record1<String>> result =
         dbContext.select(Users.USERS.PASSWORD_HASH)
             .from(Users.USERS)
-            .where(Users.USERS.EMAIL.equal(email.getAddress()))
+            .where(Users.USERS.EMAIL.equal(email.toString()))
             .fetch();
     if (result.isEmpty())
       return false;
@@ -112,7 +111,7 @@ public class DatabaseController implements DbHandler {
   }
 
   public synchronized User getUserByEmail(String email) {
-    Result<Record3<Integer, String, BigInteger>> result =
+    Result<Record3<Integer, String, String>> result =
         dbContext.select(Users.USERS.ID,
             Users.USERS.NAME,
             Users.USERS.BANK_ACCOUNT)
@@ -123,12 +122,12 @@ public class DatabaseController implements DbHandler {
       return null;
     final int id = result.get(0).value1();
     final String name = result.get(0).value2();
-    final String bankAccount = result.get(0).value3().toString();
+    final String bankAccount = result.get(0).value3();
     return new User(id, name, email, bankAccount);
   }
 
   public synchronized User getUserById(int userId) {
-    Result<Record3<String, String, BigInteger>> result =
+    Result<Record3<String, String, String>> result =
         dbContext.select(Users.USERS.EMAIL,
             Users.USERS.NAME,
             Users.USERS.BANK_ACCOUNT)
@@ -139,7 +138,7 @@ public class DatabaseController implements DbHandler {
       return null;
     final String email = result.get(0).value1();
     final String name = result.get(0).value2();
-    final String bankAccount = result.get(0).value3().toString();
+    final String bankAccount = result.get(0).value3();
     return new User(userId, name, email, bankAccount);
   }
 
@@ -157,13 +156,12 @@ public class DatabaseController implements DbHandler {
 
   @Override
   public synchronized boolean createUser(User user, String passwordHash) {
-    BigInteger bankAccount = new BigInteger(user.getBankAccount());
     dbContext.insertInto(Users.USERS,
         Users.USERS.EMAIL,
         Users.USERS.NAME,
         Users.USERS.BANK_ACCOUNT,
         Users.USERS.PASSWORD_HASH)
-        .values(user.getEmail(), user.getName(), bankAccount, passwordHash)
+        .values(user.getEmail().toString(), user.getName(), user.getBankAccount().toString(), passwordHash)
         .execute();
     return true;
   }
@@ -173,13 +171,12 @@ public class DatabaseController implements DbHandler {
       String passwordHash,
       String bankAccount
   ) {
-    BigInteger bankAccountNumber = new BigInteger(bankAccount);
     dbContext.insertInto(Users.USERS,
         Users.USERS.EMAIL,
         Users.USERS.NAME,
         Users.USERS.BANK_ACCOUNT,
         Users.USERS.PASSWORD_HASH)
-        .values(email, name, bankAccountNumber, passwordHash)
+        .values(email, name, bankAccount, passwordHash)
         .execute();
     return true;
   }
@@ -222,7 +219,7 @@ public class DatabaseController implements DbHandler {
 
     for (Record1<Integer> settlement : settlements) {
       dbContext.delete(BankTransfers.BANK_TRANSFERS)
-          .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+          .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
           .execute();
 
       dbContext.delete(Settlements.SETTLEMENTS)
@@ -267,7 +264,7 @@ public class DatabaseController implements DbHandler {
   }
 
   public synchronized List<User> getBudgetParticipants(int budgetId) {
-    Result<Record4<Integer, String, String, BigInteger>> result =
+    Result<Record4<Integer, String, String, String>> result =
         dbContext.select(Users.USERS.ID,
             Users.USERS.NAME,
             Users.USERS.EMAIL,
@@ -278,11 +275,11 @@ public class DatabaseController implements DbHandler {
             .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId))
             .fetch();
     List<User> participants = new ArrayList<>(result.size());
-    for (Record4<Integer, String, String, BigInteger> user : result) {
+    for (Record4<Integer, String, String, String> user : result) {
       final int id = user.value1();
       final String name = user.value2();
       final String email = user.value3();
-      final String bankAccount = user.value4().toString();
+      final String bankAccount = user.value4();
       participants.add(new User(id, name, email, bankAccount));
     }
     return participants;
@@ -300,26 +297,26 @@ public class DatabaseController implements DbHandler {
     Server.slh.unhangAll();
   }
 
-  public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String what) {
+  public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String description) {
     dbContext.insertInto(Payments.PAYMENTS,
         Payments.PAYMENTS.BUDGET_ID,
         Payments.PAYMENTS.AMOUNT,
-        Payments.PAYMENTS.USER_ID,
+        Payments.PAYMENTS.PAYER_ID,
         Payments.PAYMENTS.DESCRIPTION)
         .values(budget.getId(),
             amount,
             userId,
-            what)
+            description)
         .execute();
 
     Server.slh.unhangAll();
   }
 
-  public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String what) {
+  public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String description) {
     dbContext.update(Payments.PAYMENTS)
         .set(Payments.PAYMENTS.AMOUNT, amount)
-        .set(Payments.PAYMENTS.USER_ID, userId)
-        .set(Payments.PAYMENTS.DESCRIPTION, what)
+        .set(Payments.PAYMENTS.PAYER_ID, userId)
+        .set(Payments.PAYMENTS.DESCRIPTION, description)
         .where(Payments.PAYMENTS.ID.equal(paymentId))
         .execute();
 
@@ -339,21 +336,21 @@ public class DatabaseController implements DbHandler {
 
     try {
       Result<Record2<Integer, java.sql.Date>> result =
-          dbContext.select(Settlements.SETTLEMENTS.ID, Settlements.SETTLEMENTS.TERM)
+          dbContext.select(Settlements.SETTLEMENTS.ID, Settlements.SETTLEMENTS.SETTLE_DATE)
               .from(Settlements.SETTLEMENTS)
               .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))
               .orderBy(Settlements.SETTLEMENTS.ID.desc())
               .fetch();
 
-      for (Record2<Integer, java.sql.Date> settlement : result) {
+      for (Record2<Integer, Date> settlement : result) {
         int numPaidBankTransfers = dbContext.selectCount()
             .from(BankTransfers.BANK_TRANSFERS)
             .where(BankTransfers.BANK_TRANSFERS.PAID.equal(2))
-            .and(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+            .and(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
             .fetchOne().value1();
         int numAllBankTransfers = dbContext.selectCount()
             .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlement.value1()))
+            .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
             .fetchOne().value1();
 
         double amount = 0.0;
@@ -362,7 +359,7 @@ public class DatabaseController implements DbHandler {
         }
 
         settlements.add(new Settlement(settlement.value1(), budgetId, numPaidBankTransfers, numAllBankTransfers,
-            settlement.value2().toString(), amount));
+            settlement.value2(), amount));
       }
     }
     catch (Exception e) {
@@ -383,12 +380,11 @@ public class DatabaseController implements DbHandler {
 
     for (Record1<Integer> id : result) {
       final int paymentId = id.value1();
-      Record5<Integer, Integer, String, BigDecimal, Date> payment =
+      Record4<Integer, Integer, String, BigDecimal> payment =
           dbContext.select(Payments.PAYMENTS.BUDGET_ID,
-              Payments.PAYMENTS.USER_ID,
+              Payments.PAYMENTS.PAYER_ID,
               Payments.PAYMENTS.DESCRIPTION,
-              Payments.PAYMENTS.AMOUNT,
-              Payments.PAYMENTS.TERM)
+              Payments.PAYMENTS.AMOUNT)
               .from(Payments.PAYMENTS)
               .where(Payments.PAYMENTS.ID.equal(paymentId))
               .fetchOne();
@@ -397,37 +393,34 @@ public class DatabaseController implements DbHandler {
       final String userName = getUserById(userId).getName();
       final String description = payment.value3();
       final double amount = payment.value4().doubleValue();
-      final Date date = payment.value5();
-      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount, date));
+      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount));
     }
     return payments;
   }
 
   public synchronized List<Payment> getAllPayments(int budgetId, boolean accounted) {
-    Result<Record5<Integer, Integer, String, BigDecimal, Date>> result =
+    Result<Record4<Integer, Integer, String, BigDecimal>> result =
         dbContext.select(Payments.PAYMENTS.ID,
-            Payments.PAYMENTS.USER_ID,
+            Payments.PAYMENTS.PAYER_ID,
             Payments.PAYMENTS.DESCRIPTION,
-            Payments.PAYMENTS.AMOUNT,
-            Payments.PAYMENTS.TERM)
+            Payments.PAYMENTS.AMOUNT)
             .from(Payments.PAYMENTS)
             .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
-            .and(Payments.PAYMENTS.ACCOUNTED.equal(accounted)).fetch();
+            .and(Payments.PAYMENTS.SETTLED.equal(accounted)).fetch();
 
     List<Payment> payments = new ArrayList<>(result.size());
-    for (Record5<Integer, Integer, String, BigDecimal, Date> payment : result) {
+    for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
       final int userId = payment.value2();
       final String userName = getUserById(userId).getName();
       final int paymentId = payment.value1();
       final String description = payment.value3();
       final double amount = payment.value4().doubleValue();
-      final Date date = payment.value5();
-      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount, date));
+      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount));
     }
     return payments;
   }
 
-  public synchronized List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unaccountedPayments) {
+  public synchronized List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unsettledPayments) {
     List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
     Map<Integer, Double> userSpend = new HashMap<>();
     double sum = 0;
@@ -435,7 +428,7 @@ public class DatabaseController implements DbHandler {
     for (User u : getBudgetParticipants(budgetId)) {
       userSpend.put(u.getId(), 0.0);
     }
-    for (Payment p : unaccountedPayments) {
+    for (Payment p : unsettledPayments) {
       sum += p.getAmount();
       userSpend.put(p.getUserId(), userSpend.get(p.getUserId()) + p.getAmount());
     }
@@ -463,7 +456,7 @@ public class DatabaseController implements DbHandler {
     return neededTransfers;
   }
 
-  public synchronized void settleUnaccountedPayments(int budgetId, List<Payment> payments,
+  public synchronized void settlePayments(int budgetId, List<Payment> payments,
       List<BankTransfer> bankTransfers, boolean sendEmails
   ) {
     int settleId = dbContext.insertInto(Settlements.SETTLEMENTS, Settlements.SETTLEMENTS.BUDGET_ID)
@@ -472,7 +465,7 @@ public class DatabaseController implements DbHandler {
         .fetchOne().getId();
     for (Payment payment : payments) {
       dbContext.update(Payments.PAYMENTS)
-          .set(Payments.PAYMENTS.ACCOUNTED, true)
+          .set(Payments.PAYMENTS.SETTLED, true)
           .set(Payments.PAYMENTS.SETTLEMENT_ID, settleId)
           .where(Payments.PAYMENTS.ID.equal(payment.getId()))
           .execute();
@@ -481,11 +474,11 @@ public class DatabaseController implements DbHandler {
     for (BankTransfer bk : bankTransfers) {
       dbContext.insertInto(
           BankTransfers.BANK_TRANSFERS,
-          BankTransfers.BANK_TRANSFERS.SETTLE_ID,
-          BankTransfers.BANK_TRANSFERS.WHO,
-          BankTransfers.BANK_TRANSFERS.WHOM,
+          BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
+          BankTransfers.BANK_TRANSFERS.SENDER,
+          BankTransfers.BANK_TRANSFERS.RECIPIENT,
           BankTransfers.BANK_TRANSFERS.AMOUNT
-      ).values(settleId, bk.getWhoId(), bk.getWhomId(), bk.getAmount())
+      ).values(settleId, bk.getSenderId(), bk.getRecipientId(), bk.getAmount())
           .execute();
     }
     if (sendEmails)
@@ -508,23 +501,23 @@ public class DatabaseController implements DbHandler {
     Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
         dbContext.select(
             BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.SETTLE_ID,
-            BankTransfers.BANK_TRANSFERS.WHOM,
+            BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
+            BankTransfers.BANK_TRANSFERS.RECIPIENT,
             BankTransfers.BANK_TRANSFERS.AMOUNT,
             BankTransfers.BANK_TRANSFERS.PAID
         ).from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.WHO.equal(userId))
+            .where(BankTransfers.BANK_TRANSFERS.SENDER.equal(userId))
             .fetch();
 
     for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {
       int transferId = bankTransfer.value1();
       int settleId = bankTransfer.value2();
-      int whomId = bankTransfer.value3();
+      int recipientId = bankTransfer.value3();
       BigDecimal amount = bankTransfer.value4();
       int status = bankTransfer.value5();
 
-      User who = getUserById(userId);
-      User whom = getUserById(whomId);
+      User sender = getUserById(userId);
+      User recipient = getUserById(recipientId);
       int budgetId =
           dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
               .from(Settlements.SETTLEMENTS)
@@ -536,7 +529,7 @@ public class DatabaseController implements DbHandler {
               .where(Budgets.BUDGETS.ID.equal(budgetId))
               .fetchOne().value1();
 
-      myBankTransfers.add(new BankTransfer(transferId, budgetName, who, whom, amount, status));
+      myBankTransfers.add(new BankTransfer(transferId, budgetName, sender, recipient, amount, status));
     }
     return myBankTransfers;
   }
@@ -546,18 +539,18 @@ public class DatabaseController implements DbHandler {
     Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
         dbContext.select(
             BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.SETTLE_ID,
-            BankTransfers.BANK_TRANSFERS.WHO,
+            BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
+            BankTransfers.BANK_TRANSFERS.SENDER,
             BankTransfers.BANK_TRANSFERS.AMOUNT,
             BankTransfers.BANK_TRANSFERS.PAID
         ).from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.WHOM.equal(userId))
+            .where(BankTransfers.BANK_TRANSFERS.RECIPIENT.equal(userId))
             .fetch();
 
     for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {
       int transferId = bankTransfer.value1();
       int settleId = bankTransfer.value2();
-      int whoId = bankTransfer.value3();
+      int senderId = bankTransfer.value3();
       BigDecimal amount = bankTransfer.value4();
       int status = bankTransfer.value5();
 
@@ -572,10 +565,10 @@ public class DatabaseController implements DbHandler {
               .where(Budgets.BUDGETS.ID.equal(budgetId))
               .fetchOne().value1();
 
-      User who = getUserById(whoId);
-      User whom = getUserById(userId);
+      final User sender = getUserById(senderId);
+      final User recipient = getUserById(userId);
 
-      toReceiveBankTransfers.add(new BankTransfer(transferId, budgetName, who, whom, amount, status));
+      toReceiveBankTransfers.add(new BankTransfer(transferId, budgetName, sender, recipient, amount, status));
     }
     return toReceiveBankTransfers;
   }
@@ -597,12 +590,12 @@ public class DatabaseController implements DbHandler {
     Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
         dbContext.select(
             BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.WHO,
-            BankTransfers.BANK_TRANSFERS.WHOM,
+            BankTransfers.BANK_TRANSFERS.SENDER,
+            BankTransfers.BANK_TRANSFERS.RECIPIENT,
             BankTransfers.BANK_TRANSFERS.AMOUNT,
             BankTransfers.BANK_TRANSFERS.PAID)
             .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.SETTLE_ID.equal(settlementId))
+            .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId))
             .fetch();
 
     for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {

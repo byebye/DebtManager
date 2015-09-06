@@ -2,6 +2,7 @@ package client.controllers;
 
 import common.data.BankAccount;
 import common.data.Email;
+import common.data.User;
 import common.utils.SHA1Hasher;
 import client.utils.InputFormatRestrictions;
 import client.view.Alerts;
@@ -28,8 +29,6 @@ public class SignUpController extends BasicController implements Initializable {
   @FXML
   private Button buttonSignUp, buttonCancel;
 
-  private final static int MAX_EMAIL_LENGTH = 64;
-  private final static int MAX_USER_NAME_LENGTH = 32;
   private LoginController loginController;
 
   public void setLoginController(LoginController controller) {
@@ -44,9 +43,9 @@ public class SignUpController extends BasicController implements Initializable {
 
   private void initFields() {
     fieldEmail.textProperty()
-        .addListener(InputFormatRestrictions.restrictTextLength(fieldEmail::setText, MAX_EMAIL_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldEmail::setText, Email.MAX_LENGTH));
     fieldUsername.textProperty()
-        .addListener(InputFormatRestrictions.restrictTextLength(fieldUsername::setText, MAX_USER_NAME_LENGTH));
+        .addListener(InputFormatRestrictions.restrictTextLength(fieldUsername::setText, User.MAX_NAME_LENGTH));
     fieldBankAccount.textProperty()
         .addListener(InputFormatRestrictions.restrictBankAccountInput(fieldBankAccount::setText));
   }

@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Budgets extends org.jooq.impl.TableImpl<server.jooq.tables.records.BudgetsRecord> {
 
-	private static final long serialVersionUID = 1403370394;
+	private static final long serialVersionUID = 43920484;
 
 	/**
 	 * The reference instance of <code>debtmanager.budgets</code>
@@ -37,19 +37,19 @@ public class Budgets extends org.jooq.impl.TableImpl<server.jooq.tables.records.
 	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
 
 	/**
+	 * The column <code>debtmanager.budgets.owner_id</code>.
+	 */
+	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.Integer> OWNER_ID = createField("owner_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+	/**
 	 * The column <code>debtmanager.budgets.name</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(50).nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(30).nullable(false), this, "");
 
 	/**
 	 * The column <code>debtmanager.budgets.description</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(200), this, "");
-
-	/**
-	 * The column <code>debtmanager.budgets.owner_id</code>.
-	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.Integer> OWNER_ID = createField("owner_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.BudgetsRecord, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(60), this, "");
 
 	/**
 	 * Create a <code>debtmanager.budgets</code> table reference

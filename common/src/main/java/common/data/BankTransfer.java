@@ -6,28 +6,28 @@ import java.math.BigDecimal;
 public class BankTransfer implements Serializable {
 
   private final int id;
-  private final User who;
-  private final User whom;
+  private final User sender;
+  private final User recipient;
   private final BigDecimal amount;
   private final String budgetName;
   private Status status;
   private boolean toUpdate = false;
 
-  public BankTransfer(User who, User whom, BigDecimal amount) {
-    this(-1, null, who, whom, amount, 0);
+  public BankTransfer(User sender, User recipient, BigDecimal amount) {
+    this(-1, null, sender, recipient, amount, 0);
   }
 
-  public BankTransfer(int id, String budgetName, User who, User whom, BigDecimal amount, int status) {
+  public BankTransfer(int id, String budgetName, User sender, User recipient, BigDecimal amount, int status) {
     this.id = id;
     this.budgetName = budgetName;
-    this.who = who;
-    this.whom = whom;
+    this.sender = sender;
+    this.recipient = recipient;
     this.amount = amount;
     this.status = Status.fromValue(status);
   }
 
   public void updateStatus(int updatingUser) {
-    if (updatingUser == who.getId()) {
+    if (updatingUser == sender.getId()) {
       status = Status.NotConfirmed;
     }
     else {
@@ -48,28 +48,28 @@ public class BankTransfer implements Serializable {
     return status;
   }
 
-  public String getWho() {
-    return who.getName();
+  public String getSender() {
+    return sender.getName();
   }
 
-  public int getWhoId() {
-    return who.getId();
+  public int getSenderId() {
+    return sender.getId();
   }
 
-  public String getWhom() {
-    return whom.getName();
+  public String getRecipient() {
+    return recipient.getName();
   }
 
-  public int getWhomId() {
-    return whom.getId();
+  public int getRecipientId() {
+    return recipient.getId();
   }
 
   public BigDecimal getAmount() {
     return amount;
   }
 
-  public String getBankAccount() {
-    return whom.getBankAccount();
+  public BankAccount getBankAccount() {
+    return recipient.getBankAccount();
   }
 
   public void setToUpdate(boolean v) {

@@ -54,20 +54,20 @@ public class BudgetController extends BasicController implements Initializable, 
   private Button buttonAddPayment, buttonAddParticipant, buttonSettle;
 
   @FXML
-  private TableView<Payment> tableUnaccountedPayments;
+  private TableView<Payment> tableUnsettledPayments;
   @FXML
-  private TableColumn<Payment, String> columnUnaccountedWho, columnUnaccountedWhat;
+  private TableColumn<Payment, String> columnUnsettledPayer, columnUnsettledDescription;
   @FXML
-  private TableColumn<Payment, Integer> columnUnaccountedAmount;
+  private TableColumn<Payment, Integer> columnUnsettledAmount;
   @FXML
   private TableColumn<Payment, Boolean> columnConfirm;
 
   @FXML
-  private TableView<Payment> tableAccountedPayments;
+  private TableView<Payment> tableSettledPayments;
   @FXML
-  private TableColumn<Payment, String> columnAccountedWho, columnAccountedWhat;
+  private TableColumn<Payment, String> columnSettledPayer, columnSettledDescription;
   @FXML
-  private TableColumn<Payment, Integer> columnAccountedAmount;
+  private TableColumn<Payment, Integer> columnSettledAmount;
 
   @FXML
   private TableView<User> tableParticipants;
@@ -84,8 +84,8 @@ public class BudgetController extends BasicController implements Initializable, 
   private TableColumn<Settlement, String> columnDate, columnStatus;
 
   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
-  private final ObservableList<Payment> accountedPayments = FXCollections.observableArrayList();
-  private final ObservableList<Payment> unaccountedPayments = FXCollections.observableArrayList();
+  private final ObservableList<Payment> settledPayments = FXCollections.observableArrayList();
+  private final ObservableList<Payment> unsettledPayments = FXCollections.observableArrayList();
   private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
   private Budget budget;
   private double spentMoneySum = 0;
@@ -123,8 +123,8 @@ public class BudgetController extends BasicController implements Initializable, 
   private void exportBudget() {
     BudgetExporter budgetExporter = new BudgetExporter(budget,
         participantsList,
-        accountedPayments,
-        unaccountedPayments,
+        settledPayments,
+        unsettledPayments,
         settleHistory,
         currentStage);
     budgetExporter.export();
@@ -151,14 +151,14 @@ public class BudgetController extends BasicController implements Initializable, 
   private void displayAddParticipantsWindow() {
     AddParticipantsWindow addParticipantsWindow = new AddParticipantsWindow(this);
     addParticipantsWindow.initOwner(currentStage);
-    addParticipantsWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    addParticipantsWindow.setOnHidden(event -> fillTableUnsettledPayments());
     addParticipantsWindow.show();
   }
 
   private void displayAddPaymentWindow() {
     AddPaymentWindow addPaymentWindow = new AddPaymentWindow(budget, participantsList);
     addPaymentWindow.initOwner(currentStage);
-    addPaymentWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    addPaymentWindow.setOnHidden(event -> fillTableUnsettledPayments());
     addPaymentWindow.show();
   }
 
@@ -180,26 +180,26 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private List<Payment> getPaymentsToSettle() {
-    return unaccountedPayments.stream()
+    return unsettledPayments.stream()
         .filter(Payment::isAccepted)
         .collect(Collectors.toList());
   }
 
   private void initTables() {
-    initUnaccountedPaymentsTable();
-    initAccountedPaymentsTable();
+    initUnsettledPaymentsTable();
+    initSettledPaymentsTable();
     initParticipantsTable();
     initSettlementsHistoryTable();
   }
 
-  private void initUnaccountedPaymentsTable() {
-    columnUnaccountedWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnUnaccountedWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
-    columnUnaccountedAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+  private void initUnsettledPaymentsTable() {
+    columnUnsettledPayer.setCellValueFactory(new PropertyValueFactory<>("payer"));
+    columnUnsettledDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+    columnUnsettledAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
-    tableUnaccountedPayments.setItems(unaccountedPayments);
-    tableUnaccountedPayments.setRowFactory(param -> {
+    tableUnsettledPayments.setItems(unsettledPayments);
+    tableUnsettledPayments.setRowFactory(param -> {
       TableRow<Payment> row = new TableRow<>();
       row.setOnMouseClicked(mouseEvent -> handlePaymentRowClicked(row, mouseEvent));
       return row;
@@ -226,16 +226,16 @@ public class BudgetController extends BasicController implements Initializable, 
   private void displayPaymentWindow(Payment payment) {
     UpdatePaymentWindow paymentWindow = new UpdatePaymentWindow(budget, payment, participantsList);
     paymentWindow.initOwner(currentStage);
-    paymentWindow.setOnHidden(event -> fillTableUnaccountedPayments());
+    paymentWindow.setOnHidden(event -> fillTableUnsettledPayments());
     paymentWindow.show();
   }
 
-  private void initAccountedPaymentsTable() {
-    columnAccountedWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnAccountedWhat.setCellValueFactory(new PropertyValueFactory<>("what"));
-    columnAccountedAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+  private void initSettledPaymentsTable() {
+    columnSettledPayer.setCellValueFactory(new PropertyValueFactory<>("payer"));
+    columnSettledDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+    columnSettledAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
-    tableAccountedPayments.setItems(accountedPayments);
+    tableSettledPayments.setItems(settledPayments);
   }
 
   private void initParticipantsTable() {
@@ -254,19 +254,19 @@ public class BudgetController extends BasicController implements Initializable, 
   private void handleParticipantCellClicked(TableRow<User> row, MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
       final User participant = row.getItem();
-      boolean hasUnaccountedPayments = unaccountedPayments.stream()
+      boolean hasUnsettledPayments = unsettledPayments.stream()
           .anyMatch(payment -> payment.getUserId() == participant.getId());
-      displayParticipantDetailsWindow(participant, hasUnaccountedPayments);
+      displayParticipantDetailsWindow(participant, hasUnsettledPayments);
     }
   }
 
-  private void displayParticipantDetailsWindow(User participant, boolean hasUnaccountedPayments) {
+  private void displayParticipantDetailsWindow(User participant, boolean hasUnsettledPayments) {
     ParticipantDetailsWindow participantWindow =
-        new ParticipantDetailsWindow(budget, participant, hasUnaccountedPayments);
+        new ParticipantDetailsWindow(budget, participant, hasUnsettledPayments);
     participantWindow.initOwner(currentStage);
     participantWindow.setOnHidden(event -> {
       fillTableParticipants();
-      fillTableUnaccountedPayments();
+      fillTableUnsettledPayments();
     });
     participantWindow.show();
   }
@@ -334,17 +334,17 @@ public class BudgetController extends BasicController implements Initializable, 
 
   public void update() {
     fillTableParticipants();
-    fillTableUnaccountedPayments();
-    fillTableAccountedPayments();
+    fillTableUnsettledPayments();
+    fillTableSettledPayments();
     fillTableSettleHistory();
   }
 
-  private void fillTableAccountedPayments() {
-    fillTablePayments(accountedPayments, true);
+  private void fillTableSettledPayments() {
+    fillTablePayments(settledPayments, true);
   }
 
-  private void fillTableUnaccountedPayments() {
-    fillTablePayments(unaccountedPayments, false);
+  private void fillTableUnsettledPayments() {
+    fillTablePayments(unsettledPayments, false);
     updateSpentMoneySums();
   }
 
@@ -380,10 +380,10 @@ public class BudgetController extends BasicController implements Initializable, 
     }
   }
 
-  void fillTablePayments(ObservableList<Payment> payments, boolean accounted) {
+  void fillTablePayments(ObservableList<Payment> payments, boolean settled) {
     payments.clear();
     try {
-      payments.addAll(dbHandler.getAllPayments(budget.getId(), accounted));
+      payments.addAll(dbHandler.getAllPayments(budget.getId(), settled));
     }
     catch (RemoteException e) {
       e.printStackTrace();
@@ -394,7 +394,7 @@ public class BudgetController extends BasicController implements Initializable, 
   private void updateSpentMoneySums() {
     spentMoneySum = 0;
     participantsList.forEach(p -> p.setSpentMoney(0));
-    for (Payment payment : unaccountedPayments) {
+    for (Payment payment : unsettledPayments) {
       spentMoneySum += payment.getAmount();
       Optional<User> userOptional = participantsList.stream()
           .filter(user -> user.getId() == payment.getUserId())

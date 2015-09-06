@@ -32,7 +32,7 @@ public class BankTransfersController extends BasicController implements Initiali
   @FXML
   private TableView<BankTransfer> tableTransfersToSend;
   @FXML
-  private TableColumn<BankTransfer, String> columnSendTo, columnSendAccount, columnSendBudget;
+  private TableColumn<BankTransfer, String> columnSendToRecipient, columnSendAccount, columnSendBudget;
   @FXML
   private TableColumn<BankTransfer, BigDecimal> columnSendAmount;
   @FXML
@@ -43,7 +43,7 @@ public class BankTransfersController extends BasicController implements Initiali
   @FXML
   private TableView<BankTransfer> tableTransfersToReceive;
   @FXML
-  private TableColumn<BankTransfer, String> columnReceiveFrom, columnReceiveAccount, columnReceiveBudget;
+  private TableColumn<BankTransfer, String> columnReceiveFromSender, columnReceiveAccount, columnReceiveBudget;
   @FXML
   private TableColumn<BankTransfer, BigDecimal> columnReceiveAmount;
   @FXML
@@ -68,7 +68,7 @@ public class BankTransfersController extends BasicController implements Initiali
   }
 
   private void initTableTransfersToReceive() {
-    columnReceiveFrom.setCellValueFactory(new PropertyValueFactory<>("who"));
+    columnReceiveFromSender.setCellValueFactory(new PropertyValueFactory<>("sender"));
     columnReceiveAccount.setCellValueFactory(new PropertyValueFactory<>("account"));
     columnReceiveAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnReceiveBudget.setCellValueFactory(new PropertyValueFactory<>("budgetName"));
@@ -78,7 +78,7 @@ public class BankTransfersController extends BasicController implements Initiali
   }
 
   private void initTableTransfersToSend() {
-    columnSendTo.setCellValueFactory(new PropertyValueFactory<>("whom"));
+    columnSendToRecipient.setCellValueFactory(new PropertyValueFactory<>("recipient"));
     columnSendAccount.setCellValueFactory(new PropertyValueFactory<>("account"));
     columnSendAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnSendBudget.setCellValueFactory(new PropertyValueFactory<>("budgetName"));

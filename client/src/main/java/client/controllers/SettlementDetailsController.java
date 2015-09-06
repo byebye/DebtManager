@@ -40,7 +40,7 @@ public class SettlementDetailsController extends BasicController implements Init
   @FXML
   private TableView<BankTransfer> tableBankTransfers;
   @FXML
-  private TableColumn<BankTransfer, String> columnWho, columnWhom, columnBankAccount;
+  private TableColumn<BankTransfer, String> columnSender, columnRecipient, columnBankAccount;
   @FXML
   private TableColumn<BankTransfer, BigDecimal> columnAmount;
   @FXML
@@ -69,8 +69,8 @@ public class SettlementDetailsController extends BasicController implements Init
   }
 
   private void initBankTransfersTable() {
-    columnWho.setCellValueFactory(new PropertyValueFactory<>("who"));
-    columnWhom.setCellValueFactory(new PropertyValueFactory<>("whom"));
+    columnSender.setCellValueFactory(new PropertyValueFactory<>("sender"));
+    columnRecipient.setCellValueFactory(new PropertyValueFactory<>("recipient"));
     columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnBankAccount.setCellValueFactory(new PropertyValueFactory<>("bankAccount"));
     columnStatus.setCellFactory(param -> new StatusImageCell());
@@ -152,8 +152,8 @@ public class SettlementDetailsController extends BasicController implements Init
     }
 
     private boolean isCurrentUserTransferParticipant(BankTransfer transfer) {
-      return transfer.getWhoId() == currentUser.getId()
-             || transfer.getWhomId() == currentUser.getId();
+      return transfer.getSenderId() == currentUser.getId()
+             || transfer.getRecipientId() == currentUser.getId();
     }
   }
 }

@@ -16,7 +16,7 @@ package server.jooq.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.jooq.tables.records.SettlementsRecord> implements org.jooq.Record3<java.lang.Integer, java.lang.Integer, java.sql.Date> {
 
-	private static final long serialVersionUID = -2064712148;
+	private static final long serialVersionUID = 651606876;
 
 	/**
 	 * Setter for <code>debtmanager.settlements.id</code>.
@@ -47,16 +47,16 @@ public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.
 	}
 
 	/**
-	 * Setter for <code>debtmanager.settlements.term</code>.
+	 * Setter for <code>debtmanager.settlements.settle_date</code>.
 	 */
-	public void setTerm(java.sql.Date value) {
+	public void setSettleDate(java.sql.Date value) {
 		setValue(2, value);
 	}
 
 	/**
-	 * Getter for <code>debtmanager.settlements.term</code>.
+	 * Getter for <code>debtmanager.settlements.settle_date</code>.
 	 */
-	public java.sql.Date getTerm() {
+	public java.sql.Date getSettleDate() {
 		return (java.sql.Date) getValue(2);
 	}
 
@@ -113,7 +113,7 @@ public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.
 	 */
 	@Override
 	public org.jooq.Field<java.sql.Date> field3() {
-		return server.jooq.tables.Settlements.SETTLEMENTS.TERM;
+		return server.jooq.tables.Settlements.SETTLEMENTS.SETTLE_DATE;
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.
 	 */
 	@Override
 	public java.sql.Date value3() {
-		return getTerm();
+		return getSettleDate();
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.
 	 */
 	@Override
 	public SettlementsRecord value3(java.sql.Date value) {
-		setTerm(value);
+		setSettleDate(value);
 		return this;
 	}
 
@@ -189,11 +189,11 @@ public class SettlementsRecord extends org.jooq.impl.UpdatableRecordImpl<server.
 	/**
 	 * Create a detached, initialised SettlementsRecord
 	 */
-	public SettlementsRecord(java.lang.Integer id, java.lang.Integer budgetId, java.sql.Date term) {
+	public SettlementsRecord(java.lang.Integer id, java.lang.Integer budgetId, java.sql.Date settleDate) {
 		super(server.jooq.tables.Settlements.SETTLEMENTS);
 
 		setValue(0, id);
 		setValue(1, budgetId);
-		setValue(2, term);
+		setValue(2, settleDate);
 	}
 }

@@ -27,8 +27,8 @@ public class SingleRecipientEmailSender {
   public void send(Email from, Email to, String subject, String text) throws EmailNotSentException {
     SendGrid.Email email = new SendGrid.Email();
 
-    email.addTo(to.getAddress());
-    email.setFrom(from.getAddress());
+    email.addTo(to.toString());
+    email.setFrom(from.toString());
     email.setSubject(subject);
     email.setText(text);
 

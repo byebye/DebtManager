@@ -15,7 +15,7 @@ public class UpdatePaymentController extends PaymentController implements Initia
 
   public void setPayment(Payment payment) {
     this.payment = payment;
-    fieldWhat.setText(payment.getWhat());
+    fieldDescription.setText(payment.getDescription());
     fieldAmount.setText(Double.toString(payment.getAmount()));
   }
 
@@ -41,7 +41,7 @@ public class UpdatePaymentController extends PaymentController implements Initia
 
   @Override
   protected void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException {
-    dbHandler.updatePayment(payment.getId(), user.getId(), amount, fieldWhat.getText());
+    dbHandler.updatePayment(payment.getId(), user.getId(), amount, fieldDescription.getText());
   }
 
   private void removePayment() {
