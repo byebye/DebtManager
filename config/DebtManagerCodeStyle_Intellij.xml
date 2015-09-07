@@ -1,0 +1,90 @@
+<code_scheme name="DebtManagerCodeStyle">
+  <option name="OTHER_INDENT_OPTIONS">
+    <value>
+      <option name="INDENT_SIZE" value="3" />
+      <option name="CONTINUATION_INDENT_SIZE" value="2" />
+      <option name="TAB_SIZE" value="3" />
+      <option name="USE_TAB_CHARACTER" value="false" />
+      <option name="SMART_TABS" value="false" />
+      <option name="LABEL_INDENT_SIZE" value="0" />
+      <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+      <option name="USE_RELATIVE_INDENTS" value="false" />
+    </value>
+  </option>
+  <option name="LINE_SEPARATOR" value="&#10;" />
+  <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
+  <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
+  <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="100" />
+  <option name="IMPORT_LAYOUT_TABLE">
+    <value>
+      <package name="common" withSubpackages="true" static="false" />
+      <package name="client" withSubpackages="true" static="false" />
+      <package name="server" withSubpackages="true" static="false" />
+      <emptyLine />
+      <package name="" withSubpackages="true" static="false" />
+      <emptyLine />
+      <package name="javax" withSubpackages="true" static="false" />
+      <package name="javafx" withSubpackages="true" static="false" />
+      <package name="java" withSubpackages="true" static="false" />
+      <emptyLine />
+      <package name="" withSubpackages="true" static="true" />
+    </value>
+  </option>
+  <JavaCodeStyleSettings>
+    <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
+  </JavaCodeStyleSettings>
+  <XML>
+    <option name="XML_ATTRIBUTE_WRAP" value="0" />
+    <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="true" />
+    <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+  </XML>
+  <codeStyleSettings language="Groovy">
+    <indentOptions>
+      <option name="INDENT_SIZE" value="2" />
+      <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      <option name="TAB_SIZE" value="2" />
+    </indentOptions>
+  </codeStyleSettings>
+  <codeStyleSettings language="JAVA">
+    <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+    <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
+    <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+    <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="0" />
+    <option name="BLANK_LINES_AFTER_CLASS_HEADER" value="1" />
+    <option name="ELSE_ON_NEW_LINE" value="true" />
+    <option name="CATCH_ON_NEW_LINE" value="true" />
+    <option name="FINALLY_ON_NEW_LINE" value="true" />
+    <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+    <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
+    <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
+    <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+    <option name="CALL_PARAMETERS_WRAP" value="1" />
+    <option name="METHOD_PARAMETERS_WRAP" value="1" />
+    <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+    <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
+    <option name="BINARY_OPERATION_WRAP" value="1" />
+    <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
+    <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
+    <option name="DOWHILE_BRACE_FORCE" value="3" />
+    <option name="WHILE_BRACE_FORCE" value="3" />
+    <option name="FOR_BRACE_FORCE" value="3" />
+    <indentOptions>
+      <option name="INDENT_SIZE" value="2" />
+      <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      <option name="TAB_SIZE" value="2" />
+    </indentOptions>
+  </codeStyleSettings>
+  <codeStyleSettings language="JSON">
+    <indentOptions>
+      <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      <option name="TAB_SIZE" value="2" />
+    </indentOptions>
+  </codeStyleSettings>
+  <codeStyleSettings language="XML">
+    <indentOptions>
+      <option name="INDENT_SIZE" value="2" />
+      <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      <option name="TAB_SIZE" value="2" />
+    </indentOptions>
+  </codeStyleSettings>
+</code_scheme>
