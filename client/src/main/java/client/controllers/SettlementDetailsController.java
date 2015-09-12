@@ -7,6 +7,7 @@ import common.data.Payment;
 import common.data.Settlement;
 import client.view.Alerts;
 import client.view.StatusImageCell;
+import client.windows.SettledPaymentsWindow;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,7 +36,7 @@ public class SettlementDetailsController extends BasicController implements Init
   @FXML
   private Text textDetails;
   @FXML
-  private Button buttonSetAsPaid, buttonClose;
+  private Button buttonSetAsPaid, buttonPayments, buttonClose;
 
   @FXML
   private TableView<BankTransfer> tableBankTransfers;
@@ -66,6 +67,13 @@ public class SettlementDetailsController extends BasicController implements Init
   private void initButtons() {
     buttonClose.setOnAction(event -> currentStage.close());
     buttonSetAsPaid.setOnAction(event -> setAsPaid());
+    buttonPayments.setOnAction(event -> displaySettledPaymentsWindow());
+  }
+
+  private void displaySettledPaymentsWindow() {
+    SettledPaymentsWindow paymentsWindow = new SettledPaymentsWindow(settlement);
+    paymentsWindow.showAndWait();
+    fillSettlementsTable();
   }
 
   private void initBankTransfersTable() {
@@ -79,7 +87,7 @@ public class SettlementDetailsController extends BasicController implements Init
     tableBankTransfers.setItems(contentList);
   }
 
-  public void fillContentList() {
+  public void fillSettlementsTable() {
     contentList.clear();
     try {
       List<BankTransfer> transfers = dbHandler.getBankTransfersBySettlementId(settlement.getSettlementId());
@@ -108,7 +116,7 @@ public class SettlementDetailsController extends BasicController implements Init
       e.printStackTrace();
       Alerts.serverConnectionError();
     }
-    fillContentList();
+    fillSettlementsTable();
   }
 
   @Override

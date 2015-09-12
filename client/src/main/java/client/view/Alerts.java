@@ -5,7 +5,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import java.util.Optional;
 
-public class Alerts {
+public abstract class Alerts {
 
   public static void internalError() {
     showAlert(new Alert(AlertType.ERROR),
@@ -40,6 +40,13 @@ public class Alerts {
         "Participant cannot be removed",
         "Participant cannot be removed!",
         reason);
+  }
+
+  public static void noPaymentsToSettle() {
+    showAlert(new Alert(AlertType.INFORMATION),
+        "No payments to settle",
+        "No payments to settle!",
+        "Add some payments and try again.");
   }
 
   public static void exportToFileFailed() {

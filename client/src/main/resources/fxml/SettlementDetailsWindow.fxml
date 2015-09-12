@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -9,7 +10,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.Label?>
 <GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.SettlementDetailsController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
@@ -35,11 +35,11 @@
     </Text>
     <TableView fx:id="tableBankTransfers" GridPane.rowIndex="1">
       <columns>
-        <TableColumn fx:id="columnSender" minWidth="-1.0" prefWidth="-1.0" text="Sender" />
-        <TableColumn fx:id="columnRecipient" minWidth="-1.0" prefWidth="-1.0" text="Recipient" />
-        <TableColumn fx:id="columnBankAccount" minWidth="-1.0" prefWidth="140.0" text="Bank account" />
-        <TableColumn fx:id="columnAmount" minWidth="-1.0" prefWidth="-1.0" text="Amount" />
-        <TableColumn fx:id="columnStatus" minWidth="-1.0" prefWidth="-1.0" text="Status" />
+        <TableColumn fx:id="columnSender" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="110.0" text="Sender" />
+        <TableColumn fx:id="columnRecipient" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="110.0" text="Recipient" />
+        <TableColumn fx:id="columnBankAccount" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="138.0" text="Bank account" />
+        <TableColumn fx:id="columnAmount" maxWidth="-1.0" minWidth="100.0" prefWidth="100.0" text="Amount" />
+        <TableColumn fx:id="columnStatus" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" resizable="false" text="Status" />
         <TableColumn fx:id="columnConfirm" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
       </columns>
       <columnResizePolicy>
@@ -54,6 +54,11 @@
     <Button fx:id="buttonClose" layoutX="468.0" layoutY="337.0" mnemonicParsing="false" prefWidth="75.0" text="Close" GridPane.rowIndex="2">
       <GridPane.margin>
         <Insets />
+      </GridPane.margin>
+    </Button>
+    <Button fx:id="buttonPayments" mnemonicParsing="false" prefWidth="90.0" text="Payments" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+      <GridPane.margin>
+        <Insets right="85.0" />
       </GridPane.margin>
     </Button>
   </children>

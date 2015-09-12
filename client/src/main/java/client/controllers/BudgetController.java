@@ -2,7 +2,6 @@ package client.controllers;
 
 import common.data.Budget;
 import common.data.Payment;
-import common.data.Settlement;
 import common.data.User;
 import client.BudgetExporter;
 import client.view.Alerts;
@@ -10,7 +9,7 @@ import client.windows.AddParticipantsWindow;
 import client.windows.AddPaymentWindow;
 import client.windows.ParticipantDetailsWindow;
 import client.windows.SettleWindow;
-import client.windows.SettlementDetailsWindow;
+import client.windows.SettlementsHistoryWindow;
 import client.windows.UpdatePaymentWindow;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -35,7 +34,6 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +49,7 @@ public class BudgetController extends BasicController implements Initializable, 
   @FXML
   private Button buttonBudgetClose, buttonBudgetDelete, buttonBudgetExport;
   @FXML
-  private Button buttonAddPayment, buttonAddParticipant, buttonSettle;
+  private Button buttonAddPayment, buttonAddParticipant, buttonSettle, buttonHistory;
 
   @FXML
   private TableView<Payment> tableUnsettledPayments;
@@ -63,30 +61,14 @@ public class BudgetController extends BasicController implements Initializable, 
   private TableColumn<Payment, Boolean> columnConfirm;
 
   @FXML
-  private TableView<Payment> tableSettledPayments;
-  @FXML
-  private TableColumn<Payment, String> columnSettledPayer, columnSettledDescription;
-  @FXML
-  private TableColumn<Payment, Integer> columnSettledAmount;
-
-  @FXML
   private TableView<User> tableParticipants;
   @FXML
   private TableColumn<User, String> columnUserName, columnUserMail;
   @FXML
   private TableColumn<User, BigDecimal> columnUserBalance;
 
-  @FXML
-  private TableView<Settlement> tableSettleHistory;
-  @FXML
-  private TableColumn<Settlement, Double> columnAmount;
-  @FXML
-  private TableColumn<Settlement, String> columnDate, columnStatus;
-
   private final ObservableList<User> participantsList = FXCollections.observableArrayList();
-  private final ObservableList<Payment> settledPayments = FXCollections.observableArrayList();
   private final ObservableList<Payment> unsettledPayments = FXCollections.observableArrayList();
-  private final ObservableList<Settlement> settleHistory = FXCollections.observableArrayList();
   private Budget budget;
   private double spentMoneySum = 0;
 
@@ -118,14 +100,15 @@ public class BudgetController extends BasicController implements Initializable, 
     buttonAddParticipant.setOnAction(event -> displayAddParticipantsWindow());
     buttonAddPayment.setOnAction(event -> displayAddPaymentWindow());
     buttonSettle.setOnAction(event -> settlePayments());
+    buttonHistory.setOnAction(event -> displaySettlementsHistoryWindow());
   }
 
   private void exportBudget() {
     BudgetExporter budgetExporter = new BudgetExporter(budget,
         participantsList,
-        settledPayments,
+        null, //settledPayments,
         unsettledPayments,
-        settleHistory,
+        null,//settleHistory,
         currentStage);
     budgetExporter.export();
   }
@@ -164,8 +147,10 @@ public class BudgetController extends BasicController implements Initializable, 
 
   private void settlePayments() {
     try {
-      displaySettleWindow();
-      fillTableSettleHistory();
+      if (unsettledPayments.size() > 0)
+        displaySettleWindow();
+      else
+        Alerts.noPaymentsToSettle();
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -185,11 +170,15 @@ public class BudgetController extends BasicController implements Initializable, 
         .collect(Collectors.toList());
   }
 
+  private void displaySettlementsHistoryWindow() {
+    SettlementsHistoryWindow historyWindow = new SettlementsHistoryWindow(budget);
+    historyWindow.initOwner(currentStage);
+    historyWindow.showAndWait();
+  }
+
   private void initTables() {
     initUnsettledPaymentsTable();
-    initSettledPaymentsTable();
     initParticipantsTable();
-    initSettlementsHistoryTable();
   }
 
   private void initUnsettledPaymentsTable() {
@@ -228,14 +217,6 @@ public class BudgetController extends BasicController implements Initializable, 
     paymentWindow.initOwner(currentStage);
     paymentWindow.setOnHidden(event -> fillTableUnsettledPayments());
     paymentWindow.show();
-  }
-
-  private void initSettledPaymentsTable() {
-    columnSettledPayer.setCellValueFactory(new PropertyValueFactory<>("payer"));
-    columnSettledDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-    columnSettledAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-
-    tableSettledPayments.setItems(settledPayments);
   }
 
   private void initParticipantsTable() {
@@ -277,48 +258,6 @@ public class BudgetController extends BasicController implements Initializable, 
     return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
   }
 
-  private void initSettlementsHistoryTable() {
-    columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-    columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-    columnStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-    columnStatus.setCellFactory(param -> getStatusCellFactory());
-
-    tableSettleHistory.setItems(settleHistory);
-    tableSettleHistory.setRowFactory(param -> {
-          TableRow<Settlement> row = new TableRow<>();
-          row.setOnMouseClicked(mouseEvent -> handleSettlementCellClicked(row, mouseEvent));
-          return row;
-        }
-    );
-  }
-
-  private TableCell<Settlement, String> getStatusCellFactory() {
-    return new TableCell<Settlement, String>() {
-      @Override
-      public void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-        if (!empty) {
-          setStyle(item.equals("OK") ? "-fx-background-color:green" : "-fx-background-color:red");
-          setText(item);
-        }
-      }
-    };
-  }
-
-  private void handleSettlementCellClicked(TableRow<Settlement> row, MouseEvent mouseEvent) {
-    if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
-      Settlement settlement = row.getItem();
-      displaySettlementWindow(settlement);
-    }
-  }
-
-  private void displaySettlementWindow(Settlement settlement) {
-    SettlementDetailsWindow settlementDetailsWindow = new SettlementDetailsWindow(settlement, budget);
-    settlementDetailsWindow.initOwner(currentStage);
-    settlementDetailsWindow.setOnHidden(event -> fillTableSettleHistory());
-    settlementDetailsWindow.show();
-  }
-
   void addParticipants(List<User> users) {
     users.removeAll(participantsList);
     participantsList.addAll(users);
@@ -335,38 +274,11 @@ public class BudgetController extends BasicController implements Initializable, 
   public void update() {
     fillTableParticipants();
     fillTableUnsettledPayments();
-    fillTableSettledPayments();
-    fillTableSettleHistory();
-  }
-
-  private void fillTableSettledPayments() {
-    fillTablePayments(settledPayments, true);
   }
 
   private void fillTableUnsettledPayments() {
     fillTablePayments(unsettledPayments, false);
     updateSpentMoneySums();
-  }
-
-  void fillTableSettleHistory() {
-    settleHistory.clear();
-    try {
-      List<Settlement> settlements = dbHandler.getAllSettlements(budget.getId());
-      sortSettlementsByStatus(settlements);
-      settleHistory.addAll(settlements);
-    }
-    catch (RemoteException e) {
-      e.printStackTrace();
-      Alerts.serverConnectionError();
-    }
-  }
-
-  private void sortSettlementsByStatus(List<Settlement> settlements) {
-    int it = 0;
-    for (int i = 0; i < settlements.size(); i++) {
-      if (!Objects.equals(settlements.get(i).getStatus(), "OK"))
-        Collections.swap(settlements, it++, i);
-    }
   }
 
   void fillTableParticipants() {

@@ -14,6 +14,6 @@ public class SettlementDetailsWindow extends DebtManagerWindow {
     SettlementDetailsController controller = fxmlLoader.getController();
     controller.setCurrentStage(this);
     controller.setData(settlement, budget);
-    controller.fillContentList();
+    controller.fillSettlementsTable();
   }
 }

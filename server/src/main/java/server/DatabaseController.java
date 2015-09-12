@@ -335,7 +335,7 @@ public class DatabaseController implements DbHandler {
     List<Settlement> settlements = new ArrayList<>();
 
     try {
-      Result<Record2<Integer, java.sql.Date>> result =
+      Result<Record2<Integer, Date>> result =
           dbContext.select(Settlements.SETTLEMENTS.ID, Settlements.SETTLEMENTS.SETTLE_DATE)
               .from(Settlements.SETTLEMENTS)
               .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))

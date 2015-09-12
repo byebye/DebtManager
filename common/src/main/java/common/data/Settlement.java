@@ -11,7 +11,6 @@ public class Settlement implements Serializable {
   private final int allBankTransfersCount;
   private final double amount;
   private final Date settleDate;
-  private final String status;
 
   public Settlement(int settlementId, int budgetId, int paidBankTransfersCount, int allBankTransfersCount,
       Date settleDate,
@@ -23,10 +22,6 @@ public class Settlement implements Serializable {
     this.paidBankTransfersCount = paidBankTransfersCount;
     this.settlementId = settlementId;
     this.amount = amount;
-    if (paidBankTransfersCount != allBankTransfersCount)
-      this.status = paidBankTransfersCount + "/" + allBankTransfersCount;
-    else
-      this.status = "OK";
   }
 
   public int getBudgetId() {
@@ -53,8 +48,12 @@ public class Settlement implements Serializable {
     return settleDate;
   }
 
-  public String getStatus() {
-    return status;
+  public String getStatusString() {
+    return paidBankTransfersCount + "/" + allBankTransfersCount;
+  }
+
+  public boolean areAllBankTransfersPaid() {
+    return paidBankTransfersCount == allBankTransfersCount;
   }
 
   public double getAmount() {
