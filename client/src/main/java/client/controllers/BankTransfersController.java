@@ -73,7 +73,7 @@ public class BankTransfersController extends BasicController implements Initiali
     columnReceiveAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnReceiveBudget.setCellValueFactory(new PropertyValueFactory<>("budgetName"));
     columnReceiveStatus.setCellFactory(param -> new StatusImageCell());
-    columnReceiveUpdate.setCellFactory(param -> new UpdateStatusButtonCell("Ok.png", false));
+    columnReceiveUpdate.setCellFactory(param -> new UpdateStatusButtonCell("Confirm.png", false));
     tableTransfersToReceive.setItems(transfersToReceive);
   }
 

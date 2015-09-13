@@ -108,7 +108,7 @@ public class BudgetCreatorController extends BasicController implements Initiali
     final Button buttonRemove;
 
     public RemoveParticipantCell() {
-      buttonRemove = ImageUtils.loadImageButton("RemoveButton.png");
+      buttonRemove = ImageUtils.loadImageButton("RemoveUser.png");
       setPadding(new Insets(0, 0, 0, 0));
       buttonRemove.setOnAction(event -> removeParticipant());
     }

@@ -26,19 +26,20 @@ public class ImageUtils {
     return imageCache.get(imageName);
   }
 
-  public static ImageView loadImageView(String imageName) {
+  public static ImageView loadImageView(String imageName, int height) {
     Image image = loadImage(imageName);
     ImageView imageView = new ImageView(image);
     imageView.setPreserveRatio(true);
-    imageView.setFitHeight(15);
+    imageView.setFitHeight(height);
     return imageView;
   }
 
   public static Button loadImageButton(String imageName) {
     Button button = new Button();
-    button.setGraphic(ImageUtils.loadImageView(imageName));
+    button.setGraphic(ImageUtils.loadImageView(imageName, 22));
+    button.setMinSize(25, 25);
     button.setPrefSize(25, 25);
-    button.setPadding(new Insets(5, 5, 5, 5));
+    button.setPadding(new Insets(2, 2, 2, 2));
     return button;
   }
 }

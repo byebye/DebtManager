@@ -1,0 +1,33 @@
+.button {
+  -fx-background-radius: 20px;
+  -fx-min-width: 40px;
+  -fx-min-height: 40px;
+  -fx-max-width: 40px;
+  -fx-max-height: 40px;
+  -fx-background-color: -fx-body-color;
+  -fx-background-insets: 0px;
+  -fx-padding: 0px;
+  -fx-background-position: center;
+  -fx-background-size: 28px;
+  -fx-background-repeat: no-repeat;
+}
+
+.add-user-button {
+  -fx-background-image: url("../../graphics/AddUser.png");
+}
+
+.add-payment-button {
+  -fx-background-image: url("../../graphics/AddShopping.png");
+}
+
+.settle-button {
+  -fx-background-image: url("../../graphics/Settle.png");
+}
+
+.bank-transfers-button {
+  -fx-background-image: url("../../graphics/Wallet.png");
+}
+
+.settlements-history-button {
+  -fx-background-image: url("../../graphics/History.png");
+}
