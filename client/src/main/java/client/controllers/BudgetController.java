@@ -2,6 +2,7 @@ package client.controllers;
 
 import common.data.Budget;
 import common.data.Payment;
+import common.data.Settlement;
 import common.data.User;
 import client.BudgetExporter;
 import client.view.Alerts;
@@ -104,13 +105,21 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void exportBudget() {
-    BudgetExporter budgetExporter = new BudgetExporter(budget,
-        participantsList,
-        null, //settledPayments,
-        unsettledPayments,
-        null,//settleHistory,
-        currentStage);
-    budgetExporter.export();
+    try {
+      List<Payment> settledPayments = dbHandler.getAllPayments(budget.getId(), true);
+      List<Settlement> settlements = dbHandler.getAllSettlements(budget.getId());
+      BudgetExporter budgetExporter = new BudgetExporter(budget,
+          participantsList,
+          settledPayments,
+          unsettledPayments,
+          settlements,
+          currentStage);
+      budgetExporter.export();
+    }
+    catch (RemoteException e) {
+      e.printStackTrace();
+      Alerts.serverConnectionError();
+    }
   }
 
   private void deleteBudget() {
