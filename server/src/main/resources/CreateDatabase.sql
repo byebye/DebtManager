@@ -18,6 +18,8 @@ CREATE TABLE users (
   password_hash CHAR(64)    NOT NULL
 );
 
+CREATE INDEX users_email_index ON users (email);
+
 CREATE TABLE budgets (
   id          SERIAL PRIMARY KEY,
   owner_id    INT REFERENCES users (id) NOT NULL,
@@ -26,32 +28,39 @@ CREATE TABLE budgets (
 );
 
 CREATE TABLE user_budget (
-  user_id   INT REFERENCES users (id),
-  budget_id INT REFERENCES budgets (id),
+  user_id   INT REFERENCES users (id) ON DELETE CASCADE,
+  budget_id INT REFERENCES budgets (id) ON DELETE CASCADE NOT NULL,
   PRIMARY KEY (user_id, budget_id)
 );
 
 CREATE TABLE settlements (
   id          SERIAL PRIMARY KEY,
-  budget_id   INT REFERENCES budgets (id) NOT NULL,
-  settle_date DATE                        NOT NULL DEFAULT now()
+  budget_id   INT REFERENCES budgets (id) ON DELETE CASCADE NOT NULL,
+  settle_date DATE                                          NOT NULL DEFAULT now()
 );
 
 CREATE TABLE payments (
   id            SERIAL PRIMARY KEY,
-  budget_id     INT REFERENCES budgets (id) NOT NULL,
-  payer_id      INT REFERENCES users (id),
+  budget_id     INT REFERENCES budgets (id) ON DELETE CASCADE NOT NULL,
+  payer_id      INT REFERENCES users (id) ON DELETE SET NULL,
   description   VARCHAR(200),
-  amount        NUMERIC(12, 2)              NOT NULL,
-  settlement_id INT REFERENCES settlements (id)      DEFAULT NULL,
-  settled       BOOLEAN                              DEFAULT FALSE
+  amount        NUMERIC(12, 2)                                NOT NULL,
+  settlement_id INT REFERENCES settlements (id) ON DELETE NO ACTION DEFAULT NULL,
+  settled       BOOLEAN                                             DEFAULT FALSE
 );
+
+CREATE INDEX payments_budget_index ON payments (budget_id);
+CREATE INDEX payments_settlement_index ON payments (settlement_id);
 
 CREATE TABLE bank_transfers (
   id            SERIAL PRIMARY KEY,
-  settlement_id INT REFERENCES settlements (id) NOT NULL,
-  sender        INT REFERENCES users (id)       NOT NULL,
-  recipient     INT REFERENCES users (id)       NOT NULL,
-  amount        NUMERIC(12, 2)                  NOT NULL,
-  paid          INT DEFAULT 0
+  settlement_id INT REFERENCES settlements (id) ON DELETE NO ACTION NOT NULL,
+  sender        INT REFERENCES users (id) ON DELETE SET NULL,
+  recipient     INT REFERENCES users (id) ON DELETE SET NULL,
+  amount        NUMERIC(12, 2)                                      NOT NULL,
+  status        INT DEFAULT 0 CHECK (status IN (0, 1, 2))
 );
+
+CREATE INDEX bank_transfers_settlement_index ON bank_transfers (settlement_id);
+CREATE INDEX bank_transfers_sender_index ON bank_transfers (sender);
+CREATE INDEX bank_transfers_recipient_index ON bank_transfers (recipient);

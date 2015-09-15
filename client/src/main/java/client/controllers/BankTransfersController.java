@@ -96,7 +96,7 @@ public class BankTransfersController extends BasicController implements Initiali
   public void loadTransfersToSend() {
     transfersToSend.clear();
     try {
-      List<BankTransfer> transfers = dbHandler.getToSendBankTransfers(currentUser.getId());
+      List<BankTransfer> transfers = dbHandler.getBankTransfersToSend(currentUser.getId());
       DataUtils.sortTransfersByStatus(transfers);
       transfersToSend.setAll(transfers);
     }
@@ -109,7 +109,7 @@ public class BankTransfersController extends BasicController implements Initiali
   public void loadTransfersToReceive() {
     transfersToReceive.clear();
     try {
-      List<BankTransfer> transfers = dbHandler.getToReceiveBankTransfers(currentUser.getId());
+      List<BankTransfer> transfers = dbHandler.getBankTransfersToReceive(currentUser.getId());
       DataUtils.sortTransfersByStatus(transfers);
       transfersToReceive.addAll(transfers);
     }

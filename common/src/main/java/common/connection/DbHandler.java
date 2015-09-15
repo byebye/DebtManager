@@ -18,9 +18,7 @@ public interface DbHandler extends Remote {
 
   User getUserById(int userId) throws RemoteException;
 
-  boolean createUser(User user, String passwordHash) throws RemoteException;
-
-  boolean createUser(String email, String name, String passwordHash, String bankAccount) throws RemoteException;
+  boolean createUser(String email, String name, String bankAccount, String passwordHash) throws RemoteException;
 
   boolean createBudget(Budget budget) throws RemoteException;
 
@@ -32,6 +30,8 @@ public interface DbHandler extends Remote {
 
   void addBudgetParticipants(int budgetId, List<User> users) throws RemoteException;
 
+  void removeParticipant(int budgetId, int userId) throws RemoteException;
+
   void addPayment(Budget budget, int userId, BigDecimal amount, String description) throws RemoteException;
 
   void updatePayment(int paymentId, int userId, BigDecimal amount, String description) throws RemoteException;
@@ -40,25 +40,23 @@ public interface DbHandler extends Remote {
 
   List<Payment> getAllPayments(int budgetId, boolean settled) throws RemoteException;
 
+  List<Payment> getPaymentsBySettlementId(int settlementId) throws RemoteException;
+
   List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
 
   void settlePayments(int budgetId, List<Payment> paymentsToSettle, List<BankTransfer> bankTransfers,
       boolean sendEmails
   ) throws RemoteException;
 
-  void removeParticipant(int budgetId, int userId) throws RemoteException;
+  List<Settlement> getAllSettlementsOfBudget(int budgetId) throws RemoteException;
 
-  List<Settlement> getAllSettlements(int budgetId) throws RemoteException;
+  List<BankTransfer> getBankTransfersToSend(int userId) throws RemoteException;
 
-  List<Payment> getPaymentsBySettlementId(int settlementId) throws RemoteException;
-
-  List<BankTransfer> getToSendBankTransfers(int userId) throws RemoteException;
-
-  List<BankTransfer> getToReceiveBankTransfers(int userId) throws RemoteException;
+  List<BankTransfer> getBankTransfersToReceive(int userId) throws RemoteException;
 
   List<BankTransfer> getBankTransfersBySettlementId(int settlementId) throws RemoteException;
 
   void setBankTransfersStatus(int transferId, int status) throws RemoteException;
 
-  void setBankTransfersStatus(Map<Integer, Integer> bankTransfers) throws RemoteException;
+  void setBankTransfersStatus(Map<Integer, BankTransfer.Status> bankTransfers) throws RemoteException;
 }

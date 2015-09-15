@@ -30,7 +30,7 @@
     <TableView fx:id="tableSettleHistory" GridPane.rowIndex="1">
       <columns>
         <TableColumn fx:id="columnDate" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="Date" />
-        <TableColumn fx:id="columnAmount" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="120.0" text="Amount" />
+        <TableColumn fx:id="columnSpentMoney" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="120.0" text="Spent money" />
         <TableColumn fx:id="columnStatus" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" resizable="false" text="Status" />
       </columns>
       <columnResizePolicy>

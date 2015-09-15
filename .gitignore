@@ -1,5 +1,10 @@
-#In gitignore so passwords won't leak
+##### Linux #####
+.directory
+
+##### In gitignore so passwords won't leak
 startServer.sh
+startLocal.sh
+
 ##### Maven #####
 target/
 

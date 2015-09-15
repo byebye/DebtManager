@@ -16,6 +16,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -28,7 +29,7 @@ public class SettlementsHistoryController extends BasicController implements Ini
   @FXML
   private TableView<Settlement> tableSettleHistory;
   @FXML
-  private TableColumn<Settlement, Double> columnAmount;
+  private TableColumn<Settlement, BigDecimal> columnSpentMoney;
   @FXML
   private TableColumn<Settlement, String> columnDate, columnStatus;
 
@@ -48,7 +49,7 @@ public class SettlementsHistoryController extends BasicController implements Ini
 
   private void initSettlementsHistoryTable() {
     columnDate.setCellValueFactory(new PropertyValueFactory<>("settleDate"));
-    columnAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+    columnSpentMoney.setCellValueFactory(new PropertyValueFactory<>("spentMoney"));
     columnStatus.setCellValueFactory(new PropertyValueFactory<>("statusString"));
     columnStatus.setCellFactory(param -> createStatusCellFactory());
 
@@ -94,7 +95,7 @@ public class SettlementsHistoryController extends BasicController implements Ini
   public void fillTableSettlementsHistory() {
     settlementsHistory.clear();
     try {
-      List<Settlement> settlements = dbHandler.getAllSettlements(budget.getId());
+      List<Settlement> settlements = dbHandler.getAllSettlementsOfBudget(budget.getId());
       settlementsHistory.addAll(settlements);
     }
     catch (RemoteException e) {

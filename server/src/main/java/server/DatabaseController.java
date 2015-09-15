@@ -2,26 +2,21 @@ package server;
 
 import common.connection.DbHandler;
 import common.data.BankTransfer;
+import common.data.BankTransfer.Status;
 import common.data.Budget;
 import common.data.Email;
 import common.data.Payment;
 import common.data.Settlement;
 import common.data.User;
-import server.jooq.tables.BankTransfers;
-import server.jooq.tables.Budgets;
-import server.jooq.tables.Payments;
-import server.jooq.tables.Settlements;
-import server.jooq.tables.UserBudget;
-import server.jooq.tables.Users;
 import server.jooq.tables.records.BudgetsRecord;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
-import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Record5;
-import org.jooq.Result;
+import org.jooq.Record6;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
@@ -36,26 +31,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static server.jooq.tables.BankTransfers.BANK_TRANSFERS;
+import static server.jooq.tables.Budgets.BUDGETS;
+import static server.jooq.tables.Payments.PAYMENTS;
+import static server.jooq.tables.Settlements.SETTLEMENTS;
+import static server.jooq.tables.UserBudget.USER_BUDGET;
+import static server.jooq.tables.Users.USERS;
 
 public class DatabaseController implements DbHandler {
 
   private static DatabaseController onlyInstance;
   private static DbHandler exportedInstance;
-  private static String dbUser = "debtmanager"; // "z1111813";
-  private static String dbPassword = "debtmanager"; // "rU7i7xWoLVdh";
-  private static String url = "jdbc:postgresql://localhost/debtmanager";//"jdbc:postgresql://db.tcs.uj.edu.pl/z1111813";
+  private static String dbUser = "debtmanager";
+  private static String dbPassword = "debtmanager";
+  private static String url = "jdbc:postgresql://localhost/debtmanager";
   private Connection connection;
   private DSLContext dbContext;
-
-  // TODO lock that will be used to synchronize ALL operations on the database
-  public static ReentrantReadWriteLock dbLock = new ReentrantReadWriteLock();
 
   private DatabaseController() {
   }
 
-  public static void createInstance(String dbUser, String dbPassword, String url) throws InstantiationException {
+  public synchronized static void createInstance(String dbUser, String dbPassword, String url
+  ) throws InstantiationException {
     if (onlyInstance != null)
       throw new InstantiationException("instance already created");
     DatabaseController.dbUser = dbUser;
@@ -86,7 +87,7 @@ public class DatabaseController implements DbHandler {
     return exportedInstance;
   }
 
-  private void connect() {
+  private synchronized void connect() {
     try {
       if (connection == null || connection.isClosed()) {
         connection = DriverManager.getConnection(url, dbUser, dbPassword);
@@ -99,210 +100,179 @@ public class DatabaseController implements DbHandler {
   }
 
   public synchronized boolean validateUserPassword(Email email, String passwordHash) {
-    Result<Record1<String>> result =
-        dbContext.select(Users.USERS.PASSWORD_HASH)
-            .from(Users.USERS)
-            .where(Users.USERS.EMAIL.equal(email.toString()))
-            .fetch();
-    if (result.isEmpty())
+    final Record1<String> result = dbContext
+        .select(USERS.PASSWORD_HASH)
+        .from(USERS)
+        .where(USERS.EMAIL.equal(email.toString()))
+        .fetchOne();
+    if (result == null)
       return false;
-    final String expectedPassword = result.get(0).value1().trim();
-    return passwordHash.equals(expectedPassword);
+    final String expectedPasswordHash = result.value1().trim();
+    return Objects.equals(passwordHash, expectedPasswordHash);
   }
 
-  public synchronized User getUserByEmail(String email) {
-    Result<Record3<Integer, String, String>> result =
-        dbContext.select(Users.USERS.ID,
-            Users.USERS.NAME,
-            Users.USERS.BANK_ACCOUNT)
-            .from(Users.USERS)
-            .where(Users.USERS.EMAIL.equal(email))
-            .fetch();
-    if (result.isEmpty())
-      return null;
-    final int id = result.get(0).value1();
-    final String name = result.get(0).value2();
-    final String bankAccount = result.get(0).value3();
-    return new User(id, name, email, bankAccount);
-  }
-
-  public synchronized User getUserById(int userId) {
-    Result<Record3<String, String, String>> result =
-        dbContext.select(Users.USERS.EMAIL,
-            Users.USERS.NAME,
-            Users.USERS.BANK_ACCOUNT)
-            .from(Users.USERS)
-            .where(Users.USERS.ID.equal(userId))
-            .fetch();
-    if (result.isEmpty())
-      return null;
-    final String email = result.get(0).value1();
-    final String name = result.get(0).value2();
-    final String bankAccount = result.get(0).value3();
-    return new User(userId, name, email, bankAccount);
-  }
-
-  public synchronized String getBudgetName(int id) {
-    Result<Record1<String>> result =
-        dbContext.select(Budgets.BUDGETS.NAME)
-            .from(Budgets.BUDGETS)
-            .where(Budgets.BUDGETS.ID.equal(id))
-            .fetch();
-    if (result.isEmpty())
-      throw new NoSuchElementException("No such budget");
-    final String name = result.get(0).value1();
-    return name;
+  public synchronized String getBudgetName(int budgetId) {
+    return dbContext
+        .select(BUDGETS.NAME)
+        .from(BUDGETS)
+        .where(BUDGETS.ID.equal(budgetId))
+        .fetchOne()
+        .value1();
   }
 
   @Override
-  public synchronized boolean createUser(User user, String passwordHash) {
-    dbContext.insertInto(Users.USERS,
-        Users.USERS.EMAIL,
-        Users.USERS.NAME,
-        Users.USERS.BANK_ACCOUNT,
-        Users.USERS.PASSWORD_HASH)
-        .values(user.getEmail().toString(), user.getName(), user.getBankAccount().toString(), passwordHash)
-        .execute();
-    return true;
+  public synchronized User getUserByEmail(String email) {
+    return getUser(USERS.EMAIL.equal(email));
   }
 
-  public synchronized boolean createUser(String email,
-      String name,
-      String passwordHash,
-      String bankAccount
-  ) {
-    dbContext.insertInto(Users.USERS,
-        Users.USERS.EMAIL,
-        Users.USERS.NAME,
-        Users.USERS.BANK_ACCOUNT,
-        Users.USERS.PASSWORD_HASH)
+  @Override
+  public synchronized User getUserById(int userId) {
+    return getUser(USERS.ID.equal(userId));
+  }
+
+  private synchronized User getUser(Condition condition) {
+    Record4<Integer, String, String, String> result = dbContext
+        .select(
+            USERS.ID,
+            USERS.EMAIL,
+            USERS.NAME,
+            USERS.BANK_ACCOUNT)
+        .from(USERS)
+        .where(condition)
+        .fetchOne();
+    if (result == null)
+      return null;
+    return extractIntoUser(result);
+  }
+
+  private User extractIntoUser(Record4<Integer, String, String, String> result) {
+    final int userId = result.value1();
+    final String email = result.value2();
+    final String name = result.value3();
+    final String bankAccount = result.value4();
+    return new User(userId, name, email, bankAccount);
+  }
+
+  @Override
+  public synchronized boolean createUser(String email, String name, String bankAccount, String passwordHash) {
+    final int createdUsersCount = dbContext
+        .insertInto(USERS,
+            USERS.EMAIL,
+            USERS.NAME,
+            USERS.BANK_ACCOUNT,
+            USERS.PASSWORD_HASH)
         .values(email, name, bankAccount, passwordHash)
         .execute();
-    return true;
+    return createdUsersCount == 1;
   }
 
+  @Override
   public synchronized boolean createBudget(Budget budget) {
-    final BudgetsRecord result =
-        dbContext.insertInto(Budgets.BUDGETS,
-            Budgets.BUDGETS.NAME,
-            Budgets.BUDGETS.DESCRIPTION,
-            Budgets.BUDGETS.OWNER_ID)
-            .values(budget.getName(), budget.getDescription(), budget.getOwner().getId())
-            .returning(Budgets.BUDGETS.ID)
-            .fetchOne();
-    final int budgetId = result.getId();
-    for (User user : budget.getParticipants()) {
-      dbContext.insertInto(UserBudget.USER_BUDGET,
-          UserBudget.USER_BUDGET.BUDGET_ID,
-          UserBudget.USER_BUDGET.USER_ID)
-          .values(budgetId, user.getId())
-          .execute();
-    }
+    dbContext.transaction(configuration -> {
+      final DSLContext transactionContext = DSL.using(configuration);
+      final BudgetsRecord result = transactionContext
+          .insertInto(BUDGETS,
+              BUDGETS.NAME,
+              BUDGETS.DESCRIPTION,
+              BUDGETS.OWNER_ID)
+          .values(budget.getName(), budget.getDescription(), budget.getOwner().getId())
+          .returning(BUDGETS.ID)
+          .fetchOne();
+      final int budgetId = result.getId();
+      for (User user : budget.getParticipants()) {
+        transactionContext
+            .insertInto(USER_BUDGET,
+                USER_BUDGET.BUDGET_ID,
+                USER_BUDGET.USER_ID)
+            .values(budgetId, user.getId())
+            .execute();
+      }
+    });
 
     Server.slh.unhangAll();
-
     return true;
   }
 
+  @Override
   public synchronized boolean deleteBudget(Budget budget) {
-    dbContext.delete(UserBudget.USER_BUDGET)
-        .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budget.getId()))
-        .execute();
-    dbContext.delete(Payments.PAYMENTS)
-        .where(Payments.PAYMENTS.BUDGET_ID.equal(budget.getId()))
-        .execute();
-    Result<Record1<Integer>> settlements =
-        dbContext.select(Settlements.SETTLEMENTS.ID)
-            .from(Settlements.SETTLEMENTS)
-            .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budget.getId()))
-            .fetch();
-
-    for (Record1<Integer> settlement : settlements) {
-      dbContext.delete(BankTransfers.BANK_TRANSFERS)
-          .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
-          .execute();
-
-      dbContext.delete(Settlements.SETTLEMENTS)
-          .where(Settlements.SETTLEMENTS.ID.equal(settlement.value1()))
-          .execute();
-    }
-
-    dbContext.delete(Budgets.BUDGETS)
-        .where(Budgets.BUDGETS.ID.equal(budget.getId()))
+    final int deletedBudgetsCount = dbContext
+        .delete(BUDGETS)
+        .where(BUDGETS.ID.equal(budget.getId()))
         .execute();
 
     Server.slh.unhangAll();
-
-    return true;
+    return deletedBudgetsCount == 1;
   }
 
+  @Override
   public synchronized List<Budget> getAllBudgets(int userId) {
-    Result<Record4<Integer, Integer, String, String>> result =
-        dbContext.select(Budgets.BUDGETS.ID,
-            Budgets.BUDGETS.OWNER_ID,
-            Budgets.BUDGETS.NAME,
-            Budgets.BUDGETS.DESCRIPTION)
-            .from(Budgets.BUDGETS)
-            .where(Budgets.BUDGETS.OWNER_ID.equal(userId)
-                .or(Budgets.BUDGETS.ID
-                        .in(dbContext.select(UserBudget.USER_BUDGET.BUDGET_ID)
-                            .from(UserBudget.USER_BUDGET)
-                            .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)))
-                ))
-            .fetch();
-    List<Budget> budgets = new ArrayList<>();
-    for (Record4<Integer, Integer, String, String> budget : result) {
-      final int id = budget.value1();
-      final int ownerId = budget.value2();
-      final User owner = getUserById(ownerId);
-      final String name = budget.value3();
-      final String description = budget.value4();
-      final List<User> participants = getBudgetParticipants(id);
-      budgets.add(new Budget(id, owner, name, description, participants));
-    }
-    return budgets;
+    return dbContext
+        .select(
+            BUDGETS.ID,
+            BUDGETS.OWNER_ID,
+            BUDGETS.NAME,
+            BUDGETS.DESCRIPTION)
+        .from(USER_BUDGET)
+        .join(BUDGETS)
+        .on(BUDGETS.ID.equal(USER_BUDGET.BUDGET_ID))
+        .where(USER_BUDGET.USER_ID.equal(userId))
+        .fetch()
+        .stream()
+        .map(this::extractIntoBudget)
+        .collect(Collectors.toList());
   }
 
+  private Budget extractIntoBudget(Record4<Integer, Integer, String, String> budget) {
+    final int id = budget.value1();
+    final int ownerId = budget.value2();
+    final User owner = getUserById(ownerId);
+    final String name = budget.value3();
+    final String description = budget.value4();
+    final List<User> participants = getBudgetParticipants(id);
+    return new Budget(id, owner, name, description, participants);
+  }
+
+  @Override
   public synchronized List<User> getBudgetParticipants(int budgetId) {
-    Result<Record4<Integer, String, String, String>> result =
-        dbContext.select(Users.USERS.ID,
-            Users.USERS.NAME,
-            Users.USERS.EMAIL,
-            Users.USERS.BANK_ACCOUNT)
-            .from(UserBudget.USER_BUDGET
-                .join(Users.USERS)
-                .on(Users.USERS.ID.equal(UserBudget.USER_BUDGET.USER_ID)))
-            .where(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId))
-            .fetch();
-    List<User> participants = new ArrayList<>(result.size());
-    for (Record4<Integer, String, String, String> user : result) {
-      final int id = user.value1();
-      final String name = user.value2();
-      final String email = user.value3();
-      final String bankAccount = user.value4();
-      participants.add(new User(id, name, email, bankAccount));
-    }
-    return participants;
+    return dbContext
+        .select(
+            USERS.ID,
+            USERS.EMAIL,
+            USERS.NAME,
+            USERS.BANK_ACCOUNT)
+        .from(USER_BUDGET)
+        .join(USERS)
+        .on(USERS.ID.equal(USER_BUDGET.USER_ID))
+        .where(USER_BUDGET.BUDGET_ID.equal(budgetId))
+        .fetch()
+        .stream()
+        .map(this::extractIntoUser)
+        .collect(Collectors.toList());
   }
 
+  @Override
   public synchronized void addBudgetParticipants(int budgetId, List<User> users) {
-    for (User user : users) {
-      dbContext.insertInto(UserBudget.USER_BUDGET,
-          UserBudget.USER_BUDGET.BUDGET_ID,
-          UserBudget.USER_BUDGET.USER_ID)
-          .values(budgetId, user.getId())
-          .execute();
-    }
-
+    dbContext.transaction(configuration -> {
+      for (User user : users) {
+        DSL.using(configuration)
+            .insertInto(USER_BUDGET,
+                USER_BUDGET.BUDGET_ID,
+                USER_BUDGET.USER_ID)
+            .values(budgetId, user.getId())
+            .execute();
+      }
+    });
     Server.slh.unhangAll();
   }
 
+  @Override
   public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String description) {
-    dbContext.insertInto(Payments.PAYMENTS,
-        Payments.PAYMENTS.BUDGET_ID,
-        Payments.PAYMENTS.AMOUNT,
-        Payments.PAYMENTS.PAYER_ID,
-        Payments.PAYMENTS.DESCRIPTION)
+    dbContext
+        .insertInto(PAYMENTS,
+            PAYMENTS.BUDGET_ID,
+            PAYMENTS.AMOUNT,
+            PAYMENTS.PAYER_ID,
+            PAYMENTS.DESCRIPTION)
         .values(budget.getId(),
             amount,
             userId,
@@ -312,115 +282,117 @@ public class DatabaseController implements DbHandler {
     Server.slh.unhangAll();
   }
 
+  @Override
   public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String description) {
-    dbContext.update(Payments.PAYMENTS)
-        .set(Payments.PAYMENTS.AMOUNT, amount)
-        .set(Payments.PAYMENTS.PAYER_ID, userId)
-        .set(Payments.PAYMENTS.DESCRIPTION, description)
-        .where(Payments.PAYMENTS.ID.equal(paymentId))
+    dbContext
+        .update(PAYMENTS)
+        .set(PAYMENTS.AMOUNT, amount)
+        .set(PAYMENTS.PAYER_ID, userId)
+        .set(PAYMENTS.DESCRIPTION, description)
+        .where(PAYMENTS.ID.equal(paymentId))
         .execute();
 
     Server.slh.unhangAll();
   }
 
+  @Override
   public synchronized void deletePayment(int paymentId) {
-    dbContext.delete(Payments.PAYMENTS)
-        .where(Payments.PAYMENTS.ID.equal(paymentId))
+    dbContext
+        .delete(PAYMENTS)
+        .where(PAYMENTS.ID.equal(paymentId))
         .execute();
 
     Server.slh.unhangAll();
   }
 
-  public synchronized List<Settlement> getAllSettlements(int budgetId) {
-    List<Settlement> settlements = new ArrayList<>();
-
-    try {
-      Result<Record2<Integer, Date>> result =
-          dbContext.select(Settlements.SETTLEMENTS.ID, Settlements.SETTLEMENTS.SETTLE_DATE)
-              .from(Settlements.SETTLEMENTS)
-              .where(Settlements.SETTLEMENTS.BUDGET_ID.equal(budgetId))
-              .orderBy(Settlements.SETTLEMENTS.ID.desc())
-              .fetch();
-
-      for (Record2<Integer, Date> settlement : result) {
-        int numPaidBankTransfers = dbContext.selectCount()
-            .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.PAID.equal(2))
-            .and(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
-            .fetchOne().value1();
-        int numAllBankTransfers = dbContext.selectCount()
-            .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlement.value1()))
-            .fetchOne().value1();
-
-        double amount = 0.0;
-        for (Payment p : getPaymentsBySettlementId(settlement.value1())) {
-          amount += p.getAmount();
-        }
-
-        settlements.add(new Settlement(settlement.value1(), budgetId, numPaidBankTransfers, numAllBankTransfers,
-            settlement.value2(), amount));
-      }
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      throw e;
-    }
-
-    return settlements;
+  @Override
+  public synchronized List<Settlement> getAllSettlementsOfBudget(int budgetId) {
+    return dbContext
+        .select(
+            SETTLEMENTS.ID,
+            SETTLEMENTS.SETTLE_DATE)
+        .from(SETTLEMENTS)
+        .where(SETTLEMENTS.BUDGET_ID.equal(budgetId))
+        .orderBy(SETTLEMENTS.ID.desc())
+        .fetch()
+        .stream()
+        .map(settlement -> extractIntoSettlement(budgetId, settlement))
+        .collect(Collectors.toList());
   }
 
+  private Settlement extractIntoSettlement(int budgetId, Record2<Integer, Date> settlement) {
+    final int settlementId = settlement.value1();
+    final int paidTransfersCount = getPaidBankTransfersCount(settlementId);
+    final int allTransfersCount = getAllBankTransfersCount(settlementId);
+    final BigDecimal spentMoney = calculateSettlementSpentMoney(settlementId);
+    final Date settleDate = settlement.value2();
+    return new Settlement(settlementId, budgetId, paidTransfersCount, allTransfersCount, settleDate, spentMoney);
+  }
+
+  private synchronized BigDecimal calculateSettlementSpentMoney(int settlementId) {
+    return dbContext
+        .select(DSL.coalesce(PAYMENTS.AMOUNT.sum().cast(BigDecimal.class), DSL.value(0.0)))
+        .from(PAYMENTS)
+        .where(PAYMENTS.SETTLEMENT_ID.equal(settlementId))
+        .fetchOne()
+        .value1();
+  }
+
+  private synchronized int getPaidBankTransfersCount(int settlementId) {
+    return dbContext
+        .selectCount()
+        .from(BANK_TRANSFERS)
+        .where(BANK_TRANSFERS.PAID.equal(Status.Confirmed.getValue()))
+        .and(BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId))
+        .fetchOne().value1();
+  }
+
+  private synchronized int getAllBankTransfersCount(int settlementId) {
+    return dbContext
+        .selectCount()
+        .from(BANK_TRANSFERS)
+        .where(BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId))
+        .fetchOne().value1();
+  }
+
+  @Override
   public synchronized List<Payment> getPaymentsBySettlementId(int settlementId) {
-    List<Payment> payments = new ArrayList<>();
-    Result<Record1<Integer>> result =
-        dbContext.select(Payments.PAYMENTS.ID)
-            .from(Payments.PAYMENTS)
-            .where(Payments.PAYMENTS.SETTLEMENT_ID.equal(settlementId))
-            .fetch();
-
-    for (Record1<Integer> id : result) {
-      final int paymentId = id.value1();
-      Record4<Integer, Integer, String, BigDecimal> payment =
-          dbContext.select(Payments.PAYMENTS.BUDGET_ID,
-              Payments.PAYMENTS.PAYER_ID,
-              Payments.PAYMENTS.DESCRIPTION,
-              Payments.PAYMENTS.AMOUNT)
-              .from(Payments.PAYMENTS)
-              .where(Payments.PAYMENTS.ID.equal(paymentId))
-              .fetchOne();
-      final int budgetId = payment.value1();
-      final int userId = payment.value2();
-      final String userName = getUserById(userId).getName();
-      final String description = payment.value3();
-      final double amount = payment.value4().doubleValue();
-      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount));
-    }
-    return payments;
+    return getPayments(PAYMENTS.SETTLEMENT_ID.equal(settlementId));
   }
 
-  public synchronized List<Payment> getAllPayments(int budgetId, boolean accounted) {
-    Result<Record4<Integer, Integer, String, BigDecimal>> result =
-        dbContext.select(Payments.PAYMENTS.ID,
-            Payments.PAYMENTS.PAYER_ID,
-            Payments.PAYMENTS.DESCRIPTION,
-            Payments.PAYMENTS.AMOUNT)
-            .from(Payments.PAYMENTS)
-            .where(Payments.PAYMENTS.BUDGET_ID.equal(budgetId))
-            .and(Payments.PAYMENTS.SETTLED.equal(accounted)).fetch();
-
-    List<Payment> payments = new ArrayList<>(result.size());
-    for (Record4<Integer, Integer, String, BigDecimal> payment : result) {
-      final int userId = payment.value2();
-      final String userName = getUserById(userId).getName();
-      final int paymentId = payment.value1();
-      final String description = payment.value3();
-      final double amount = payment.value4().doubleValue();
-      payments.add(new Payment(paymentId, budgetId, userId, userName, description, amount));
-    }
-    return payments;
+  @Override
+  public synchronized List<Payment> getAllPayments(int budgetId, boolean settled) {
+    return getPayments(PAYMENTS.BUDGET_ID.equal(budgetId).and(PAYMENTS.SETTLED.equal(settled)));
   }
 
-  public synchronized List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unsettledPayments) {
+  private synchronized List<Payment> getPayments(Condition condition) {
+    return dbContext
+        .select(
+            PAYMENTS.ID,
+            PAYMENTS.BUDGET_ID,
+            PAYMENTS.PAYER_ID,
+            PAYMENTS.DESCRIPTION,
+            PAYMENTS.AMOUNT)
+        .from(PAYMENTS)
+        .where(condition)
+        .fetch()
+        .stream()
+        .map(this::extractIntoPayment)
+        .collect(Collectors.toList());
+  }
+
+  private Payment extractIntoPayment(Record5<Integer, Integer, Integer, String, BigDecimal> payment) {
+    final int paymentId = payment.value1();
+    final int budgetId = payment.value2();
+    final int userId = payment.value3();
+    final String userName = getUserById(userId).getName();
+    final String description = payment.value4();
+    final double amount = payment.value5().doubleValue();
+    return new Payment(paymentId, budgetId, userId, userName, description, amount);
+  }
+
+  @Override
+  public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unsettledPayments) {
     List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
     Map<Integer, Double> userSpend = new HashMap<>();
     double sum = 0;
@@ -433,10 +405,12 @@ public class DatabaseController implements DbHandler {
       userSpend.put(p.getUserId(), userSpend.get(p.getUserId()) + p.getAmount());
     }
 
-    for (Integer userId : userSpend.keySet()) {
-      if (userSpend.get(userId) < sum / userNum)
+    for (Entry<Integer, Double> userIdAmountEntry : userSpend.entrySet()) {
+      final int userId = userIdAmountEntry.getKey();
+      final double spentAmount = userIdAmountEntry.getValue();
+      if (spentAmount < sum / userNum)
         usersBellowAverage.add(userId);
-      else if (userSpend.get(userId) > sum / userNum)
+      else if (spentAmount > sum / userNum)
         usersAboveAverage.add(userId);
     }
 
@@ -456,177 +430,136 @@ public class DatabaseController implements DbHandler {
     return neededTransfers;
   }
 
+  @Override
   public synchronized void settlePayments(int budgetId, List<Payment> payments,
-      List<BankTransfer> bankTransfers, boolean sendEmails
-  ) {
-    int settleId = dbContext.insertInto(Settlements.SETTLEMENTS, Settlements.SETTLEMENTS.BUDGET_ID)
+      List<BankTransfer> bankTransfers, boolean shouldSendEmails) {
+    final int settlementId = dbContext
+        .insertInto(SETTLEMENTS,
+            SETTLEMENTS.BUDGET_ID)
         .values(budgetId)
-        .returning(Settlements.SETTLEMENTS.ID)
-        .fetchOne().getId();
+        .returning(SETTLEMENTS.ID)
+        .fetchOne()
+        .getId();
+
+    dbContext.transaction(configuration -> {
+      final DSLContext transactionContext = DSL.using(configuration);
+      insertPayments(transactionContext, settlementId, payments);
+      insertBankTransfers(transactionContext, settlementId, bankTransfers);
+    });
+
+    if (shouldSendEmails)
+      new Thread(new BankTransferEmailSender(budgetId, bankTransfers)).start();
+
+    Server.slh.unhangAll();
+  }
+
+  private synchronized void insertPayments(DSLContext transactionContext, int settlementId, List<Payment> payments) {
     for (Payment payment : payments) {
-      dbContext.update(Payments.PAYMENTS)
-          .set(Payments.PAYMENTS.SETTLED, true)
-          .set(Payments.PAYMENTS.SETTLEMENT_ID, settleId)
-          .where(Payments.PAYMENTS.ID.equal(payment.getId()))
+      transactionContext
+          .update(PAYMENTS)
+          .set(PAYMENTS.SETTLED, true)
+          .set(PAYMENTS.SETTLEMENT_ID, settlementId)
+          .where(PAYMENTS.ID.equal(payment.getId()))
           .execute();
     }
-
-    for (BankTransfer bk : bankTransfers) {
-      dbContext.insertInto(
-          BankTransfers.BANK_TRANSFERS,
-          BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
-          BankTransfers.BANK_TRANSFERS.SENDER,
-          BankTransfers.BANK_TRANSFERS.RECIPIENT,
-          BankTransfers.BANK_TRANSFERS.AMOUNT
-      ).values(settleId, bk.getSenderId(), bk.getRecipientId(), bk.getAmount())
-          .execute();
-    }
-    if (sendEmails)
-      new Thread(new BankTransferEmailSender(budgetId, bankTransfers)).run();
-
-    Server.slh.unhangAll();
   }
 
-  public synchronized void removeParticipant(int budgetId, int userId) {
-    dbContext.delete(UserBudget.USER_BUDGET)
-        .where(UserBudget.USER_BUDGET.USER_ID.equal(userId)
-            .and(UserBudget.USER_BUDGET.BUDGET_ID.equal(budgetId)))
-        .execute();
-
-    Server.slh.unhangAll();
-  }
-
-  public synchronized List<BankTransfer> getToSendBankTransfers(int userId) {
-    List<BankTransfer> myBankTransfers = new ArrayList<>();
-    Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
-        dbContext.select(
-            BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
-            BankTransfers.BANK_TRANSFERS.RECIPIENT,
-            BankTransfers.BANK_TRANSFERS.AMOUNT,
-            BankTransfers.BANK_TRANSFERS.PAID
-        ).from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.SENDER.equal(userId))
-            .fetch();
-
-    for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {
-      int transferId = bankTransfer.value1();
-      int settleId = bankTransfer.value2();
-      int recipientId = bankTransfer.value3();
-      BigDecimal amount = bankTransfer.value4();
-      int status = bankTransfer.value5();
-
-      User sender = getUserById(userId);
-      User recipient = getUserById(recipientId);
-      int budgetId =
-          dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
-              .from(Settlements.SETTLEMENTS)
-              .where(Settlements.SETTLEMENTS.ID.equal(settleId))
-              .fetchOne().value1();
-      String budgetName =
-          dbContext.select(Budgets.BUDGETS.NAME)
-              .from(Budgets.BUDGETS)
-              .where(Budgets.BUDGETS.ID.equal(budgetId))
-              .fetchOne().value1();
-
-      myBankTransfers.add(new BankTransfer(transferId, budgetName, sender, recipient, amount, status));
-    }
-    return myBankTransfers;
-  }
-
-  public synchronized List<BankTransfer> getToReceiveBankTransfers(int userId) {
-    List<BankTransfer> toReceiveBankTransfers = new ArrayList<>();
-    Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
-        dbContext.select(
-            BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID,
-            BankTransfers.BANK_TRANSFERS.SENDER,
-            BankTransfers.BANK_TRANSFERS.AMOUNT,
-            BankTransfers.BANK_TRANSFERS.PAID
-        ).from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.RECIPIENT.equal(userId))
-            .fetch();
-
-    for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {
-      int transferId = bankTransfer.value1();
-      int settleId = bankTransfer.value2();
-      int senderId = bankTransfer.value3();
-      BigDecimal amount = bankTransfer.value4();
-      int status = bankTransfer.value5();
-
-      int budgetId =
-          dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
-              .from(Settlements.SETTLEMENTS)
-              .where(Settlements.SETTLEMENTS.ID.equal(settleId))
-              .fetchOne().value1();
-      String budgetName =
-          dbContext.select(Budgets.BUDGETS.NAME)
-              .from(Budgets.BUDGETS)
-              .where(Budgets.BUDGETS.ID.equal(budgetId))
-              .fetchOne().value1();
-
-      final User sender = getUserById(senderId);
-      final User recipient = getUserById(userId);
-
-      toReceiveBankTransfers.add(new BankTransfer(transferId, budgetName, sender, recipient, amount, status));
-    }
-    return toReceiveBankTransfers;
-  }
-
-  public synchronized List<BankTransfer> getBankTransfersBySettlementId(int settlementId) {
-    List<BankTransfer> bankTransfers = new ArrayList<>();
-
-    int budgetId =
-        dbContext.select(Settlements.SETTLEMENTS.BUDGET_ID)
-            .from(Settlements.SETTLEMENTS)
-            .where(Settlements.SETTLEMENTS.ID.equal(settlementId))
-            .fetchOne().value1();
-    String budgetName =
-        dbContext.select(Budgets.BUDGETS.NAME)
-            .from(Budgets.BUDGETS)
-            .where(Budgets.BUDGETS.ID.equal(budgetId))
-            .fetchOne().value1();
-
-    Result<Record5<Integer, Integer, Integer, BigDecimal, Integer>> result =
-        dbContext.select(
-            BankTransfers.BANK_TRANSFERS.ID,
-            BankTransfers.BANK_TRANSFERS.SENDER,
-            BankTransfers.BANK_TRANSFERS.RECIPIENT,
-            BankTransfers.BANK_TRANSFERS.AMOUNT,
-            BankTransfers.BANK_TRANSFERS.PAID)
-            .from(BankTransfers.BANK_TRANSFERS)
-            .where(BankTransfers.BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId))
-            .fetch();
-
-    for (Record5<Integer, Integer, Integer, BigDecimal, Integer> bankTransfer : result) {
-      bankTransfers.add(
-          new BankTransfer(
-              bankTransfer.value1(),
-              budgetName,
-              getUserById(bankTransfer.value2()),
-              getUserById(bankTransfer.value3()),
-              bankTransfer.value4(),
-              bankTransfer.value5()
+  private synchronized void insertBankTransfers(DSLContext transactionContext, int settlementId,
+      List<BankTransfer> bankTransfers) {
+    for (BankTransfer transfer : bankTransfers) {
+      transactionContext
+          .insertInto(BANK_TRANSFERS,
+              BANK_TRANSFERS.SETTLEMENT_ID,
+              BANK_TRANSFERS.SENDER,
+              BANK_TRANSFERS.RECIPIENT,
+              BANK_TRANSFERS.AMOUNT
           )
-      );
+          .values(settlementId, transfer.getSenderId(), transfer.getRecipientId(), transfer.getAmount())
+          .execute();
     }
-    return bankTransfers;
   }
 
   @Override
-  public synchronized void setBankTransfersStatus(int transferId, int status) throws RemoteException {
-    dbContext.update(BankTransfers.BANK_TRANSFERS)
-        .set(BankTransfers.BANK_TRANSFERS.PAID, status)
-        .where(BankTransfers.BANK_TRANSFERS.ID.equal(transferId))
+  public synchronized void removeParticipant(int budgetId, int userId) {
+    dbContext
+        .delete(USER_BUDGET)
+        .where(USER_BUDGET.USER_ID.equal(userId))
+        .and(USER_BUDGET.BUDGET_ID.equal(budgetId))
         .execute();
-  }
-
-  @Override
-  public synchronized void setBankTransfersStatus(Map<Integer, Integer> bankTransfers) throws RemoteException {
-    for (Map.Entry<Integer, Integer> transfer : bankTransfers.entrySet()) {
-      setBankTransfersStatus(transfer.getKey(), transfer.getValue());
-    }
 
     Server.slh.unhangAll();
+  }
+
+  @Override
+  public synchronized List<BankTransfer> getBankTransfersToSend(int userId) {
+    return getBankTransfers(BANK_TRANSFERS.SENDER.equal(userId));
+  }
+
+  @Override
+  public synchronized List<BankTransfer> getBankTransfersToReceive(int userId) {
+    return getBankTransfers(BANK_TRANSFERS.RECIPIENT.equal(userId));
+  }
+
+  @Override
+  public synchronized List<BankTransfer> getBankTransfersBySettlementId(int settlementId) {
+    return getBankTransfers(BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId));
+  }
+
+  private synchronized List<BankTransfer> getBankTransfers(Condition condition) {
+    return dbContext
+        .select(
+            BUDGETS.NAME,
+            BANK_TRANSFERS.ID,
+            BANK_TRANSFERS.SENDER,
+            BANK_TRANSFERS.RECIPIENT,
+            BANK_TRANSFERS.AMOUNT,
+            BANK_TRANSFERS.PAID
+        )
+        .from(BANK_TRANSFERS)
+        .join(SETTLEMENTS)
+        .on(SETTLEMENTS.ID.equal(BANK_TRANSFERS.SETTLEMENT_ID))
+        .join(BUDGETS)
+        .on(BUDGETS.ID.equal(SETTLEMENTS.BUDGET_ID))
+        .where(condition)
+        .fetch()
+        .stream()
+        .map(this::extractIntoBankTransfer)
+        .collect(Collectors.toList());
+  }
+
+  private BankTransfer extractIntoBankTransfer(
+      Record6<String, Integer, Integer, Integer, BigDecimal, Integer> bankTransfer) {
+    final String budgetName = bankTransfer.value1();
+    final int transferId = bankTransfer.value2();
+    final User sender = getUserById(bankTransfer.value3());
+    final User recipient = getUserById(bankTransfer.value4());
+    final BigDecimal amount = bankTransfer.value5();
+    final int status = bankTransfer.value6();
+    return new BankTransfer(transferId, budgetName, sender, recipient, amount, status);
+  }
+
+  @Override
+  public synchronized void setBankTransfersStatus(Map<Integer, BankTransfer.Status> bankTransfers) {
+    dbContext.transaction(configuration -> {
+      for (Entry<Integer, BankTransfer.Status> transferEntry : bankTransfers.entrySet()) {
+        final int transferId = transferEntry.getKey();
+        final Status status = transferEntry.getValue();
+        DSL.using(configuration)
+            .update(BANK_TRANSFERS)
+            .set(BANK_TRANSFERS.PAID, status.getValue())
+            .where(BANK_TRANSFERS.ID.equal(transferId))
+            .execute();
+      }
+    });
+    Server.slh.unhangAll();
+  }
+
+  @Override
+  public synchronized void setBankTransfersStatus(int transferId, int status) {
+    dbContext
+        .update(BANK_TRANSFERS)
+        .set(BANK_TRANSFERS.PAID, status)
+        .where(BANK_TRANSFERS.ID.equal(transferId))
+        .execute();
   }
 }

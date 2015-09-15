@@ -21,7 +21,7 @@ public class BasicAccessProvider implements AccessProvider {
   public void signUp(Email mail, String name, String passwordHash, BankAccount bankAccount)
       throws RemoteException, AuthenticationException {
     if (!DatabaseController.getInstance()
-        .createUser(mail.toString(), name, passwordHash, bankAccount.toString())) {
+        .createUser(mail.toString(), name, bankAccount.toString(), passwordHash)) {
       throw new AuthenticationException();
     }
   }

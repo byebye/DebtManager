@@ -116,6 +116,7 @@ public class BudgetCreatorController extends BasicController implements Initiali
     private void removeParticipant() {
       User participant = (User) getTableRow().getItem();
       participantsList.remove(participant);
+      fieldEmail.requestFocus();
     }
 
     @Override

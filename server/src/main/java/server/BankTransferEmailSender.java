@@ -8,7 +8,6 @@ import java.util.List;
 
 public class BankTransferEmailSender implements Runnable {
 
-  private static DatabaseController dbController;
   private String budgetName;
   private List<BankTransfer> transfers;
   private static Email debtmanagerEmail;
@@ -24,10 +23,10 @@ public class BankTransferEmailSender implements Runnable {
 
   @Override
   public void run() {
-    SingleRecipientEmailSender sender = new SingleRecipientEmailSender();
+    final SingleRecipientEmailSender sender = new SingleRecipientEmailSender();
     for (BankTransfer transfer : transfers) {
-      User fromUser = Server.dbController.getUserById(transfer.getSenderId()),
-          toUser = Server.dbController.getUserById(transfer.getRecipientId());
+      final User fromUser = Server.dbController.getUserById(transfer.getSenderId());
+      final User toUser = Server.dbController.getUserById(transfer.getRecipientId());
 
       try {
         sender.send(debtmanagerEmail,
@@ -37,7 +36,7 @@ public class BankTransferEmailSender implements Runnable {
         System.out.println("Email from " + fromUser.getEmail() + " to " + toUser.getEmail() + " sent");
       }
       catch (SingleRecipientEmailSender.EmailNotSentException e) {
-        System.out.println("Email from " + fromUser.getEmail() + " to " + toUser.getEmail() + " not sent");
+        System.out.println("Email from " + fromUser.getEmail() + " to " + toUser.getEmail() + " not sent:\n" + e);
       }
 
       try {
@@ -48,7 +47,7 @@ public class BankTransferEmailSender implements Runnable {
         System.out.println("Email from " + toUser.getEmail() + " to " + fromUser.getEmail() + " sent");
       }
       catch (SingleRecipientEmailSender.EmailNotSentException e) {
-        System.out.println("Email from " + toUser.getEmail() + " to " + fromUser.getEmail() + " not sent");
+        System.out.println("Email from " + toUser.getEmail() + " to " + fromUser.getEmail() + " not sent:\n" + e);
       }
     }
   }

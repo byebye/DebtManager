@@ -1,6 +1,7 @@
 package common.data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Date;
 
 public class Settlement implements Serializable {
@@ -9,19 +10,19 @@ public class Settlement implements Serializable {
   private final int settlementId;
   private final int paidBankTransfersCount;
   private final int allBankTransfersCount;
-  private final double amount;
+  private final BigDecimal spentMoney;
   private final Date settleDate;
 
   public Settlement(int settlementId, int budgetId, int paidBankTransfersCount, int allBankTransfersCount,
       Date settleDate,
-      double amount
+      BigDecimal spentMoney
   ) {
     this.budgetId = budgetId;
     this.settleDate = settleDate;
     this.allBankTransfersCount = allBankTransfersCount;
     this.paidBankTransfersCount = paidBankTransfersCount;
     this.settlementId = settlementId;
-    this.amount = amount;
+    this.spentMoney = spentMoney.setScale(2);
   }
 
   public int getBudgetId() {
@@ -56,7 +57,7 @@ public class Settlement implements Serializable {
     return paidBankTransfersCount == allBankTransfersCount;
   }
 
-  public double getAmount() {
-    return amount;
+  public BigDecimal getSpentMoney() {
+    return spentMoney;
   }
 }

@@ -25,11 +25,11 @@ import javafx.scene.text.Text;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class SettlementDetailsController extends BasicController implements Initializable {
 
@@ -102,13 +102,10 @@ public class SettlementDetailsController extends BasicController implements Init
 
   public void setAsPaid() {
     //TODO: add confirmation window
-    Map<Integer, Integer> bankTransfersToSet = new HashMap<>();
-    for (BankTransfer transfer : contentList) {
-      if (transfer.isToUpdate()) {
-        transfer.updateStatus(currentUser.getId());
-        bankTransfersToSet.put(transfer.getId(), transfer.getStatus().getValue());
-      }
-    }
+    final Map<Integer, BankTransfer.Status> bankTransfersToSet = contentList.stream()
+        .filter(BankTransfer::isToUpdate)
+        .peek(transfer -> transfer.updateStatus(currentUser.getId()))
+        .collect(Collectors.toMap(BankTransfer::getId, BankTransfer::getStatus));
     try {
       dbHandler.setBankTransfersStatus(bankTransfersToSet);
     }

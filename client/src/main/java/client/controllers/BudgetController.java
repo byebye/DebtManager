@@ -107,7 +107,7 @@ public class BudgetController extends BasicController implements Initializable, 
   private void exportBudget() {
     try {
       List<Payment> settledPayments = dbHandler.getAllPayments(budget.getId(), true);
-      List<Settlement> settlements = dbHandler.getAllSettlements(budget.getId());
+      List<Settlement> settlements = dbHandler.getAllSettlementsOfBudget(budget.getId());
       BudgetExporter budgetExporter = new BudgetExporter(budget,
           participantsList,
           settledPayments,
