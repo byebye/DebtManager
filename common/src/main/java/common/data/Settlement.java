@@ -22,7 +22,7 @@ public class Settlement implements Serializable {
     this.allBankTransfersCount = allBankTransfersCount;
     this.paidBankTransfersCount = paidBankTransfersCount;
     this.settlementId = settlementId;
-    this.spentMoney = spentMoney.setScale(2);
+    this.spentMoney = spentMoney.setScale(2, BigDecimal.ROUND_HALF_DOWN);
   }
 
   public int getBudgetId() {

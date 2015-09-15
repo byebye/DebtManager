@@ -22,7 +22,7 @@ public class BankTransfer implements Serializable {
     this.budgetName = budgetName;
     this.sender = sender;
     this.recipient = recipient;
-    this.amount = amount;
+    this.amount = amount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
     this.status = Status.fromValue(status);
   }
 

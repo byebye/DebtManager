@@ -42,8 +42,6 @@ public interface DbHandler extends Remote {
 
   List<Payment> getPaymentsBySettlementId(int settlementId) throws RemoteException;
 
-  List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> paymentsToSettle) throws RemoteException;
-
   void settlePayments(int budgetId, List<Payment> paymentsToSettle, List<BankTransfer> bankTransfers,
       boolean sendEmails
   ) throws RemoteException;

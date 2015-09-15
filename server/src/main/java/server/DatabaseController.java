@@ -392,45 +392,6 @@ public class DatabaseController implements DbHandler {
   }
 
   @Override
-  public List<BankTransfer> calculateBankTransfers(int budgetId, List<Payment> unsettledPayments) {
-    List<Integer> usersBellowAverage = new ArrayList<>(), usersAboveAverage = new ArrayList<>();
-    Map<Integer, Double> userSpend = new HashMap<>();
-    double sum = 0;
-    double userNum = (double) getBudgetParticipants(budgetId).size();
-    for (User u : getBudgetParticipants(budgetId)) {
-      userSpend.put(u.getId(), 0.0);
-    }
-    for (Payment p : unsettledPayments) {
-      sum += p.getAmount();
-      userSpend.put(p.getUserId(), userSpend.get(p.getUserId()) + p.getAmount());
-    }
-
-    for (Entry<Integer, Double> userIdAmountEntry : userSpend.entrySet()) {
-      final int userId = userIdAmountEntry.getKey();
-      final double spentAmount = userIdAmountEntry.getValue();
-      if (spentAmount < sum / userNum)
-        usersBellowAverage.add(userId);
-      else if (spentAmount > sum / userNum)
-        usersAboveAverage.add(userId);
-    }
-
-    List<BankTransfer> neededTransfers = new ArrayList<>();
-
-    while (!usersBellowAverage.isEmpty() && !usersAboveAverage.isEmpty()) {
-      int userBellow = usersBellowAverage.remove(0), userAbove = usersAboveAverage.remove(0);
-      neededTransfers.add(new BankTransfer(getUserById(userBellow), getUserById(userAbove),
-          BigDecimal.valueOf(sum / userNum - userSpend.get(userBellow))));//drop paymentId field
-      userSpend.put(userAbove, userSpend.get(userAbove) - (sum / userNum - userSpend.get(userBellow)));
-      if (userSpend.get(userAbove) < sum / userNum)
-        usersBellowAverage.add(userAbove);
-      else if (userSpend.get(userAbove) > sum / userNum)
-        usersAboveAverage.add(userAbove);
-    }
-
-    return neededTransfers;
-  }
-
-  @Override
   public synchronized void settlePayments(int budgetId, List<Payment> payments,
       List<BankTransfer> bankTransfers, boolean shouldSendEmails) {
     final int settlementId = dbContext

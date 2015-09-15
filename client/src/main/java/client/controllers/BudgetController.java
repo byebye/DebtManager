@@ -168,7 +168,7 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void displaySettleWindow() {
-    SettleWindow settleWindow = new SettleWindow(this, budget, getPaymentsToSettle());
+    SettleWindow settleWindow = new SettleWindow(this, budget, participantsList, getPaymentsToSettle());
     settleWindow.initOwner(currentStage);
     settleWindow.showAndWait();
   }
@@ -264,7 +264,7 @@ public class BudgetController extends BasicController implements Initializable, 
   private ObservableValue<BigDecimal> userBalanceCellFactory(CellDataFeatures<User, BigDecimal> cell) {
     final User participant = cell.getValue();
     final double balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
-    return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_FLOOR));
+    return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_HALF_DOWN));
   }
 
   void addParticipants(List<User> users) {
