@@ -16,7 +16,7 @@ package server.jooq.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<server.jooq.tables.records.BankTransfersRecord> implements org.jooq.Record6<java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.math.BigDecimal, java.lang.Integer> {
 
-	private static final long serialVersionUID = 1532038828;
+	private static final long serialVersionUID = 1510925418;
 
 	/**
 	 * Setter for <code>debtmanager.bank_transfers.id</code>.
@@ -89,16 +89,16 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 	}
 
 	/**
-	 * Setter for <code>debtmanager.bank_transfers.paid</code>.
+	 * Setter for <code>debtmanager.bank_transfers.status</code>.
 	 */
-	public void setPaid(java.lang.Integer value) {
+	public void setStatus(java.lang.Integer value) {
 		setValue(5, value);
 	}
 
 	/**
-	 * Getter for <code>debtmanager.bank_transfers.paid</code>.
+	 * Getter for <code>debtmanager.bank_transfers.status</code>.
 	 */
-	public java.lang.Integer getPaid() {
+	public java.lang.Integer getStatus() {
 		return (java.lang.Integer) getValue(5);
 	}
 
@@ -179,7 +179,7 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 	 */
 	@Override
 	public org.jooq.Field<java.lang.Integer> field6() {
-		return server.jooq.tables.BankTransfers.BANK_TRANSFERS.PAID;
+		return server.jooq.tables.BankTransfers.BANK_TRANSFERS.STATUS;
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 	 */
 	@Override
 	public java.lang.Integer value6() {
-		return getPaid();
+		return getStatus();
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 	 */
 	@Override
 	public BankTransfersRecord value6(java.lang.Integer value) {
-		setPaid(value);
+		setStatus(value);
 		return this;
 	}
 
@@ -306,7 +306,7 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 	/**
 	 * Create a detached, initialised BankTransfersRecord
 	 */
-	public BankTransfersRecord(java.lang.Integer id, java.lang.Integer settlementId, java.lang.Integer sender, java.lang.Integer recipient, java.math.BigDecimal amount, java.lang.Integer paid) {
+	public BankTransfersRecord(java.lang.Integer id, java.lang.Integer settlementId, java.lang.Integer sender, java.lang.Integer recipient, java.math.BigDecimal amount, java.lang.Integer status) {
 		super(server.jooq.tables.BankTransfers.BANK_TRANSFERS);
 
 		setValue(0, id);
@@ -314,6 +314,6 @@ public class BankTransfersRecord extends org.jooq.impl.UpdatableRecordImpl<serve
 		setValue(2, sender);
 		setValue(3, recipient);
 		setValue(4, amount);
-		setValue(5, paid);
+		setValue(5, status);
 	}
 }

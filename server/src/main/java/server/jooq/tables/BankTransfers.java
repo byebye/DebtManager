@@ -16,7 +16,7 @@ package server.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BankTransfers extends org.jooq.impl.TableImpl<server.jooq.tables.records.BankTransfersRecord> {
 
-	private static final long serialVersionUID = -1753817294;
+	private static final long serialVersionUID = 1102653624;
 
 	/**
 	 * The reference instance of <code>debtmanager.bank_transfers</code>
@@ -44,12 +44,12 @@ public class BankTransfers extends org.jooq.impl.TableImpl<server.jooq.tables.re
 	/**
 	 * The column <code>debtmanager.bank_transfers.sender</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> SENDER = createField("sender", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> SENDER = createField("sender", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
 	/**
 	 * The column <code>debtmanager.bank_transfers.recipient</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> RECIPIENT = createField("recipient", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> RECIPIENT = createField("recipient", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
 	/**
 	 * The column <code>debtmanager.bank_transfers.amount</code>.
@@ -57,9 +57,9 @@ public class BankTransfers extends org.jooq.impl.TableImpl<server.jooq.tables.re
 	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.math.BigDecimal> AMOUNT = createField("amount", org.jooq.impl.SQLDataType.NUMERIC.precision(12, 2).nullable(false), this, "");
 
 	/**
-	 * The column <code>debtmanager.bank_transfers.paid</code>.
+	 * The column <code>debtmanager.bank_transfers.status</code>.
 	 */
-	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> PAID = createField("paid", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
+	public final org.jooq.TableField<server.jooq.tables.records.BankTransfersRecord, java.lang.Integer> STATUS = createField("status", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>debtmanager.bank_transfers</code> table reference

@@ -27,8 +27,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -342,7 +340,7 @@ public class DatabaseController implements DbHandler {
     return dbContext
         .selectCount()
         .from(BANK_TRANSFERS)
-        .where(BANK_TRANSFERS.PAID.equal(Status.Confirmed.getValue()))
+        .where(BANK_TRANSFERS.STATUS.equal(Status.Confirmed.getValue()))
         .and(BANK_TRANSFERS.SETTLEMENT_ID.equal(settlementId))
         .fetchOne().value1();
   }
@@ -474,7 +472,7 @@ public class DatabaseController implements DbHandler {
             BANK_TRANSFERS.SENDER,
             BANK_TRANSFERS.RECIPIENT,
             BANK_TRANSFERS.AMOUNT,
-            BANK_TRANSFERS.PAID
+            BANK_TRANSFERS.STATUS
         )
         .from(BANK_TRANSFERS)
         .join(SETTLEMENTS)
@@ -507,7 +505,7 @@ public class DatabaseController implements DbHandler {
         final Status status = transferEntry.getValue();
         DSL.using(configuration)
             .update(BANK_TRANSFERS)
-            .set(BANK_TRANSFERS.PAID, status.getValue())
+            .set(BANK_TRANSFERS.STATUS, status.getValue())
             .where(BANK_TRANSFERS.ID.equal(transferId))
             .execute();
       }
@@ -519,7 +517,7 @@ public class DatabaseController implements DbHandler {
   public synchronized void setBankTransfersStatus(int transferId, int status) {
     dbContext
         .update(BANK_TRANSFERS)
-        .set(BANK_TRANSFERS.PAID, status)
+        .set(BANK_TRANSFERS.STATUS, status)
         .where(BANK_TRANSFERS.ID.equal(transferId))
         .execute();
   }
