@@ -69,6 +69,7 @@ public class LoginController extends BasicController implements Initializable {
     SignUpWindow signUpWindow = new SignUpWindow(this);
     signUpWindow.initOwner(currentStage);
     signUpWindow.showAndWait();
+    buttonLogIn.requestFocus();
   }
 
   private void logIn() {

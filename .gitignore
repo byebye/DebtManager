@@ -1,13 +1,6 @@
 ##### Linux #####
 .directory
 
-##### In gitignore so passwords won't leak
-startServer.sh
-startLocal.sh
-
-##### Maven #####
-target/
-
 ##### Java files #####
 *.class
 
@@ -44,8 +37,10 @@ hs_err_pid*
 # .idea/uiDesigner.xml
 
 # Gradle:
-# .idea/gradle.xml
-# .idea/libraries
+build/
+.gradle
+.idea/gradle.xml
+.idea/libraries
 
 # Mongo Explorer plugin:
 # .idea/mongoSettings.xml
@@ -57,7 +52,7 @@ hs_err_pid*
 ## Plugin-specific files:
 
 # IntelliJ
-/out/
+out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

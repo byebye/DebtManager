@@ -1,0 +1,11 @@
+dependencies {
+  compile project(':common'),
+      'org.json:json:20141113',
+      'com.fasterxml.jackson.core:jackson-databind:2.6.2'
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': 'client.windows.LoginWindow'
+  }
+}

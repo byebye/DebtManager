@@ -1,0 +1,40 @@
+plugins {
+  // to build all-in-one jar - by executing task 'shadowJar'
+  id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'com.github.johnrengelman.shadow'
+  apply plugin: 'idea'
+  apply plugin: 'eclipse'
+  sourceCompatibility = 1.8
+  group = 'me.managedebts'
+  version = '0.0.2'
+
+  repositories {
+    mavenCentral()
+  }
+  jar {
+    manifest {
+      attributes 'Implementation-Title': 'DebtManager-' + project.name,
+          'Implementation-Version': version
+    }
+  }
+  shadowJar {
+    baseName = project.name + '-all'
+    classifier = ''
+  }
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': project.name
+  }
+}
+
+dependencies {
+  compile project(':common'),
+      project(':server'),
+      project(':client')
+}
