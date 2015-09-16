@@ -1,5 +1,3 @@
--- CREATE DATABASE debtmanager OWNER debtmanager;
-
 CREATE SCHEMA debtmanager;
 SET search_path TO debtmanager;
 

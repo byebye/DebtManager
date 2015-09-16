@@ -12,9 +12,7 @@ jar {
   manifest {
     attributes 'Main-Class': 'server.Server'
   }
-  exclude 'CreateTables.sql',
-      'GenerateJooqClasses.sh',
-      'JooqClassesGenerator.xml'
+  exclude 'CreateTables.sql'
 }
 
 // ***** Generate JOOQ classes from database *****
@@ -34,9 +32,11 @@ import javax.xml.bind.JAXB
 import org.jooq.util.GenerationTool
 import groovy.xml.MarkupBuilder
 
+final def String srcDir = file('src/main/java').canonicalPath
+final def String jooqClassesDir = srcDir + '/server/jooq'
 task generateJooqClasses << {
-  description 'Generates JOOQ classes from Postgres database.'
-  println 'Generating JOOQ classes'
+  description 'Generates jOOQ classes used by server from Postgres database tables.'
+  println 'Generating jOOQ classes into ' + jooqClassesDir
   def writer = new StringWriter()
   def jooqXml = new MarkupBuilder(writer)
       .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd'
@@ -57,7 +57,7 @@ task generateJooqClasses << {
       }
       target() {
         packageName('server.jooq')
-        directory('src/main/java')
+        directory(srcDir)
       }
     }
   }
@@ -68,9 +68,8 @@ task generateJooqClasses << {
 
 compileJava.dependsOn generateJooqClasses
 
-def jooqClassesDir = 'src/main/java/server/jooq'
 task cleanJooqClasses << {
-  println 'Removing JOOQ generated classes'
+  println 'Removing jOOQ generated classes from ' + jooqClassesDir
   delete jooqClassesDir
 }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-client_host=localhost
-server_url=http://${client_host}
+host=localhost
+server_url=http://${host}
 jdk_bin=/usr/lib/jvm/java-8-jdk/bin
 java=${jdk_bin}/java
 rmi=${jdk_bin}/rmiregistry
@@ -12,6 +12,7 @@ client=${PWD}/client/build/libs/client-all-${app_version}.jar
 
 function print_help() {
    echo -e "Options:\n"\
+   "-h  display this help\n"\
    "-b  build the whole project (using gradle)\n"\
    "-c  start client\n"\
    "-s  start server\n"\
@@ -19,14 +20,19 @@ function print_help() {
    "Info: for more settings modify this script."
 }
 
+function build() {
+   gradle shadowJar -p server/ 
+   gradle shadowJar -p client/
+}
+
 function start_client() {
    echo "Starting client..."
-   echo "Connecting to ${client_host}"
+   echo "Connecting to ${host}"
 
    ${java}  -Djava.security.policy=Allpermissions.policy \
             -Djava.rmi.server.codebase=${server_url}/classes/common.jar \
-            -Djava.rmi.server.hostname=${client_host} \
-            -jar ${client} --host=${client_host}
+            -Djava.rmi.server.hostname=${host} \
+            -jar ${client} --host=${host} &
 }
 
 function stop_server() {
@@ -51,7 +57,7 @@ function start_server() {
    sleep 1
    ${java}  -Djava.security.policy=Allpermissions.policy \
             -Djava.rmi.server.codebase=file:///${codebase} \
-            -Djava.rmi.server.hostname=${server_url} \
+            -Djava.rmi.server.hostname=${host} \
             -jar ${server} -u debtmanager -p debtmanager -d localhost/debtmanager &
 }
 
@@ -60,7 +66,8 @@ if [ -z "${1}" ]; then
 fi
 while getopts ":bcst" option; do
    case ${option} in
-      b) gradle shadowJar  ;;
+      h) print_help && exit 0 ;;
+      b) build  ;;
       c) start_client=true ;;
       s) start_server=true ;;
       t) stop_server && exit 0 ;;
