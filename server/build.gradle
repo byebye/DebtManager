@@ -2,7 +2,6 @@ dependencies {
   compile project(':common'),
       'org.jooq:jooq:3.6.2',
       'org.jooq:jooq-meta:3.6.2',
-      'org.jooq:jooq-codegen:3.6.2',
       'org.postgresql:postgresql:9.4-1202-jdbc42',
       'javax.mail:mail:1.4.7',
       'javax.activation:activation:1.1.1',
@@ -17,3 +16,62 @@ jar {
       'GenerateJooqClasses.sh',
       'JooqClassesGenerator.xml'
 }
+
+// ***** Generate JOOQ classes from database *****
+
+buildscript {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.jooq:jooq-codegen:3.6.2',
+        'org.postgresql:postgresql:9.4-1202-jdbc42'
+  }
+}
+
+import javax.xml.bind.JAXB
+import org.jooq.util.GenerationTool
+import groovy.xml.MarkupBuilder
+
+task generateJooqClasses << {
+  description 'Generates JOOQ classes from Postgres database.'
+  println 'Generating JOOQ classes'
+  def writer = new StringWriter()
+  def jooqXml = new MarkupBuilder(writer)
+      .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd'
+  ) {
+    jdbc() {
+      driver('org.postgresql.Driver')
+      url('jdbc:postgresql://localhost/debtmanager')
+      user('debtmanager')
+      password('debtmanager')
+    }
+    generator() {
+      database() {
+        name('org.jooq.util.postgres.PostgresDatabase')
+        inputSchema('debtmanager')
+        includes('.*')
+      }
+      generate() {
+      }
+      target() {
+        packageName('server.jooq')
+        directory('src/main/java')
+      }
+    }
+  }
+  GenerationTool.generate(
+      JAXB.unmarshal(new StringReader(writer.toString()), org.jooq.util.jaxb.Configuration.class)
+  )
+}
+
+compileJava.dependsOn generateJooqClasses
+
+def jooqClassesDir = 'src/main/java/server/jooq'
+task cleanJooqClasses << {
+  println 'Removing JOOQ generated classes'
+  delete jooqClassesDir
+}
+
+clean.dependsOn cleanJooqClasses

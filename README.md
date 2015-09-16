@@ -9,27 +9,28 @@ As we do not possess a code signing certificate you should add http://managedebt
 in order to be able to run it. That is enough if you want to just use the app.
 
 ##Building
-However, if you want to build it yourself keep in mind that it is heavily customized for our setup
+However, if you want to build it yourself keep in mind that it is heavily customized for our setup 
 (Amazon EC2 instance running Linux, Amazon RDS running PostgreSQL and SendGrid for sending emails).
 
 
 **Requirements:**
 
 1. Java JDK 8 with JavaFX included
-1. Maven - to build and download needed libraries:
-   * jOOQ 3.5.4 (only server)
+1. Gradle - to build and download needed libraries:
+   * jOOQ 3.6.2 (only server)
    * PostgreSQL JDBC Driver (only server)
    * common (internal library used by both client and server)
    * and more
 
 To build
 
-    mvn package
+    gradle build
 
 
 **Opening in IDE:**
 
-To open project in IDE import it as a maven project. 
+To open project in IDE import it as a gradle project. 
+If you use IntelliJ or Eclipse, run `gradle idea` or `gradle eclipse` respectively and just open project.
 You may need to configure IDE to use Java 8 version.
 
 
