@@ -1,5 +1,6 @@
 .button {
   -fx-background-radius: 20px;
+  -fx-border-radius: 20px;
   -fx-min-width: 40px;
   -fx-min-height: 40px;
   -fx-max-width: 40px;
@@ -10,6 +11,10 @@
   -fx-background-position: center;
   -fx-background-size: 28px;
   -fx-background-repeat: no-repeat;
+}
+
+.button:focused {
+  -fx-border-color: -fx-focus-color;
 }
 
 .add-user-button {
@@ -25,7 +30,7 @@
 }
 
 .bank-transfers-button {
-  -fx-background-image: url("../../graphics/Wallet.png");
+  -fx-background-image: url("../../graphics/PayHands.png");
 }
 
 .settlements-history-button {

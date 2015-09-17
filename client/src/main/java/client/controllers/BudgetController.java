@@ -29,6 +29,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import java.math.BigDecimal;
@@ -46,11 +47,13 @@ public class BudgetController extends BasicController implements Initializable, 
   @FXML
   private Label labelBudgetName, labelBudgetDescription;
   @FXML
-  private Label labelSum, labelSumPerPerson;
+  private Label labelSpentMoney, labelSumPerPerson;
   @FXML
   private Button buttonBudgetClose, buttonBudgetDelete, buttonBudgetExport;
   @FXML
-  private Button buttonAddPayment, buttonAddParticipant, buttonSettle, buttonHistory;
+  private Button buttonAddPayment, buttonAddParticipant, buttonSettle, buttonHistory, buttonBankTransfers;
+  @FXML
+  private ToggleButton buttonPaymentsPaid, buttonPaymentsOwed, buttonPaymentsOther;
 
   @FXML
   private TableView<Payment> tableUnsettledPayments;
@@ -327,7 +330,7 @@ public class BudgetController extends BasicController implements Initializable, 
       // TODO else: error - payment with owner not participating in budget
     }
     refreshBalanceCells();
-    labelSum.setText(String.format("Sum: %.2f$", spentMoneySum));
+    labelSpentMoney.setText(String.format("Sum: %.2f$", spentMoneySum));
     labelSumPerPerson.setText(String.format("Sum / Person: %.2f$", spentMoneySum / participantsList.size()));
   }
 
