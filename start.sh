@@ -21,6 +21,7 @@ function print_help() {
 }
 
 function build() {
+   gradle shadowJar -p common/
    gradle shadowJar -p server/ 
    gradle shadowJar -p client/
 }

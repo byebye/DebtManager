@@ -9,3 +9,5 @@ jar {
     attributes 'Main-Class': 'client.windows.LoginWindow'
   }
 }
+
+shadowJar.dependsOn ':common:shadowJar'

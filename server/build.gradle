@@ -15,6 +15,11 @@ jar {
   exclude 'CreateTables.sql'
 }
 
+shadowJar {
+  dependsOn ':common:shadowJar'
+  exclude 'CreateTables.sql'
+}
+
 // ***** Generate JOOQ classes from database *****
 
 buildscript {
@@ -36,6 +41,10 @@ final def String srcDir = file('src/main/java').canonicalPath
 final def String jooqClassesDir = srcDir + '/server/jooq'
 task generateJooqClasses << {
   description 'Generates jOOQ classes used by server from Postgres database tables.'
+  if (file(jooqClassesDir).exists()) {
+    println 'jOOQ classes already generated'
+    return
+  }
   println 'Generating jOOQ classes into ' + jooqClassesDir
   def writer = new StringWriter()
   def jooqXml = new MarkupBuilder(writer)
