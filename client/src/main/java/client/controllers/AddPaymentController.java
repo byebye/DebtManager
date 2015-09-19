@@ -5,6 +5,7 @@ import common.data.User;
 import javafx.fxml.Initializable;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
 
 public class AddPaymentController extends PaymentController implements Initializable {
@@ -23,7 +24,8 @@ public class AddPaymentController extends PaymentController implements Initializ
   }
 
   @Override
-  protected void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException {
-    dbHandler.addPayment(budget, user.getId(), amount, fieldDescription.getText());
+  protected void savePaymentInDatabase(User user, BigDecimal amount,
+      Collection<Integer> owingUserIds) throws RemoteException {
+    dbHandler.addPayment(budget, user.getId(), amount, fieldDescription.getText(), owingUserIds);
   }
 }

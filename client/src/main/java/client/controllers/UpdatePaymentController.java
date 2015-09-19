@@ -7,6 +7,7 @@ import client.view.Alerts;
 import javafx.fxml.Initializable;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
 
 public class UpdatePaymentController extends PaymentController implements Initializable {
@@ -28,7 +29,7 @@ public class UpdatePaymentController extends PaymentController implements Initia
   }
 
   private boolean isPaymentOwner(User user) {
-    return user.getId() == payment.getUserId();
+    return user.getId() == payment.getPayerId();
   }
 
   @Override
@@ -40,8 +41,9 @@ public class UpdatePaymentController extends PaymentController implements Initia
   }
 
   @Override
-  protected void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException {
-    dbHandler.updatePayment(payment.getId(), user.getId(), amount, fieldDescription.getText());
+  protected void savePaymentInDatabase(User user, BigDecimal amount,
+      Collection<Integer> owingUserIds) throws RemoteException {
+    dbHandler.updatePayment(payment.getId(), user.getId(), amount, fieldDescription.getText(), owingUserIds);
   }
 
   private void removePayment() {

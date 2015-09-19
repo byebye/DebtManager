@@ -17,6 +17,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -199,11 +200,32 @@ public class BudgetController extends BasicController implements Initializable, 
     columnUnsettledAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
     columnConfirm.setCellFactory(param -> new CheckBoxTableCell());
 
-    tableUnsettledPayments.setItems(unsettledPayments);
+    tableUnsettledPayments.setItems(initFilteredPaymentsView());
     tableUnsettledPayments.setRowFactory(param -> {
       TableRow<Payment> row = new TableRow<>();
       row.setOnMouseClicked(mouseEvent -> handlePaymentRowClicked(row, mouseEvent));
       return row;
+    });
+  }
+
+  private FilteredList<Payment> initFilteredPaymentsView() {
+    FilteredList<Payment> filteredPayments = new FilteredList<>(unsettledPayments, payment -> true);
+    buttonPaymentsPaid.setOnAction(event ->
+        updatePaymentsView(filteredPayments));
+    buttonPaymentsOwed.setOnAction(event ->
+        updatePaymentsView(filteredPayments));
+    buttonPaymentsOther.setOnAction(event ->
+        updatePaymentsView(filteredPayments));
+    return filteredPayments;
+  }
+
+  private void updatePaymentsView(FilteredList<Payment> filteredPayments) {
+    filteredPayments.setPredicate(payment -> {
+      if (isCurrentUserPaymentOwner(payment))
+        return buttonPaymentsPaid.isSelected();
+      if (payment.isUserOwing(currentUser.getId()))
+        return buttonPaymentsOwed.isSelected();
+      return buttonPaymentsOther.isSelected();
     });
   }
 
@@ -221,7 +243,7 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private boolean isCurrentUserPaymentOwner(Payment payment) {
-    return payment.getUserId() == currentUser.getId();
+    return payment.getPayerId() == currentUser.getId();
   }
 
   private void displayPaymentWindow(Payment payment) {
@@ -248,7 +270,7 @@ public class BudgetController extends BasicController implements Initializable, 
     if (mouseEvent.getClickCount() == 2 && !row.isEmpty()) {
       final User participant = row.getItem();
       boolean hasUnsettledPayments = unsettledPayments.stream()
-          .anyMatch(payment -> payment.getUserId() == participant.getId());
+          .anyMatch(payment -> payment.getPayerId() == participant.getId());
       displayParticipantDetailsWindow(participant, hasUnsettledPayments);
     }
   }
@@ -293,7 +315,7 @@ public class BudgetController extends BasicController implements Initializable, 
     updateSpentMoneySums();
   }
 
-  void fillTableParticipants() {
+  private void fillTableParticipants() {
     participantsList.clear();
     try {
       participantsList.addAll(dbHandler.getBudgetParticipants(budget.getId()));
@@ -304,7 +326,7 @@ public class BudgetController extends BasicController implements Initializable, 
     }
   }
 
-  void fillTablePayments(ObservableList<Payment> payments, boolean settled) {
+  private void fillTablePayments(ObservableList<Payment> payments, boolean settled) {
     payments.clear();
     try {
       payments.addAll(dbHandler.getAllPayments(budget.getId(), settled));
@@ -321,7 +343,7 @@ public class BudgetController extends BasicController implements Initializable, 
     for (Payment payment : unsettledPayments) {
       spentMoneySum += payment.getAmount();
       Optional<User> userOptional = participantsList.stream()
-          .filter(user -> user.getId() == payment.getUserId())
+          .filter(user -> user.getId() == payment.getPayerId())
           .findFirst();
       if (userOptional.isPresent()) {
         User participant = userOptional.get();

@@ -21,6 +21,8 @@ import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -91,12 +93,18 @@ public abstract class PaymentController extends BasicController implements Initi
     boxChoosePayer.setCellFactory(cellFactory);
   }
 
-  protected void savePayment() {
+  private void savePayment() {
     clearErrorHighlights();
+    if (fieldAmount.getText().isEmpty()) {
+      labelError.setText("Amount must be specified");
+      ErrorHighlighter.highlightInvalidFields(fieldAmount);
+    }
     final User chosenUser = boxChoosePayer.getSelectionModel().getSelectedItem();
     final BigDecimal amount = new BigDecimal(fieldAmount.getText());
+    // TODO
+    final List<Integer> owingUserIds = new ArrayList<>();
     try {
-      savePaymentInDatabase(chosenUser, amount);
+      savePaymentInDatabase(chosenUser, amount, owingUserIds);
       currentStage.close();
     }
     catch (RemoteException e) {
@@ -105,7 +113,8 @@ public abstract class PaymentController extends BasicController implements Initi
     }
   }
 
-  protected abstract void savePaymentInDatabase(User user, BigDecimal amount) throws RemoteException;
+  protected abstract void savePaymentInDatabase(User user, BigDecimal amount,
+      Collection<Integer> owingUserIds) throws RemoteException;
 
   @Override
   protected void clearErrorHighlights() {

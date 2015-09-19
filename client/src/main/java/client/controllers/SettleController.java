@@ -84,7 +84,7 @@ public class SettleController extends BasicController implements Initializable {
     tableSettleView.setItems(FXCollections.observableArrayList(bankTransfers));
   }
 
-  public List<BankTransfer> calculateBankTransfers(List<Payment> paymentsToSettle) {
+  private List<BankTransfer> calculateBankTransfers(List<Payment> paymentsToSettle) {
     final Map<Integer, User> idToUser = participants.stream()
         .collect(Collectors.toMap(User::getId, user -> user));
     final List<Integer> usersBelowAverage = new LinkedList<>();
@@ -97,7 +97,7 @@ public class SettleController extends BasicController implements Initializable {
     double sum = 0;
     for (Payment p : paymentsToSettle) {
       sum += p.getAmount();
-      userIdToSpentMoney.put(p.getUserId(), userIdToSpentMoney.get(p.getUserId()) + p.getAmount());
+      userIdToSpentMoney.put(p.getPayerId(), userIdToSpentMoney.get(p.getPayerId()) + p.getAmount());
     }
 
     final double average = sum / participants.size();
@@ -132,7 +132,7 @@ public class SettleController extends BasicController implements Initializable {
 
   private void acceptSettlement() {
     try {
-      dbHandler.settlePayments(budget.getId(), paymentsToSettle, bankTransfers,
+      dbHandler.settlePayments(budget.getId(), mapPaymentsToIds(paymentsToSettle), bankTransfers,
           checkBoxSendViaMail.isSelected());
       budgetController.update();
       currentStage.close();
@@ -141,6 +141,12 @@ public class SettleController extends BasicController implements Initializable {
       e.printStackTrace();
       Alerts.serverConnectionError();
     }
+  }
+
+  private List<Integer> mapPaymentsToIds(List<Payment> payments) {
+    return payments.stream()
+            .map(Payment::getId)
+            .collect(Collectors.toList());
   }
 
   @Override

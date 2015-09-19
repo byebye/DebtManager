@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS user_budget CASCADE;
 DROP TABLE IF EXISTS settlements CASCADE;
 DROP TABLE IF EXISTS payments CASCADE;
 DROP TABLE IF EXISTS bank_transfers CASCADE;
+DROP TABLE IF EXISTS payments_owing_users CASCADE;
 
 CREATE TABLE users (
   id            SERIAL PRIMARY KEY,
@@ -49,6 +50,12 @@ CREATE TABLE payments (
 
 CREATE INDEX payments_budget_index ON payments (budget_id);
 CREATE INDEX payments_settlement_index ON payments (settlement_id);
+
+CREATE TABLE payments_owing_users (
+  payment_id INT REFERENCES payments (id) ON DELETE CASCADE NOT NULL,
+  user_id    INT REFERENCES users (id)    ON DELETE SET NULL,
+  PRIMARY KEY (payment_id, user_id)
+);
 
 CREATE TABLE bank_transfers (
   id            SERIAL PRIMARY KEY,

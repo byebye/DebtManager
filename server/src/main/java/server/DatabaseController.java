@@ -15,7 +15,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Record4;
-import org.jooq.Record5;
 import org.jooq.Record6;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -27,15 +26,20 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static server.jooq.tables.BankTransfers.BANK_TRANSFERS;
 import static server.jooq.tables.Budgets.BUDGETS;
 import static server.jooq.tables.Payments.PAYMENTS;
+import static server.jooq.tables.PaymentsOwingUsers.PAYMENTS_OWING_USERS;
 import static server.jooq.tables.Settlements.SETTLEMENTS;
 import static server.jooq.tables.UserBudget.USER_BUDGET;
 import static server.jooq.tables.Users.USERS;
@@ -264,8 +268,19 @@ public class DatabaseController implements DbHandler {
   }
 
   @Override
-  public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String description) {
-    dbContext
+  public synchronized void addPayment(Budget budget, int userId, BigDecimal amount, String description,
+      Collection<Integer> owingUserIds) {
+    dbContext.transaction(configuration -> {
+      DSLContext transactionContext = DSL.using(configuration);
+      final int paymentId = insertPayment(transactionContext, budget, userId, amount, description);
+      insertOwingUsers(transactionContext, paymentId, new HashSet<>(owingUserIds));
+    });
+    Server.slh.unhangAll();
+  }
+
+  private int insertPayment(DSLContext transactionContext, Budget budget, int userId, BigDecimal amount,
+      String description) {
+    return transactionContext
         .insertInto(PAYMENTS,
             PAYMENTS.BUDGET_ID,
             PAYMENTS.AMOUNT,
@@ -275,22 +290,74 @@ public class DatabaseController implements DbHandler {
             amount,
             userId,
             description)
+        .returning(PAYMENTS.ID)
         .execute();
+  }
 
-    Server.slh.unhangAll();
+  private void insertOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> owingUserIds) {
+    owingUserIds.forEach(owingUserId ->
+        transactionContext
+            .insertInto(PAYMENTS_OWING_USERS,
+                PAYMENTS_OWING_USERS.PAYMENT_ID,
+                PAYMENTS_OWING_USERS.USER_ID)
+            .values(paymentId, owingUserId)
+            .execute());
   }
 
   @Override
-  public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String description) {
-    dbContext
+  public synchronized void updatePayment(int paymentId, int userId, BigDecimal amount, String description,
+      Collection<Integer> owingUserIds) {
+    dbContext.transaction(configuration -> {
+      DSLContext transactionContext = DSL.using(configuration);
+      updatePayment(transactionContext, paymentId, userId, amount, description);
+      updateOwingUsers(transactionContext, paymentId, new HashSet<>(owingUserIds));
+    });
+    Server.slh.unhangAll();
+  }
+
+  private void updatePayment(DSLContext transactionContext, int paymentId, int userId, BigDecimal amount,
+      String description) {
+    transactionContext
         .update(PAYMENTS)
         .set(PAYMENTS.AMOUNT, amount)
         .set(PAYMENTS.PAYER_ID, userId)
         .set(PAYMENTS.DESCRIPTION, description)
         .where(PAYMENTS.ID.equal(paymentId))
         .execute();
+  }
 
-    Server.slh.unhangAll();
+  private void updateOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> newOwingUserIds) {
+    final Set<Integer> removedOwingUsers = getRemovedOwingUsers(transactionContext, paymentId, newOwingUserIds);
+    deleteOwingUsers(transactionContext, paymentId, removedOwingUsers);
+
+    newOwingUserIds.forEach(owingUserId ->
+        transactionContext
+            .insertInto(PAYMENTS_OWING_USERS,
+                PAYMENTS_OWING_USERS.PAYMENT_ID,
+                PAYMENTS_OWING_USERS.USER_ID)
+            .values(paymentId, owingUserId)
+            .onDuplicateKeyIgnore()
+            .execute());
+  }
+
+  private Set<Integer> getRemovedOwingUsers(DSLContext transactionContext, int paymentId,
+      Set<Integer> newOwingUserIds) {
+    final Set<Integer> currentOwingUsers = transactionContext
+        .select(PAYMENTS_OWING_USERS.USER_ID)
+        .from(PAYMENTS_OWING_USERS)
+        .where(PAYMENTS_OWING_USERS.PAYMENT_ID.equal(paymentId))
+        .fetchSet(PAYMENTS_OWING_USERS.USER_ID);
+
+    currentOwingUsers.removeAll(newOwingUserIds);
+    return currentOwingUsers;
+  }
+
+  private void deleteOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> owingUserIds) {
+    transactionContext
+        .deleteFrom(PAYMENTS_OWING_USERS)
+        .where(PAYMENTS_OWING_USERS.PAYMENT_ID.equal(paymentId))
+        .and(PAYMENTS_OWING_USERS.USER_ID.in(owingUserIds))
+        .execute();
   }
 
   @Override
@@ -370,8 +437,11 @@ public class DatabaseController implements DbHandler {
             PAYMENTS.BUDGET_ID,
             PAYMENTS.PAYER_ID,
             PAYMENTS.DESCRIPTION,
-            PAYMENTS.AMOUNT)
+            PAYMENTS.AMOUNT,
+            DSL.arrayAgg(PAYMENTS_OWING_USERS.USER_ID))
         .from(PAYMENTS)
+        .join(PAYMENTS_OWING_USERS)
+        .on(PAYMENTS_OWING_USERS.PAYMENT_ID.equal(PAYMENTS.ID))
         .where(condition)
         .fetch()
         .stream()
@@ -379,18 +449,19 @@ public class DatabaseController implements DbHandler {
         .collect(Collectors.toList());
   }
 
-  private Payment extractIntoPayment(Record5<Integer, Integer, Integer, String, BigDecimal> payment) {
+  private Payment extractIntoPayment(Record6<Integer, Integer, Integer, String, BigDecimal, Integer[]> payment) {
     final int paymentId = payment.value1();
     final int budgetId = payment.value2();
     final int userId = payment.value3();
     final String userName = getUserById(userId).getName();
     final String description = payment.value4();
     final double amount = payment.value5().doubleValue();
-    return new Payment(paymentId, budgetId, userId, userName, description, amount);
+    final List<Integer> owingUserIds = Arrays.asList(payment.value6());
+    return new Payment(paymentId, budgetId, userId, userName, description, amount, owingUserIds);
   }
 
   @Override
-  public synchronized void settlePayments(int budgetId, List<Payment> payments,
+  public synchronized void settlePayments(int budgetId, List<Integer> paymentIds,
       List<BankTransfer> bankTransfers, boolean shouldSendEmails) {
     final int settlementId = dbContext
         .insertInto(SETTLEMENTS,
@@ -402,7 +473,7 @@ public class DatabaseController implements DbHandler {
 
     dbContext.transaction(configuration -> {
       final DSLContext transactionContext = DSL.using(configuration);
-      insertPayments(transactionContext, settlementId, payments);
+      insertPayments(transactionContext, settlementId, paymentIds);
       insertBankTransfers(transactionContext, settlementId, bankTransfers);
     });
 
@@ -412,15 +483,13 @@ public class DatabaseController implements DbHandler {
     Server.slh.unhangAll();
   }
 
-  private synchronized void insertPayments(DSLContext transactionContext, int settlementId, List<Payment> payments) {
-    for (Payment payment : payments) {
-      transactionContext
-          .update(PAYMENTS)
-          .set(PAYMENTS.SETTLED, true)
-          .set(PAYMENTS.SETTLEMENT_ID, settlementId)
-          .where(PAYMENTS.ID.equal(payment.getId()))
-          .execute();
-    }
+  private synchronized void insertPayments(DSLContext transactionContext, int settlementId, List<Integer> paymentIds) {
+    transactionContext
+        .update(PAYMENTS)
+        .set(PAYMENTS.SETTLED, true)
+        .set(PAYMENTS.SETTLEMENT_ID, settlementId)
+        .where(PAYMENTS.ID.in(paymentIds))
+        .execute();
   }
 
   private synchronized void insertBankTransfers(DSLContext transactionContext, int settlementId,

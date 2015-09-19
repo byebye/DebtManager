@@ -9,6 +9,7 @@ import common.data.User;
 import java.math.BigDecimal;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +33,11 @@ public interface DbHandler extends Remote {
 
   void removeParticipant(int budgetId, int userId) throws RemoteException;
 
-  void addPayment(Budget budget, int userId, BigDecimal amount, String description) throws RemoteException;
+  void addPayment(Budget budget, int userId, BigDecimal amount, String description,
+      Collection<Integer> owingUserIds) throws RemoteException;
 
-  void updatePayment(int paymentId, int userId, BigDecimal amount, String description) throws RemoteException;
+  void updatePayment(int paymentId, int userId, BigDecimal amount, String description,
+      Collection<Integer> owingUserIds) throws RemoteException;
 
   void deletePayment(int paymentId) throws RemoteException;
 
@@ -42,7 +45,7 @@ public interface DbHandler extends Remote {
 
   List<Payment> getPaymentsBySettlementId(int settlementId) throws RemoteException;
 
-  void settlePayments(int budgetId, List<Payment> paymentsToSettle, List<BankTransfer> bankTransfers,
+  void settlePayments(int budgetId, List<Integer> paymentsToSettle, List<BankTransfer> bankTransfers,
       boolean sendEmails
   ) throws RemoteException;
 
