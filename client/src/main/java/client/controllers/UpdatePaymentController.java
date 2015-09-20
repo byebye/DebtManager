@@ -41,6 +41,13 @@ public class UpdatePaymentController extends PaymentController implements Initia
   }
 
   @Override
+  protected void checkOwingUsers() {
+    participants.stream()
+        .filter(user -> payment.isUserOwing(user.getId()))
+        .forEach(user -> boxOwingUsers.getCheckModel().check(user));
+  }
+
+  @Override
   protected void savePaymentInDatabase(User user, BigDecimal amount,
       Collection<Integer> owingUserIds) throws RemoteException {
     dbHandler.updatePayment(payment.getId(), user.getId(), amount, fieldDescription.getText(), owingUserIds);

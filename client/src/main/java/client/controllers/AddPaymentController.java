@@ -24,6 +24,12 @@ public class AddPaymentController extends PaymentController implements Initializ
   }
 
   @Override
+  protected void checkOwingUsers() {
+    boxOwingUsers.getCheckModel().checkAll();
+    boxOwingUsers.getCheckModel().clearCheck(currentUser);
+  }
+
+  @Override
   protected void savePaymentInDatabase(User user, BigDecimal amount,
       Collection<Integer> owingUserIds) throws RemoteException {
     dbHandler.addPayment(budget, user.getId(), amount, fieldDescription.getText(), owingUserIds);

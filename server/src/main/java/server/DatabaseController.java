@@ -8,7 +8,6 @@ import common.data.Email;
 import common.data.Payment;
 import common.data.Settlement;
 import common.data.User;
-import server.jooq.tables.records.BudgetsRecord;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -172,15 +171,15 @@ public class DatabaseController implements DbHandler {
   public synchronized boolean createBudget(Budget budget) {
     dbContext.transaction(configuration -> {
       final DSLContext transactionContext = DSL.using(configuration);
-      final BudgetsRecord result = transactionContext
+      final int budgetId = transactionContext
           .insertInto(BUDGETS,
               BUDGETS.NAME,
               BUDGETS.DESCRIPTION,
               BUDGETS.OWNER_ID)
           .values(budget.getName(), budget.getDescription(), budget.getOwner().getId())
           .returning(BUDGETS.ID)
-          .fetchOne();
-      final int budgetId = result.getId();
+          .fetchOne()
+          .getValue(BUDGETS.ID);
       for (User user : budget.getParticipants()) {
         transactionContext
             .insertInto(USER_BUDGET,
@@ -291,7 +290,8 @@ public class DatabaseController implements DbHandler {
             userId,
             description)
         .returning(PAYMENTS.ID)
-        .execute();
+        .fetchOne()
+        .getValue(PAYMENTS.ID);
   }
 
   private void insertOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> owingUserIds) {
@@ -327,29 +327,27 @@ public class DatabaseController implements DbHandler {
   }
 
   private void updateOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> newOwingUserIds) {
-    final Set<Integer> removedOwingUsers = getRemovedOwingUsers(transactionContext, paymentId, newOwingUserIds);
-    deleteOwingUsers(transactionContext, paymentId, removedOwingUsers);
-
+    final Set<Integer> currentOwingUsers = getCurrentOwingUsers(transactionContext, paymentId);
+    final Set<Integer> usersToRetain = new HashSet<>(newOwingUserIds);
+    usersToRetain.retainAll(currentOwingUsers);
+    currentOwingUsers.removeAll(usersToRetain);
+    deleteOwingUsers(transactionContext, paymentId, currentOwingUsers);
+    newOwingUserIds.removeAll(usersToRetain);
     newOwingUserIds.forEach(owingUserId ->
         transactionContext
             .insertInto(PAYMENTS_OWING_USERS,
                 PAYMENTS_OWING_USERS.PAYMENT_ID,
                 PAYMENTS_OWING_USERS.USER_ID)
             .values(paymentId, owingUserId)
-            .onDuplicateKeyIgnore()
             .execute());
   }
 
-  private Set<Integer> getRemovedOwingUsers(DSLContext transactionContext, int paymentId,
-      Set<Integer> newOwingUserIds) {
-    final Set<Integer> currentOwingUsers = transactionContext
+  private Set<Integer> getCurrentOwingUsers(DSLContext transactionContext, int paymentId) {
+    return transactionContext
         .select(PAYMENTS_OWING_USERS.USER_ID)
         .from(PAYMENTS_OWING_USERS)
         .where(PAYMENTS_OWING_USERS.PAYMENT_ID.equal(paymentId))
         .fetchSet(PAYMENTS_OWING_USERS.USER_ID);
-
-    currentOwingUsers.removeAll(newOwingUserIds);
-    return currentOwingUsers;
   }
 
   private void deleteOwingUsers(DSLContext transactionContext, int paymentId, Set<Integer> owingUserIds) {
@@ -443,6 +441,12 @@ public class DatabaseController implements DbHandler {
         .join(PAYMENTS_OWING_USERS)
         .on(PAYMENTS_OWING_USERS.PAYMENT_ID.equal(PAYMENTS.ID))
         .where(condition)
+        .groupBy(
+            PAYMENTS.ID,
+            PAYMENTS.BUDGET_ID,
+            PAYMENTS.PAYER_ID,
+            PAYMENTS.DESCRIPTION,
+            PAYMENTS.AMOUNT)
         .fetch()
         .stream()
         .map(this::extractIntoPayment)
@@ -469,7 +473,7 @@ public class DatabaseController implements DbHandler {
         .values(budgetId)
         .returning(SETTLEMENTS.ID)
         .fetchOne()
-        .getId();
+        .getValue(SETTLEMENTS.ID);
 
     dbContext.transaction(configuration -> {
       final DSLContext transactionContext = DSL.using(configuration);
