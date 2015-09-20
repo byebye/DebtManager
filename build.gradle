@@ -10,7 +10,7 @@ allprojects {
   apply plugin: 'eclipse'
   sourceCompatibility = 1.8
   group = 'me.managedebts'
-  version = '0.0.2'
+  version = '0.0.3'
 
   repositories {
     mavenCentral()

@@ -126,7 +126,7 @@
         </TableView>
         <HBox alignment="CENTER_RIGHT" spacing="5.0" VBox.vgrow="ALWAYS">
           <children>
-            <Label fx:id="labelSumPerPerson" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Balance: 0.00$" HBox.hgrow="ALWAYS">
+            <Label fx:id="labelCurrentUserBalance" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Balance: 0.00$" HBox.hgrow="ALWAYS">
               <font>
                 <Font size="15.0" />
               </font>

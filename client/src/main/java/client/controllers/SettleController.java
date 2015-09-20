@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +40,10 @@ public class SettleController extends BasicController implements Initializable {
 
   private List<BankTransfer> bankTransfers;
   private List<User> participants;
-  private List<Payment> paymentsToSettle;
   private BudgetController budgetController;
   private Budget budget;
+  private Map<Integer, Double> usersBalance;
+  private List<Payment> paymentsToSettle;
 
   public void setBudgetController(BudgetController budgetController) {
     this.budgetController = budgetController;
@@ -59,6 +59,10 @@ public class SettleController extends BasicController implements Initializable {
 
   public void setPaymentsToSettle(List<Payment> paymentsToSettle) {
     this.paymentsToSettle = paymentsToSettle;
+  }
+
+  public void setUsersBalance(final Map<Integer, Double> usersBalance) {
+    this.usersBalance = usersBalance;
   }
 
   @Override
@@ -80,33 +84,24 @@ public class SettleController extends BasicController implements Initializable {
   }
 
   public void fillBankTransfersTable() {
-    bankTransfers = calculateBankTransfers(paymentsToSettle);
+    bankTransfers = calculateBankTransfers();
     tableSettleView.setItems(FXCollections.observableArrayList(bankTransfers));
   }
 
-  private List<BankTransfer> calculateBankTransfers(List<Payment> paymentsToSettle) {
+  private List<BankTransfer> calculateBankTransfers() {
     final Map<Integer, User> idToUser = participants.stream()
         .collect(Collectors.toMap(User::getId, user -> user));
     final List<Integer> usersBelowAverage = new LinkedList<>();
     final List<Integer> usersAboveAverage = new LinkedList<>();
-    final Map<Integer, Double> userIdToSpentMoney = new HashMap<>();
 
-    for (User participant : participants) {
-      userIdToSpentMoney.put(participant.getId(), 0.0);
-    }
-    double sum = 0;
-    for (Payment p : paymentsToSettle) {
-      sum += p.getAmount();
-      userIdToSpentMoney.put(p.getPayerId(), userIdToSpentMoney.get(p.getPayerId()) + p.getAmount());
-    }
-
+    final double sum = usersBalance.values().stream().mapToDouble(balance -> balance).sum();
     final double average = sum / participants.size();
-    for (Entry<Integer, Double> userIdAmountEntry : userIdToSpentMoney.entrySet()) {
+    for (Entry<Integer, Double> userIdAmountEntry : usersBalance.entrySet()) {
       final int userId = userIdAmountEntry.getKey();
-      final double spentAmount = userIdAmountEntry.getValue();
-      if (spentAmount < average)
+      final double balance = userIdAmountEntry.getValue();
+      if (balance < average)
         usersBelowAverage.add(userId);
-      else if (spentAmount > average)
+      else if (balance > average)
         usersAboveAverage.add(userId);
     }
 
@@ -117,14 +112,14 @@ public class SettleController extends BasicController implements Initializable {
       final int userAbove = usersAboveAverage.remove(0);
       final User sender = idToUser.get(userBelow);
       final User recipient = idToUser.get(userAbove);
-      final double amount = average - userIdToSpentMoney.get(userBelow);
+      final double amount = average - usersBalance.get(userBelow);
       neededTransfers.add(new BankTransfer(sender, recipient, BigDecimal.valueOf(amount)));
 
-      final double updatedSpentMoney = userIdToSpentMoney.get(userAbove) - amount;
-      userIdToSpentMoney.put(userAbove, updatedSpentMoney);
-      if (updatedSpentMoney < average)
+      final double updatedBalance = usersBalance.get(userAbove) - amount;
+      usersBalance.put(userAbove, updatedBalance);
+      if (updatedBalance < average)
         usersBelowAverage.add(userAbove);
-      else if (updatedSpentMoney > average)
+      else if (updatedBalance > average)
         usersAboveAverage.add(userAbove);
     }
     return neededTransfers;

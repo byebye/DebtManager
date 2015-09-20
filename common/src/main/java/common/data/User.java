@@ -11,7 +11,6 @@ public class User implements Serializable {
   private final String name;
   private final Email email;
   private final BankAccount bankAccount;
-  private double spentMoney = 0;
 
   public User(int id, String name, String email, String bankAccount) {
     this(id, name, new Email(email), new BankAccount(bankAccount));
@@ -38,18 +37,6 @@ public class User implements Serializable {
 
   public BankAccount getBankAccount() {
     return bankAccount;
-  }
-
-  public double getSpentMoney() {
-    return spentMoney;
-  }
-
-  public void setSpentMoney(double spentMoney) {
-    this.spentMoney = spentMoney;
-  }
-
-  public void addSpentMoney(double spentMoney) {
-    this.spentMoney += spentMoney;
   }
 
   @Override

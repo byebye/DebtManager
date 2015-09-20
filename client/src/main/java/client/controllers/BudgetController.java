@@ -38,6 +38,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -48,7 +49,7 @@ public class BudgetController extends BasicController implements Initializable, 
   @FXML
   private Label labelBudgetName, labelBudgetDescription;
   @FXML
-  private Label labelSpentMoney, labelSumPerPerson;
+  private Label labelSpentMoney, labelCurrentUserBalance;
   @FXML
   private Button buttonBudgetClose, buttonBudgetDelete, buttonBudgetExport;
   @FXML
@@ -172,7 +173,10 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void displaySettleWindow() {
-    SettleWindow settleWindow = new SettleWindow(this, budget, participantsList, getPaymentsToSettle());
+    final List<Payment> paymentsToSettle = getPaymentsToSettle();
+    final Map<Integer, Double> usersBalance = participantsList.stream()
+        .collect(Collectors.toMap(User::getId, user -> calculateUserBalance(user, paymentsToSettle)));
+    SettleWindow settleWindow = new SettleWindow(this, budget, participantsList, paymentsToSettle, usersBalance);
     settleWindow.initOwner(currentStage);
     settleWindow.showAndWait();
   }
@@ -220,13 +224,16 @@ public class BudgetController extends BasicController implements Initializable, 
   }
 
   private void updatePaymentsView(FilteredList<Payment> filteredPayments) {
-    filteredPayments.setPredicate(payment -> {
-      if (isCurrentUserPaymentOwner(payment))
-        return buttonPaymentsPaid.isSelected();
-      if (payment.isUserOwing(currentUser.getId()))
-        return buttonPaymentsOwed.isSelected();
-      return buttonPaymentsOther.isSelected();
-    });
+    filteredPayments.setPredicate(this::isPaymentVisibleOnList);
+    updateSpentMoney();
+  }
+
+  private boolean isPaymentVisibleOnList(Payment payment) {
+    if (isCurrentUserPaymentOwner(payment))
+      return buttonPaymentsPaid.isSelected();
+    if (payment.isUserOwing(currentUser.getId()))
+      return buttonPaymentsOwed.isSelected();
+    return buttonPaymentsOther.isSelected();
   }
 
   private void handlePaymentRowClicked(TableRow<Payment> row, MouseEvent mouseEvent) {
@@ -288,8 +295,8 @@ public class BudgetController extends BasicController implements Initializable, 
 
   private ObservableValue<BigDecimal> userBalanceCellFactory(CellDataFeatures<User, BigDecimal> cell) {
     final User participant = cell.getValue();
-    final double balance = participant.getSpentMoney() - spentMoneySum / participantsList.size();
-    return new ReadOnlyObjectWrapper<>(new BigDecimal(balance).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+    final BigDecimal userBalance = BigDecimal.valueOf(calculateUserBalance(participant, unsettledPayments));
+    return new ReadOnlyObjectWrapper<>(userBalance.setScale(2, BigDecimal.ROUND_HALF_DOWN));
   }
 
   void addParticipants(List<User> users) {
@@ -312,7 +319,7 @@ public class BudgetController extends BasicController implements Initializable, 
 
   private void fillTableUnsettledPayments() {
     fillTablePayments(unsettledPayments, false);
-    updateSpentMoneySums();
+    updateSpentMoney();
   }
 
   private void fillTableParticipants() {
@@ -337,28 +344,33 @@ public class BudgetController extends BasicController implements Initializable, 
     }
   }
 
-  private void updateSpentMoneySums() {
-    spentMoneySum = 0;
-    participantsList.forEach(p -> p.setSpentMoney(0));
-    for (Payment payment : unsettledPayments) {
-      spentMoneySum += payment.getAmount();
-      Optional<User> userOptional = participantsList.stream()
-          .filter(user -> user.getId() == payment.getPayerId())
-          .findFirst();
-      if (userOptional.isPresent()) {
-        User participant = userOptional.get();
-        participant.addSpentMoney(payment.getAmount());
-      }
-      // TODO else: error - payment with owner not participating in budget
-    }
+  private void updateSpentMoney() {
     refreshBalanceCells();
+    spentMoneySum = unsettledPayments.stream()
+        .filter(this::isPaymentVisibleOnList)
+        .mapToDouble(Payment::getAmount)
+        .sum();
     labelSpentMoney.setText(String.format("Sum: %.2f$", spentMoneySum));
-    labelSumPerPerson.setText(String.format("Sum / Person: %.2f$", spentMoneySum / participantsList.size()));
+  }
+
+  private double calculateUserBalance(User user, List<Payment> payments) {
+    double balance = 0.0;
+    for (Payment payment : payments) {
+      final double amount = payment.getAmount();
+      final double perUser = amount / (payment.getOwingUsers().size() + 1 /* payer */);
+      if (payment.getPayerId() == user.getId())
+        balance += amount - perUser;
+      else if (payment.isUserOwing(user.getId()))
+        balance -= perUser;
+    }
+    return balance;
   }
 
   private void refreshBalanceCells() {
     tableParticipants.getColumns().get(2).setVisible(false);
     tableParticipants.getColumns().get(2).setVisible(true);
+    labelCurrentUserBalance.setText(
+        String.format("Balance: %.2f$", calculateUserBalance(currentUser, unsettledPayments)));
   }
 
   @Override
